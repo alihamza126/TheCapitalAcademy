@@ -1,144 +1,145 @@
 'use client'
-import React, { useState } from 'react'
-import Link from 'next/link'
-import * as Icon from "@phosphor-icons/react/dist/ssr";
-import { useRouter, useSearchParams } from 'next/navigation'
+
+import { useState } from 'react'
 import { signIn, useSession } from 'next-auth/react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
-import { FormData, signinSchema, zodResolver } from '@/lib/validatoins'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { FormData, signinSchema } from '@/lib/validatoins'
 import toast from 'react-hot-toast'
+import Link from 'next/link'
+import { Eye, EyeSlash } from '@phosphor-icons/react'
+import { Google } from '@mui/icons-material'
 
-const Login = () => {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [showPassword, setShowPassword] = useState<boolean>(false);
-    const router = useRouter();
-    const { data: session, status } = useSession();
+export default function Login() {
+	const [isLoading, setIsLoading] = useState(false)
+	const [showPassword, setShowPassword] = useState(false)
 
-    const searchParams = useSearchParams();
-    const pathname = searchParams.get("callbackUrl") || '/';
+	const { data: session, status } = useSession()
+	const router = useRouter()
+	const searchParams = useSearchParams()
+	const callbackUrl = searchParams.get('callbackUrl') || '/'
 
-    console.log(status)
+	if (status === 'authenticated') {
+		router.replace(callbackUrl)
+	}
 
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<FormData>({
+		resolver: zodResolver(signinSchema),
+		defaultValues: {
+			email: '',
+			password: '',
+		},
+	})
 
-    if (status === 'authenticated' && session) {
-      router.replace('/');
-    }
+	const onSubmit = async (data: FormData) => {
+		setIsLoading(true)
+		toast.loading('Logging in...', { id: 'login' })
 
+		const res = await signIn('credentials', {
+			email: data.email,
+			password: data.password,
+			redirect: false,
+			callbackUrl,
+		})
 
+		toast.dismiss('login')
+		setIsLoading(false)
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<FormData>({
-        resolver: zodResolver(signinSchema),
-        defaultValues: {
-            email: "",
-            password: "",
-        },
-    });
+		if (res?.error) return toast.error(res.error)
+		if (res?.ok) router.replace(callbackUrl)
+	}
 
-    const onSubmit = async (data: FormData) => {
-        setIsLoading(true);
-        toast.loading('Logging in...', { id: 'login' });
-        
-        try {
-           signIn("credentials", {
-               email: data.email,
-               password: data.password,
-               redirect: false, // Prevent automatic redirection
-               callbackUrl: pathname,
-            }).then((res) => {
-                if (res?.error) {
-                    return toast.error(res.error);
-                }
-                if (res?.ok) {
-                    router.replace(pathname);
-                }
-            }).catch((err) => {
-                toast.error(err);
-            })
+	const handleGoogleLogin = async () => {
+		await signIn('google', { callbackUrl })
+	}
 
-        } catch (error) {
-            // already handled in toast
-        } finally {
-            toast.dismiss('login');
-            setIsLoading(false);
-        }
-    };
+	return (
+		<div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-primary via-[#F0F4FF] to-secondary">
+			<div className="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 bg-white shadow-xl rounded-3xl overflow-hidden">
 
-    return (
-        <>
-            <div className="login-block md:py-20 py-10">
-                <div className="container">
-                    <div className="content-main flex gap-y-8 max-md:flex-col">
-                        <div className="left md:w-1/2 w-full lg:pr-[60px] md:pr-[40px] md:border-r border-line">
-                            <div className="heading4">Login</div>
-                            <form className="md:mt-7 mt-4" onSubmit={handleSubmit(onSubmit)}>
-                                <div className="email ">
-                                    <input
-                                        className="border-line px-4 pt-3 pb-3 w-full rounded-lg"
-                                        id="username"
-                                        type="email"
-                                        placeholder="Email address *"
-                                        {...register("email", { required: true })}
-                                        required />
-                                    {errors.email && (
-                                        <p className="text-red text-sm py-1">
-                                            {errors.email.message}
-                                        </p>
-                                    )}
-                                </div>
-                                <div className="relative mt-5">
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        placeholder="Password *"
-                                        disabled={isLoading}
-                                        className="border-line px-4 py-3 w-full rounded-lg"
-                                        {...register('password', { required: 'Password is required' })}
-                                    />
-                                    <Icon.Eye
-                                        size={24}
-                                        className="absolute z-30 right-3 top-3 cursor-pointer"
-                                        onClick={() => setShowPassword((prev) => !prev)}
-                                    />
-                                    {errors.password && <p className="text-red text-sm mt-1">{errors.password.message}</p>}
-                                </div>
-                                <div className="flex items-center justify-between mt-5">
-                                    <div className='flex items-center'>
-                                        <div className="block-input">
-                                            <input
-                                                type="checkbox"
-                                                name='remember'
-                                                id='remember'
-                                            />
-                                            <Icon.CheckSquare size={20} weight='fill' className='icon-checkbox' />
-                                        </div>
-                                        <label htmlFor='remember' className="pl-2 cursor-pointer">Remember me</label>
-                                    </div>
-                                    <Link href="/forgot" className='font-semibold hover:underline'>Forgot Your Password?</Link>
-                                </div>
-                                <div className="block-button md:mt-7 mt-4">
-                                    <button className="button-main">
-                                        {isLoading ? 'Loading...' : 'Login'}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        <div className="right md:w-1/2 w-full lg:pl-[60px] md:pl-[40px] flex items-center">
-                            <div className="text-content">
-                                <div className="heading4">New Customer</div>
-                                <div className="mt-2 text-secondary">Be part of our growing family of new customers! Join us today and unlock a world of exclusive benefits, offers, and personalized experiences.</div>
-                                <div className="block-button md:mt-7 mt-4">
-                                    <Link href={'/register'} className="button-main">Register</Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    )
+				{/* Left Side - Image or Branding */}
+				<div className="hidden md:flex flex-col justify-center items-center bg-gradient-to-tr from-primary to-secondary text-white p-10">
+					<h2 className="text-4xl font-bold mb-3">The Capital Academy</h2>
+					<p className="text-lg font-light">Empowering Students to Achieve More</p>
+					<img src="/images/education-side.svg" alt="Login Illustration" className="mt-8 w-[300px]" />
+				</div>
+
+				{/* Right Side - Form */}
+				<div className="p-8 md:p-14">
+					<h2 className="text-3xl font-semibold text-gray-800 mb-4">Login to Your Account</h2>
+					<p className="text-gray-500 mb-6 text-sm">Access your dashboard, courses, and materials</p>
+
+					{/* Google Login */}
+					<button
+						onClick={handleGoogleLogin}
+						className="flex items-center justify-center w-full border border-gray-300 rounded-md py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+					>
+						<Google size={20} className="mr-2" />
+						Continue with Google
+					</button>
+
+					<div className="flex items-center my-5">
+						<hr className="flex-grow border-gray-300" />
+						<span className="px-3 text-gray-400 text-sm">OR</span>
+						<hr className="flex-grow border-gray-300" />
+					</div>
+
+					<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+						<div>
+							<input
+								{...register('email')}
+								type="email"
+								placeholder="Email address"
+								className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+							/>
+							{errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+						</div>
+
+						<div className="relative">
+							<input
+								{...register('password')}
+								type={showPassword ? 'text' : 'password'}
+								placeholder="Password"
+								className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+							/>
+							<div
+								onClick={() => setShowPassword(!showPassword)}
+								className="absolute right-3 top-2.5 text-gray-600 cursor-pointer"
+							>
+								{showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
+							</div>
+							{errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+						</div>
+
+						<div className="flex justify-between items-center text-sm">
+							<label className="flex items-center space-x-2">
+								<input type="checkbox" className="form-checkbox rounded text-primary" />
+								<span>Remember me</span>
+							</label>
+							<Link href="/forgot" className="text-primary hover:underline">Forgot Password?</Link>
+						</div>
+
+						<button
+							disabled={isLoading}
+							className="w-full bg-primary text-white font-medium py-2 rounded-lg hover:bg-primary/90 transition"
+						>
+							{isLoading ? 'Logging in...' : 'Login'}
+						</button>
+					</form>
+
+					<p className="text-sm text-gray-600 mt-6">
+						New here?{' '}
+						<Link href="/register" className="text-primary font-semibold hover:underline">
+							Create an account
+						</Link>
+					</p>
+				</div>
+			</div>
+		</div>
+	)
 }
-
-export default Login

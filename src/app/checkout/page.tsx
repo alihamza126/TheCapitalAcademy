@@ -82,7 +82,7 @@ export default function Checkout() {
 		cprice: 5000,
 		cdesc:
 			"Comprehensive MCQ bank designed for medical entrance exam preparation with detailed explanations and practice tests.",
-		features: ["5000+ MCQs", "Detailed Explanations", "Practice Tests", "Progress Tracking", "Mobile Access"],
+		features: ["40K+ MCQs", "Detailed Explanations", "Practice Tests", "Progress Tracking", "Mobile Access"],
 	})
 	const [promoPrice, setPromoPrice] = useState(0)
 	const [promoCode, setPromoCode] = useState("")
@@ -145,7 +145,7 @@ export default function Checkout() {
 					cprice: 4500,
 					cdesc:
 						"Comprehensive NUMS MCQ collection with expert-crafted questions, detailed solutions, and strategic preparation guidance.",
-					features: ["4500+ NUMS MCQs", "Expert Solutions", "Topic-wise Tests", "Progress Tracking", "Study Planner"],
+					features: ["40K+ NUMS MCQs", "Expert Solutions", "Topic-wise Tests", "Progress Tracking", "Study Planner"],
 				},
 				"mdcat+nums": {
 					cprice: 8000,
