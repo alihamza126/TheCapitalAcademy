@@ -25,7 +25,7 @@ export default withAuth(
          if (!token) {
             return NextResponse.redirect(
                new URL(
-                  "/login?callbackUrl=" + encodeURIComponent(pathname),
+                  "/signin?callbackUrl=" + encodeURIComponent(pathname),
                   req.url
                )
             );
@@ -57,7 +57,7 @@ export default withAuth(
          },
       },
       pages: {
-         signIn: "/login",
+         signIn: "/signin",
       },
    }
 );

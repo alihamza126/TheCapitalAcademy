@@ -29,34 +29,41 @@ const menuItems = [
     description: "Overview & analytics",
   },
   {
+    text: "My Courses",
+    icon: GraduationCap,
+    path: "/dashboard/courses",
+    description: "Learning paths",
+  },
+  {
     text: "Analytics",
     icon: BarChart3,
     path: "/dashboard/analytics",
     description: "Data insights",
   },
   {
-    text: "Schedule",
+    text: "Study Planner",
     icon: Calendar,
-    path: "/dashboard/schedule",
+    path: "/dashboard/planner",
     description: "Manage calendar",
   },
   {
-    text: "Resources",
+    text: "Saved MCQ's",
     icon: Bookmark,
-    path: "/dashboard/resources",
+    path: "/dashboard/saved",
     description: "Saved content",
   },
+  // {
+  //   text: "Aggregator",  
+  //   icon: Calculator,
+  //   path: "/dashboard/tools",
+  //   description: "Utilities & tools",
+  // },
+
   {
-    text: "Tools",
-    icon: Calculator,
-    path: "/dashboard/tools",
-    description: "Utilities & tools",
-  },
-  {
-    text: "Courses",
-    icon: GraduationCap,
-    path: "/dashboard/courses",
-    description: "Learning paths",
+    text: "Subscriptions",
+    icon: Bell,
+    path: "/dashboard/subscriptions",
+    description: "Account settings",
   },
   {
     text: "Profile",
@@ -300,7 +307,7 @@ export default function DashboardLayout({
                     <LayoutDashboard className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    
+
                   </div>
                 </div>
               </div>
@@ -318,11 +325,10 @@ export default function DashboardLayout({
                       whileHover="hover"
                       whileTap={{ scale: 0.98 }}
                       onClick={() => handleNavigation(item.path)}
-                      className={`w-full flex items-center gap-4 px-4 py-4 rounded-xl text-left transition-all duration-200 group touch-manipulation ${
-                        isActive(item.path)
-                          ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-700 shadow-lg backdrop-blur-sm border border-blue-200/50"
-                          : "text-slate-700 hover:bg-white/60 backdrop-blur-sm"
-                      }`}
+                      className={`w-full flex items-center gap-4 px-4 py-4 rounded-xl text-left transition-all duration-200 group touch-manipulation ${isActive(item.path)
+                        ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-700 shadow-lg backdrop-blur-sm border border-blue-200/50"
+                        : "text-slate-700 hover:bg-white/60 backdrop-blur-sm"
+                        }`}
                     >
                       <motion.div variants={iconVariants} initial="rest" whileHover="hover" className="flex-shrink-0">
                         <item.icon className="w-5 h-5" />
@@ -424,11 +430,10 @@ export default function DashboardLayout({
                     whileHover="hover"
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleNavigation(item.path)}
-                    className={`w-full flex items-center gap-3 px-3 xl:px-4 py-3 xl:py-3.5 rounded-xl text-left transition-all duration-200 backdrop-blur-sm relative overflow-hidden group ${
-                      isActive(item.path)
-                        ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-700 shadow-lg border border-blue-200/50"
-                        : "text-slate-700 hover:bg-white/60"
-                    } ${sidebarCollapsed ? "justify-center px-2" : ""}`}
+                    className={`w-full flex items-center gap-3 px-3 xl:px-4 py-3 xl:py-3.5 rounded-xl text-left transition-all duration-200 backdrop-blur-sm relative overflow-hidden group ${isActive(item.path)
+                      ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-700 shadow-lg border border-blue-200/50"
+                      : "text-slate-700 hover:bg-white/60"
+                      } ${sidebarCollapsed ? "justify-center px-2" : ""}`}
                   >
                     {isActive(item.path) && (
                       <motion.div
@@ -528,7 +533,7 @@ export default function DashboardLayout({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="p-4 sm:p-6 lg:p-6 xl:p-8"
+            className="p-3"
           >
             <motion.div
               layout

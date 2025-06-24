@@ -175,17 +175,46 @@ const config: Config = {
    plugins: [
       heroui({
          themes: {
-            light: {
-               colors: {
-                  secondary: {
-                     DEFAULT: "#696C70",
-                     foreground: "#000000",
-                  },
-                  focus: "#BEF264",
+           light: {
+             colors: {
+               primary: {
+                 50: "#FFF5F5",
+                 100: "#FED7D7",
+                 200: "#FEB2B2",
+                 300: "#FC8181",
+                 400: "#F56565",
+                 500: "#E53E3E", // This is your main primary color
+                 600: "#C53030",
+                 700: "#9B2C2C",
+                 800: "#822727",
+                 900: "#63171B",
+                 DEFAULT: "#E53E3E",
+                 foreground: "#FFFFFF",
                },
-            },
+               secondary: {
+                 50: "#F0FFF4",
+                 100: "#C6F6D5",
+                 200: "#9AE6B4",
+                 300: "#68D391",
+                 400: "#48BB78",
+                 500: "#38A169", // This is your main secondary color
+                 600: "#2F855A",
+                 700: "#276749",
+                 800: "#22543D",
+                 900: "#1C4532",
+                 DEFAULT: "#38A169",
+                 foreground: "#FFFFFF",
+               },
+             },
+           },
+           // You can also define a dark theme if needed
+           dark: {
+             colors: {
+               // ... dark theme colors
+             },
+           },
          },
-      }),
+       }),
       require("tailwindcss-animate"),
    ],
 };

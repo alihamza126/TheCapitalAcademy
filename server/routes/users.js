@@ -23,7 +23,7 @@ userRouter.post("/register", asyncWrapper(async (req, res) => {
     //check if user already exists
     const user = await UserModel.findOne({ email })
     if (user) {
-        return res.status(400).json({ error: "User already exists", success: false });
+        return res.status(409).json({ error: "User already exists", success: false });
     }
 
     const userByUsername = await UserModel.findOne({

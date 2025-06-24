@@ -124,8 +124,8 @@ const PageForgotPassword: React.FC = () => {
 
           <p className="mt-6 text-center text-secondary">
             Remembered your password?{' '}
-            <Link href="/login" className="text-purple hover:underline">
-              Login
+            <Link href="/signin" className="text-purple hover:underline">
+            Sign in
             </Link>
           </p>
         </div>

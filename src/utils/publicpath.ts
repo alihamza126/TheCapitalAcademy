@@ -1,7 +1,7 @@
 export const publicPages = [
 	'/',
-	'/login',
-	'/register',
+	'/signin',
+	'/signup',
 	'/forgot',
 	'/about',
 	'/contact',

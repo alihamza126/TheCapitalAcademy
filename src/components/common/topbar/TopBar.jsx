@@ -23,7 +23,7 @@ const TopBar = () => {
   useEffect(() => {
     const fetchTopbar = async () => {
       try {
-        const res = await Axios.get('/homepage/topbar');
+        const res = await Axios.get('/api/v1/common/topbar');
         setTopbarContent(res?.data?.tcontent);
       } catch (error) {
         console.error('Fetching topbar content failed:', error);
@@ -46,17 +46,15 @@ const TopBar = () => {
           elevation={0}
           sx={{
             background: 'linear-gradient(to right, #1757ab, #e260a2)',
-            height: 44,
+            height: 38,
             justifyContent: 'center',
           }}
         >
-          <Toolbar sx={{ minHeight: 44, px: 2 }}>
-            <Typography variant="body2" sx={{ flexGrow: 1, color: '#fff' }}>
-              <div className="marquee-container">
-                <marquee className="marquee-text" scrollAmount="4">
+          <Toolbar sx={{   px: 2 }}>
+            <Typography variant="body2" sx={{ flexGrow: 1,display: 'flex',items: 'center',width: '100%', color: '#fff' }}>
+                <marquee className="marquee-text  text-lg h-full" scrollAmount="4">
                   {topbarContent}
                 </marquee>
-              </div>
             </Typography>
 
             <IconButton

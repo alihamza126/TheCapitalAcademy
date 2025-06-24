@@ -1,222 +1,91 @@
-import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Link, useNavigate } from "react-router-dom";
-import "./login.scss";
-import { useDispatch, useSelector } from "react-redux";
-import { logout, setError, setLoading, setProfileData, setUser } from "../../redux/authSlice";
-import axios from "axios";
-import { useSnackbar } from "notistack";
-import Spinner from "react-bootstrap/Spinner";
-import { IconButton, InputAdornment } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useState } from "react";
-import axiosInstance from "../../baseUrl";
-import { useEffect } from "react";
+"use client"
+import React from 'react';
+import { Card, CardBody, Input, Button, Link } from "@heroui/react";
+import { Icon } from "@iconify/react";
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link to={"/"}>The Capital Academy </Link>
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+const App: React.FC = () => {
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
 
-// TODO remove, this demo shouldn't need to reset the theme.
-
-const defaultTheme = createTheme();
-
-export default function Login() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
-  const isLoading = useSelector((state) => state.auth.isLoading);
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    try {
-      enqueueSnackbar("fetching data ...", {
-        variant: "info",
-        autoHideDuration: 1500,
-      });
-      dispatch(setLoading(true));
-      const response = await axiosInstance.post("/auth/login", {
-        username: data.get("username"),
-        password: data.get("password"),
-      });
-      dispatch(setUser(response.data));
-      // console.log(response.data)
-
-      // Set user data in cooki
-      localStorage.setItem("user", JSON.stringify(response.data));
-
-      enqueueSnackbar("You are logged in Successfully", {
-        variant: "success",
-        autoHideDuration: 3500,
-      });
-      dispatch(setLoading(false));
-      enqueueSnackbar("Redirecting to home page ...", {
-        variant: "info",
-        autoHideDuration: 1500,
-      });
-      setTimeout(() => {
-        navigate("/");
-        window.location.reload()
-      }, 100);
-    } catch (error) {
-      enqueueSnackbar(error?.response?.data || "Network Error", {
-        variant: "error",
-        autoHideDuration: 2500,
-      });
-      dispatch(setLoading(false));
-    }
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Implement login logic here
+    console.log("Login attempted with:", { email, password });
   };
 
-  const [showPassword, setShowPassword] = useState(false);
-  const handleTogglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  useEffect(() => {
-    const handleLogout = async () => {
-      try {
-        const res = await axiosInstance.get('/auth/logout');
-        localStorage.removeItem('user');
-        dispatch(logout());
-        console.warn("logout")
-      } catch (error) {
-      }
-    }
-
-    handleLogout();
-  },[]);
-
-
   return (
-    <div className="login py-5 shadow-lg">
-      <ThemeProvider theme={defaultTheme}>
-        <Container
-          component="main"
-          maxWidth="xs"
-          className="login-box overflow-hidden shadow"
-        >
-          <CssBaseline />
-          <Box
-            sx={{
-              marginTop: 8,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Sign in
-            </Typography>
-            <Box
-              component="form"
-              onSubmit={handleSubmit}
-              noValidate
-              sx={{ mt: 1 }}
-            >
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="username"
-                label="username"
-                name="username"
-                autoComplete="username"
-                autoFocus
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type={showPassword ? "text" : "password"}
-                id="password"
-                autoComplete="current-password"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleTogglePasswordVisibility}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-
-              <div className="d-flex align-items-center justify-content-between">
-                <FormControlLabel
-                  control={<Checkbox value="remember" color="primary" />}
-                  label="Remember me"
-                />
-                <small className="ms-5">
-                  <Link to={"/forgot-password"}>Forgot password</Link>
-                </small>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-blue-50">
+      <Card className="w-full max-w-md shadow-xl">
+        <CardBody className="p-8">
+          <div className="flex flex-col items-center gap-4 mb-8">
+            <Icon icon="lucide:heart-pulse" className="text-red-500 text-5xl" />
+            <h1 className="text-3xl font-bold text-gray-800">PreMed</h1>
+          </div>
+          <h2 className="text-2xl font-semibold text-center text-gray-700 mb-2">Welcome Back</h2>
+          <p className="text-center text-gray-500 mb-6">Study. Anywhere. Anytime.</p>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <Input
+              type="email"
+              placeholder="Email Address"
+              value={email}
+              onValueChange={setEmail}
+              startContent={<Icon icon="lucide:mail" className="text-gray-400" />}
+              classNames={{
+                input: "bg-gray-50",
+                inputWrapper: "bg-gray-50",
+              }}
+            />
+            <Input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onValueChange={setPassword}
+              startContent={<Icon icon="lucide:lock" className="text-gray-400" />}
+              endContent={
+                <Button isIconOnly variant="light" aria-label="Toggle password visibility">
+                  <Icon icon="lucide:eye-off" className="text-gray-400" />
+                </Button>
+              }
+              classNames={{
+                input: "bg-gray-50",
+                inputWrapper: "bg-gray-50",
+              }}
+            />
+            <Button type="submit" color="danger" fullWidth className="mt-2">
+              Sign In
+            </Button>
+          </form>
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-500 mb-2">
+              Don't have an account? <Link href="#" size="sm" className="text-red-500 font-semibold">Sign Up</Link>
+            </p>
+            <Link href="#" size="sm" className="text-red-500">Forgot Password?</Link>
+          </div>
+          <div className="mt-8">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
               </div>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Sign In{" "}
-                {isLoading && (
-                  <Spinner
-                    animation="border"
-                    variant="light"
-                    size="sm"
-                    className="ms-1"
-                  />
-                )}
-              </Button>
-              <Grid container>
-                {/* <Grid item xs>
-                                    <Link href="#" variant="body2">
-                                        Forgot password?
-                                    </Link>
-                                </Grid> */}
-                <Grid item>
-                  Don't have an account?
-                  <Link to={"/signup"} variant="body2">
-                    {" Sign Up"}
-                  </Link>
-                </Grid>
-              </Grid>
-            </Box>
-          </Box>
-          <Copyright sx={{ mt: 8, mb: 4 }} />
-        </Container>
-      </ThemeProvider>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">OR</span>
+              </div>
+            </div>
+            <Button 
+              variant="bordered" 
+              fullWidth 
+              className="mt-4"
+              startContent={<Icon icon="logos:google-icon" className="text-xl" />}
+            >
+              Continue with Google
+            </Button>
+          </div>
+          <p className="mt-8 text-xs text-center text-gray-400">
+            By logging in, you agree to our <Link href="#" size="sm" className="text-red-500">Terms of Use</Link> and <Link href="#" size="sm" className="text-red-500">Privacy Policy</Link>
+          </p>
+        </CardBody>
+      </Card>
     </div>
   );
-}
+};
+
+export default App;

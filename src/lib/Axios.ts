@@ -27,24 +27,24 @@ Axios.interceptors.request.use(
    }
 );
 
-// Add a response interceptor to handle token expiration
-Axios.interceptors.response.use(
-   (response) => response,
-   async (error) => {
-      const originalRequest = error.config;
+// // Add a response interceptor to handle token expiration
+// Axios.interceptors.response.use(
+//    (response) => response,
+//    async (error) => {
+//       const originalRequest = error.config;
 
-      // If the error is 401 (Unauthorized) and we haven't already tried to refresh
-      if (error.response?.status === 401 && !originalRequest._retry) {
-         originalRequest._retry = true;
+//       // If the error is 401 (Unauthorized) and we haven't already tried to refresh
+//       if (error.response?.status === 401 && !originalRequest._retry) {
+//          originalRequest._retry = true;
 
-         // Here you could implement token refresh logic if needed
-         // For now, we'll just redirect to login
-         window.location.href = "/login";
-         return Promise.reject(error);
-      }
+//          // Here you could implement token refresh logic if needed
+//          // For now, we'll just redirect to login
+//          window.location.href = "/login";
+//          return Promise.reject(error);
+//       }
 
-      return Promise.reject(error);
-   }
-);
+//       return Promise.reject(error);
+//    }
+// );
 
 export default Axios;

@@ -11,6 +11,8 @@ import Image from "next/image"
 import logo from "/public/logo.png"
 import { ChevronDown } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, NavbarContent, user } from "@heroui/react"
+import { signOut, useSession } from "next-auth/react"
 
 // Custom NavLink component for Next.js
 export const NavLink = ({ href, children, className = "", activeClassName = "", ...props }) => {
@@ -25,12 +27,15 @@ export const NavLink = ({ href, children, className = "", activeClassName = "", 
 }
 
 const Navbar = () => {
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isCoursesDropdownOpen, setIsCoursesDropdownOpen] = useState(false)
   const [isDashboardDropdownOpen, setIsDashboardDropdownOpen] = useState(false)
   const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(false)
   const [isMobileDashboardOpen, setIsMobileDashboardOpen] = useState(false)
-  const isLogin = true
+  const { data: session, status } = useSession();
+  console.log(session)
+  const isLogin = session?.user || false
 
   // Close all dropdowns function
   const closeAllDropdowns = () => {
@@ -338,27 +343,62 @@ const Navbar = () => {
             transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="hidden lg:flex lg:items-center lg:space-x-3 lg:order-2"
           >
-            <motion.button
-              whileHover={{ y: -1 }}
-              whileTap={{ y: 0 }}
-              transition={{ duration: 0.15 }}
-              className="text-gray-700 hover:text-[#1757ab] px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border border-gray-300 hover:border-[#1757ab] hover:shadow-sm"
-            >
-              Sign In
-            </motion.button>
+            {!isLogin ? (
+              <>
+                <Link href={isLogin ? "/dashboard" : "/signin"}>
+                  <motion.button
+                    whileHover={{ y: -1 }}
+                    whileTap={{ y: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="text-gray-700 hover:text-[#1757ab] px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border border-gray-300 hover:border-[#1757ab] hover:shadow-sm"
+                  >
+                    Sign In
+                  </motion.button>
+                </Link>
 
-            <motion.button
-              whileHover={{
-                y: -1,
-                boxShadow: '0 4px 12px rgba(23, 87, 171, 0.2)'
-              }}
-              whileTap={{ y: 0 }}
-              transition={{ duration: 0.15 }}
-              className="bg-[#1757ab] text-white hover:bg-[#144c95] px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm"
-            >
-              Sign Up
-            </motion.button>
+                <Link href={isLogin ? "/dashboard" : "/signup"}>
+                  <motion.button
+                    whileHover={{
+                      y: -1,
+                      boxShadow: '0 4px 12px rgba(23, 87, 171, 0.2)'
+                    }}
+                    whileTap={{ y: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="bg-[#1757ab] text-white hover:bg-[#144c95] px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm"
+                  >
+                    Sign Up
+                  </motion.button>
+                </Link>
+              </>
+            )
+              :
+              <Dropdown placement="bottom-end">
+                <DropdownTrigger>
+                  <Avatar
+                    isBordered
+                    as="button"
+                    className="transition-transform"
+                    color="secondary"
+                    name="Jason Hughes"
+                    size="sm"
+                    src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                  />
+                </DropdownTrigger>
+                <DropdownMenu aria-label="Profile Actions" variant="flat">
+                  <DropdownItem key="profile" className="h-14 gap-2">
+                    <p className="font-semibold">Signed in as</p>
+                    <p className="">{session?.user?.email}</p>
+                  </DropdownItem>
+                  <DropdownItem key="help_and_feedback"><Link href={'/profile'}>Profile Settings</Link></DropdownItem>
+                  {/* <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem> */}
+                  <DropdownItem key="logout" color="danger" onPress={() => signOut()}>
+                    Log Out
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            }
           </motion.div>
+
 
         </div>
       </div>
