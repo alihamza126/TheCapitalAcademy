@@ -16,54 +16,8 @@ interface Review {
   course?: string
 }
 
-const Reviews = () => {
-  const [reviews, setReviews] = useState<Review[]>([
-    {
-      name: "Sarah Ahmed",
-      comment:
-        "This course completely transformed my MDCAT preparation! The interactive MCQs and detailed explanations helped me understand complex concepts easily. Highly recommended!",
-      city: "Karachi",
-      createdAt: "2024-01-15",
-      rating: 5,
-      course: "MDCAT Preparation",
-    },
-    {
-      name: "Muhammad Ali",
-      comment:
-        "Amazing platform with up-to-date content. The mobile app makes it so convenient to study anywhere. Got excellent results in NUMS!",
-      city: "Lahore",
-      createdAt: "2024-01-10",
-      rating: 5,
-      course: "NUMS Preparation",
-    },
-    {
-      name: "Fatima Khan",
-      comment:
-        "The cost-effective pricing and scholarship opportunities made quality education accessible. The user interface is incredibly intuitive and engaging.",
-      city: "Islamabad",
-      createdAt: "2024-01-08",
-      rating: 5,
-      course: "MDCAT + NUMS Combo",
-    },
-    {
-      name: "Hassan Raza",
-      comment:
-        "Excellent question bank with detailed solutions. The progress tracking feature helped me identify my weak areas and improve systematically.",
-      city: "Faisalabad",
-      createdAt: "2024-01-05",
-      rating: 4,
-      course: "MDCAT Preparation",
-    },
-    {
-      name: "Aisha Malik",
-      comment:
-        "The 24/7 support team is incredibly helpful. Whenever I had doubts, they were quick to respond with detailed explanations.",
-      city: "Multan",
-      createdAt: "2024-01-03",
-      rating: 5,
-      course: "NUMS Preparation",
-    },
-  ])
+const Reviews = ({ reviews: data }) => {
+  const [reviews, setReviews] = useState<Review[]>(data || [])
 
   const [currentIndex, setCurrentIndex] = useState(0)
   const [error, setError] = useState<string | null>(null)

@@ -8,9 +8,27 @@ const topbarSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
 });
 
+const reviewSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    comment: {
+        type: String,
+        required: true
+    },
+    city: {
+        type: String,
+        required: false,
+    },
+}, {
+    timestamps: true
+});
+
 
 
 // Prevent OverwriteModelError
 const Home = mongoose?.models?.topbarSchema || mongoose.model('Common', topbarSchema)
+const Review = mongoose?.models?.reviewSchema || mongoose.model('Review', reviewSchema)
 
-export { Home }
+export { Home, Review }

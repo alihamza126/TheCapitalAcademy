@@ -4,6 +4,7 @@ import next from 'next'
 import express from 'express'
 import userRouter from './server/routes/users.js';
 import commonRouter from './server/routes/common.js';
+import reviewRouter from './server/routes/review.js';
 // import errorHandler from './server/middleware/errorHandler.js';
 import mongoose from 'mongoose';
 
@@ -46,6 +47,7 @@ app.prepare().then(() => {
   //routes start from here
   expressApp.use("/api/v1/users", userRouter);
   expressApp.use("/api/v1/common", commonRouter);
+  expressApp.use("/api/v1/review", reviewRouter);
 
 
 

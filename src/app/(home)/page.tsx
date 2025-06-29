@@ -6,12 +6,23 @@ import Pricing from '@/components/pricing/Pricing';
 import Features from '@/components/features/Features';
 import Reviews from '@/components/review/Review';
 import FAQAccordion from '@/components/Faqs/Faqs';
+import Axios from '@/lib/Axios';
 
 
 
 
 
 export default async function Home() {
+    const reviews=[];
+    console.log("Fetching reviews from API...");
+    try {
+        const res=await Axios.get('/api/v1/review');
+        console.log("data",res.data);
+        // reviews.push(res.data)
+    } catch (error) {
+        console.log(error)
+    }
+    
     return (
         <>
             <Header />
@@ -19,7 +30,7 @@ export default async function Home() {
             <Boards/>
             <Pricing/>
             <Features/>
-            <Reviews/>
+            <Reviews reviews={reviews}/>
             <FAQAccordion/>
         </>
     )
