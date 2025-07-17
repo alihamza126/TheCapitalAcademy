@@ -25,7 +25,6 @@ commonRouter.post('/topbar', asyncWrapper(async (req, res) => {
     }
 }));
 
-
 commonRouter.get('/topbar', asyncWrapper(async (req, res) => {
     const data = await Home.findOne();
     res.status(200).send(data);

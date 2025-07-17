@@ -7,16 +7,16 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useSnackbar } from 'notistack';
 import Axios from '@/lib/Axios';
 
-const TopBar = () => {
+const TopBar = ({ content }) => {
   const [open, setOpen] = useState(
     typeof window !== 'undefined' &&
-    sessionStorage.getItem('topCapitalAcademyTopBar') === 'false'
+      sessionStorage.getItem('topCapitalAcademyTopBar') === 'false'
       ? false
       : true
   );
 
   const { enqueueSnackbar } = useSnackbar();
-  const [topbarContent, setTopbarContent] = useState(
+  const [topbarContent, setTopbarContent] = useState(content ||
     'Welcome Dear Student! May Your Journey Be Filled With Joy & Success'
   );
 
@@ -50,11 +50,11 @@ const TopBar = () => {
             justifyContent: 'center',
           }}
         >
-          <Toolbar sx={{   px: 2 }}>
-            <Typography variant="body2" sx={{ flexGrow: 1,display: 'flex',items: 'center',width: '100%', color: '#fff' }}>
-                <marquee className="marquee-text  text-lg h-full" scrollAmount="4">
-                  {topbarContent}
-                </marquee>
+          <Toolbar sx={{ px: 2 }}>
+            <Typography variant="body2" sx={{ flexGrow: 1, display: 'flex', items: 'center', width: '100%', color: '#fff' }}>
+              <marquee className="marquee-text  text-lg h-full" scrollAmount="4">
+                {topbarContent}
+              </marquee>
             </Typography>
 
             <IconButton

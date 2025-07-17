@@ -17,6 +17,7 @@ interface Review {
 }
 
 const Reviews = ({ reviews: data }) => {
+  console.log(data)
   const [reviews, setReviews] = useState<Review[]>(data || [])
 
   const [currentIndex, setCurrentIndex] = useState(0)

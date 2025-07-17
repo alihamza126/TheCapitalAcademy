@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
 		unique: true,
 	},
 	password: String,
-	image:{
+	image: {
 		type: String,
 		default: null
 	},
@@ -39,10 +39,21 @@ const userSchema = new mongoose.Schema({
 	phone: { type: String, default: null },
 	gender: {
 		type: String,
-		enum: ['male', 'female'], 
+		enum: ['male', 'female'],
 		default: 'male',
 	},
 	dob: { type: Date, default: null, required: false },
+	isFreeTrial: { type: Boolean, default: false },
+	freeTrialExpiry: { type: Date, default: null },
+	isActive: { type: Boolean, default: true },
+
+	// address: {
+	// 	street: { type: String, default: null },
+	// 	city: { type: String, default: null },
+	// 	state: { type: String, default: null },
+	// 	country: { type: String, default: null },
+	// 	zip: { type: String, default: null },
+	// },
 
 
 	forgotPasswordToken: String,

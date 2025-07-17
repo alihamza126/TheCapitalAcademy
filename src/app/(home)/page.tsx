@@ -13,25 +13,23 @@ import Axios from '@/lib/Axios';
 
 
 export default async function Home() {
-    const reviews=[];
-    console.log("Fetching reviews from API...");
+    let reviews = [];
     try {
-        const res=await Axios.get('/api/v1/review');
-        console.log("data",res.data);
-        // reviews.push(res.data)
+        const res = await Axios.get('/api/v1/review');
+        reviews = res.data;
     } catch (error) {
         console.log(error)
     }
-    
+
     return (
         <>
             <Header />
             <HomeCard />
-            <Boards/>
-            <Pricing/>
-            <Features/>
-            <Reviews reviews={reviews}/>
-            <FAQAccordion/>
+            <Boards />
+            <Pricing />
+            <Features />
+            <Reviews reviews={reviews} />
+            <FAQAccordion />
         </>
     )
 }

@@ -5,7 +5,7 @@ import './stickynav.scss'; // Import your CSS file for additional styling
 import TopBar from '../../components/common/topbar/TopBar';
 import Navbar from '../../components/common/navbar/Navbar';
 
-const StickyNav = () => {
+const StickyNav = ({ content }) => {
 
     return (
         <div className=' sticky top-0 z-50 w-full shadow-sm'>
@@ -15,7 +15,7 @@ const StickyNav = () => {
                 backdropFilter: 'blur(10px)',
             }}
                 color='white' className='border-none backdrop-blur-xl shadow-xl  bg-white '>
-                <TopBar />
+                <TopBar content={content} />
                 <Navbar />
             </AppBar>
         </div>

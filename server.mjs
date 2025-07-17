@@ -14,15 +14,11 @@ dotenv.config({
   path: "./.env.local",
 }); // 👈 
 
-
-
 const port = parseInt(process.env.PORT || '3000', 10)
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handler = app.getRequestHandler()
 const expressApp = express();
-
-
 
 const connectMongoDB = async () => {
   try {
@@ -35,12 +31,7 @@ const connectMongoDB = async () => {
 
 connectMongoDB();
 
-
-
 app.prepare().then(() => {
-
-
-
   expressApp.use(cookieParser());
   expressApp.use(express.json());
 
@@ -48,9 +39,6 @@ app.prepare().then(() => {
   expressApp.use("/api/v1/users", userRouter);
   expressApp.use("/api/v1/common", commonRouter);
   expressApp.use("/api/v1/review", reviewRouter);
-
-
-
 
 
   // for next front-end requests
@@ -64,7 +52,6 @@ app.prepare().then(() => {
 
   const httpServer = createServer(expressApp);
   // setupSocket(httpServer);
-
 
 
   httpServer.listen(port, () => {
