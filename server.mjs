@@ -10,6 +10,9 @@ import mongoose from 'mongoose';
 
 import dotenv from "dotenv";
 import cookieParser from 'cookie-parser';
+import courseRouter from './server/routes/course.js';
+import referalRouter from './server/routes/referal.js';
+import PurchaseRouter from './server/routes/purchases.js';
 dotenv.config({
   path: "./.env.local",
 }); // 👈 
@@ -39,6 +42,9 @@ app.prepare().then(() => {
   expressApp.use("/api/v1/users", userRouter);
   expressApp.use("/api/v1/common", commonRouter);
   expressApp.use("/api/v1/review", reviewRouter);
+  expressApp.use("/api/v1/course", courseRouter);
+  expressApp.use("/api/v1/referral", referalRouter);
+  expressApp.use("/api/v1/purchase", PurchaseRouter);
 
 
   // for next front-end requests

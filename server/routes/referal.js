@@ -2,8 +2,8 @@
 import express from 'express'
 import { asyncWrapper } from '../helpers/asyncWrapper.js';
 import { authenticateUser } from '../middleware/auth.middleware.js';
-import { ReferalModel } from '../models/referral.js'
-import { PurchaseModel } from '../models/purchase.js'
+import ReferalModel from '../models/referral.js'
+import PurchaseModel from '../models/purchase.js'
 
 
 const referalRouter = express.Router();

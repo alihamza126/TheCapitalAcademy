@@ -28,6 +28,10 @@ import bank from "/public/assets/bank.png"
 import mdImg from "/public/courses/1.png"
 import numsImg from "/public/courses/2.png"
 import mdNumsImg from "/public/courses/3.png"
+import Axios from "@/lib/Axios"
+import { uploadFile } from "@/actions/Cloudniary"
+import ImageUploaderBox from "@/components/upload/Uplader"
+import { useSession } from "next-auth/react"
 
 // Mock data - replace with your actual data
 const courseImages = {
@@ -70,7 +74,6 @@ export default function Checkout() {
 	const [activeTab, setActiveTab] = useState(0)
 	const [payMethod, setPayMethod] = useState("jazzcash")
 	const [imageUrl, setImageUrl] = useState("/placeholder.svg?height=400&width=300")
-	const [image, setImage] = useState<File | null>(null)
 	const [showAlert, setShowAlert] = useState(false)
 	const [loading, setLoading] = useState(false)
 	const [snackbar, setSnackbar] = useState({
@@ -79,13 +82,14 @@ export default function Checkout() {
 		severity: "info" as "success" | "error" | "warning" | "info",
 	})
 	const [cData, setCData] = useState<CourseData>({
-		cprice: 5000,
+		cprice: null,
 		cdesc:
-			"Comprehensive MCQ bank designed for medical entrance exam preparation with detailed explanations and practice tests.",
-		features: ["40K+ MCQs", "Detailed Explanations", "Practice Tests", "Progress Tracking", "Mobile Access"],
+			"",
+		features: [],
 	})
 	const [promoPrice, setPromoPrice] = useState(0)
 	const [promoCode, setPromoCode] = useState("")
+	const { data: session, status } = useSession();
 
 	const router = useRouter()
 	const searchParams = useSearchParams()
@@ -106,19 +110,24 @@ export default function Checkout() {
 				throw new Error("Please provide a promo code")
 			}
 
-			// Mock API call - replace with actual API
-			const mockResponse = Math.random() > 0.5
+			const res = await Axios.get(`/api/v1/referral/${promoCodeValue}`);
 
-			if (mockResponse) {
-				showSnackbar("Promo code applied successfully!", "success")
-				const percentage = 15 // Mock 15% discount
-				const originalPrice = cData.cprice
-				const totalPrice = (originalPrice * percentage) / 100
-				setPromoPrice(totalPrice)
-			} else {
-				showSnackbar("Invalid or expired promo code", "error")
+			if (res.status === 200 && res.data.statusCode == 404) {
+				showSnackbar(res.data.status, "error");
 				setPromoPrice(0)
-				setPromoCode("")
+				setPromoCode('');
+
+			} else if (res.status === 200 && res.data.statusCode == 401) {
+				showSnackbar(res.data.status, "warning");
+				setPromoPrice(0)
+				setPromoCode('');
+			}
+			else {
+				showSnackbar("Applied Successfully", "success");
+				const percentage = parseInt(res.data.priceDiscount); //10
+				const originalPrice = cData.cprice; //100*10/100
+				const totalPrice = (originalPrice * percentage / 100);
+				setPromoPrice(totalPrice)
 			}
 		} catch (error) {
 			showSnackbar((error as Error).message, "error")
@@ -126,64 +135,41 @@ export default function Checkout() {
 		}
 	}
 
+
 	useEffect(() => {
-		// Mock data fetch - replace with actual API call
-		const fetchCourseData = async () => {
-			const mockData = {
-				mdcat: {
-					cprice: 5000,
-					cdesc:
-						"Complete MDCAT MCQ bank with detailed explanations, practice tests, and comprehensive study materials designed by medical education experts.",
-					features: [
-						"50K+ MDCAT MCQs",
-						"Detailed Explanations",
-						"Mock Tests",
-						"Performance Analytics",
-					],
-				},
-				nums: {
-					cprice: 4500,
-					cdesc:
-						"Comprehensive NUMS MCQ collection with expert-crafted questions, detailed solutions, and strategic preparation guidance.",
-					features: ["40K+ NUMS MCQs", "Expert Solutions", "Topic-wise Tests", "Progress Tracking", "Study Planner"],
-				},
-				"mdcat+nums": {
-					cprice: 8000,
-					cdesc:
-						"Combined MDCAT and NUMS MCQ banks offering complete preparation package with extensive question bank and advanced features.",
-					features: [
-						"9500+ Combined MCQs",
-						"Dual Exam Prep",
-						"Advanced Analytics",
-						"Priority Support",
-						"Lifetime Updates",
-					],
-				},
+		const fetch = async () => {
+			let res;
+			if (course == 'mdcat') {
+				res = await Axios.get('/api/v1/course/mdcat');
 			}
-
-			setCData(mockData[course as keyof typeof mockData] || mockData.mdcat)
+			else if (course == 'nums') {
+				res = await Axios.get('/api/v1/course/nums');
+			}
+			else {
+				const encodedCourse = encodeURIComponent("mdcat+nums"); // Safely encode any special chars
+				res = await Axios.get(`/api/v1/course/${encodedCourse}`);
+			}
+			setCData(res.data);
 		}
+		fetch();
+	}, [promoPrice, course]);
 
-		fetchCourseData()
-	}, [course])
+	const Features = ["40K+ MCQs", "Detailed Explanations", "Practice Tests", "Progress Tracking", "Mobile Access"]
 
-	const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const file = event.target.files?.[0]
-		if (file) {
-			if (file.type.startsWith("image/")) {
-				const url = URL.createObjectURL(file)
-				setImageUrl(url)
-				setImage(file)
-			} else {
-				showSnackbar("Please upload a valid image file", "error")
-			}
+	const handleImageChange = (url) => {
+		if (url) {
+			setImageUrl(url)
 		}
 	}
 
 	const handlePurchase = async () => {
-		setLoading(true)
+		if (status == "unauthenticated") {
+			showSnackbar("Please sign in to purchase course", "warning");
+			return;
+		}
 
-		if (!image) {
+		setLoading(true)
+		if (!imageUrl) {
 			showSnackbar("Please upload payment screenshot to proceed", "warning")
 			setLoading(false)
 			return
@@ -191,9 +177,15 @@ export default function Checkout() {
 
 		try {
 			// Mock API call - replace with actual implementation
-			await new Promise((resolve) => setTimeout(resolve, 2000))
-
-			showSnackbar("Order placed successfully! We'll verify your payment shortly.", "success")
+			const finalPrice = cData.cprice - promoPrice;
+			const res = await Axios.post('/api/v1/purchase/course', {
+				finalPrice: finalPrice,
+				course,
+				refCode: promoCode,
+				fileURL: imageUrl
+			})
+			if (res)
+				showSnackbar("Order placed successfully! We'll verify your payment shortly.", "success")
 			setShowAlert(true)
 			setLoading(false)
 		} catch (error) {
@@ -287,7 +279,7 @@ export default function Checkout() {
 												<div className="space-y-4">
 													<h3 className="text-lg font-semibold text-black">What's Included:</h3>
 													<div className="space-y-2">
-														{cData.features.map((feature, index) => (
+														{Features.map((feature, index) => (
 															<div key={index} className="flex items-center space-x-3">
 																<CheckCircleIcon className="w-5 h-5 text-success flex-shrink-0" />
 																<span className="text-secondary">{feature}</span>
@@ -419,33 +411,8 @@ export default function Checkout() {
 												</div>
 
 												{/* Screenshot Upload */}
-												<div className="border-2 border-dashed border-line rounded-xl p-6 text-center">
-													<div className="mb-4">
-														<Image
-															src={imageUrl || "/placeholder.svg"}
-															alt="Payment screenshot"
-															width={300}
-															height={400}
-															className="w-full max-w-xs h-48 object-cover rounded-lg mx-auto border border-line"
-														/>
-													</div>
-													<input
-														type="file"
-														accept="image/*"
-														onChange={handleImageChange}
-														className="hidden"
-														id="payment-screenshot"
-													/>
-													<label
-														htmlFor="payment-screenshot"
-														className="inline-flex items-center px-6 py-3 bg-white border-2 border-primary text-primary rounded-lg cursor-pointer hover:bg-primary hover:text-white transition-all font-medium"
-													>
-														<ArrowUpLeftFromSquare className="w-5 h-5 mr-2" />
-														Upload Payment Screenshot
-													</label>
-													<p className="text-xs text-secondary2 mt-2">
-														Upload a clear screenshot of your payment confirmation
-													</p>
+												<div className="rounded-xl p-1 flex justify-center text-center">
+													<ImageUploaderBox onUpload={handleImageChange} />
 												</div>
 											</div>
 										</div>
@@ -468,7 +435,7 @@ export default function Checkout() {
 												size="large"
 												className="px-8 py-3 bg-success hover:bg-success/90 text-white font-semibold"
 												onClick={handlePurchase}
-												disabled={loading || !image}
+												disabled={loading || !imageUrl}
 												startIcon={loading ? null : <CurrencyDollarIcon className="w-5 h-5" />}
 											>
 												{loading ? "Processing Order..." : "Complete Purchase"}
@@ -493,7 +460,7 @@ export default function Checkout() {
 											<p className="font-semibold text-black">{course.toUpperCase()} MCQ Bank</p>
 											<p className="text-sm text-secondary">Digital Course Access</p>
 										</div>
-										<span className="font-bold text-black">PKR {cData.cprice.toLocaleString()}</span>
+										<span className="font-bold text-black">PKR {cData?.cprice?.toLocaleString()}</span>
 									</div>
 
 									{promoPrice > 0 && (
@@ -502,7 +469,7 @@ export default function Checkout() {
 												<TagIcon className="w-4 h-4" />
 												<span className="font-medium">Discount Applied</span>
 											</div>
-											<span className="font-bold">-PKR {promoPrice.toLocaleString()}</span>
+											<span className="font-bold">-PKR {promoPrice?.toLocaleString()}</span>
 										</div>
 									)}
 
@@ -511,7 +478,7 @@ export default function Checkout() {
 									<div className="flex justify-between items-center">
 										<span className="text-lg font-bold text-black">Total Amount</span>
 										<span className="text-2xl font-bold text-primary">
-											PKR {(cData.cprice - promoPrice).toLocaleString()}
+											PKR {(cData.cprice - promoPrice)?.toLocaleString()}
 										</span>
 									</div>
 								</div>
