@@ -13,6 +13,7 @@ import {
 	Textarea,
 	Progress,
 	Chip,
+	Badge,
 	Tooltip,
 	Divider,
 	Accordion,
@@ -345,9 +346,11 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 						</Button>
 
 						<div className="flex items-center gap-2">
+							<Badge content={index + 1} color="primary" size="sm">
 								<span className="text-sm font-semibold">
 									{index + 1}/{mcqs?.length}
 								</span>
+							</Badge>
 						</div>
 
 						<div className="flex items-center gap-1">
@@ -474,9 +477,11 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 								<CardHeader className="hidden lg:flex flex-shrink-0">
 									<div className="flex justify-between items-center w-full">
 										<div className="flex items-center gap-3">
-											<h3 className="text-xl font-bold">
-												Question {index + 1}/{mcqs?.length}
-											</h3>
+											<Badge content={index + 1} color="primary" placement="top-right">
+												<h3 className="text-xl font-bold">
+													Question {index + 1}/{mcqs?.length}
+												</h3>
+											</Badge>
 											{mcqs[index]?.info && (
 												<Chip color="secondary" variant="flat" className="capitalize">
 													{mcqs[index]?.info}
@@ -608,9 +613,9 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 													) : (
 														// Explanation - Scrollable
 														<div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
-															<div className="lg:col-span-2 h-full">
+															<div className="lg:col-span-2">
 																<h5 className="text-base lg:text-lg font-semibold text-blue-600 mb-4">Explanation</h5>
-																<Card className="bg-green-50 h-full border-l-4 border-l-green-500">
+																<Card className="bg-green-50 border-l-4 border-l-green-500">
 																	<CardBody className="py-3 lg:py-4">
 																		<MathJax
 																			dynamic={true}
@@ -729,7 +734,7 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 				</div>
 
 				{/* Mobile Sidebar Drawer */}
-				<Modal isOpen={isSidebarOpen} hideCloseButton onClose={onSidebarClose} placement="bottom" className="lg:hidden" size="full">
+				<Modal isOpen={isSidebarOpen} onClose={onSidebarClose} placement="bottom" className="lg:hidden" size="full">
 					<ModalContent>
 						<ModalHeader className="flex justify-between items-center">
 							<h4 className="text-lg font-semibold">Questions Overview</h4>
@@ -745,7 +750,7 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 										size="md"
 										variant={getQuestionStatusVariant(mcq._id, i)}
 										color={getQuestionStatusColor(mcq._id, i)}
-										onPress={() => handleSetIndex(i)}
+										onClick={() => handleSetIndex(i)}
 										className="aspect-square min-w-0 text-sm font-medium h-12"
 									>
 										{i + 1}
@@ -798,33 +803,32 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 							<h2 className="text-xl lg:text-2xl font-bold text-blue-600">Test Instructions</h2>
 						</ModalHeader>
 						<ModalBody>
-							<Card shadow="none">
+							<Card className="bg-blue-50">
 								<CardBody>
 									<ul className="space-y-3 text-sm lg:text-base">
 										<li className="flex items-start gap-2">
-											<span className="text-blue-600 font-bold">✅</span>
+											<span className="text-blue-600 font-bold">•</span>
 											You can select only one option per question
 										</li>
 										<li className="flex items-start gap-2">
-											<span className="text-blue-600 font-bold">⚠️</span>
+											<span className="text-blue-600 font-bold">•</span>
 											Once an option is selected, it cannot be changed later
 										</li>
 										<li className="flex items-start gap-2">
-											<span className="text-blue-600 font-bold">📝</span>
+											<span className="text-blue-600 font-bold">•</span>
 											You can solve only {subject === "mock" ? "200" : "100"} MCQs in one go
 										</li>
 										<li className="flex items-start gap-2">
-											<span className="text-blue-600 font-bold">📊</span>
+											<span className="text-blue-600 font-bold">•</span>
 											{subject === "mock"
 												? "Check Mock-test result after completion"
 												: "Your data will enter the stats only if you submit or save the test"}
 										</li>
 										<li className="flex items-start gap-2 lg:hidden">
-											<span className="text-blue-600 font-bold">👈👉</span>
+											<span className="text-blue-600 font-bold">•</span>
 											Swipe left/right to navigate between questions
 										</li>
 									</ul>
-
 								</CardBody>
 							</Card>
 						</ModalBody>
@@ -851,7 +855,7 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 					<ModalContent>
 						<ModalBody className="p-4 lg:p-8">
 							<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-								<Card className=" bg-blue-600 text-white">
+								<Card className="bg-gradient-to-br from-purple-500 to-blue-600 text-white">
 									<CardBody className="text-center space-y-4 lg:space-y-6">
 										<h3 className="text-xl lg:text-2xl font-bold">Your Result</h3>
 										<div className="w-24 h-24 lg:w-32 lg:h-32 rounded-full bg-white/20 flex flex-col items-center justify-center mx-auto">
@@ -994,10 +998,10 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 																<div
 																	key={optionIndex}
 																	className={`p-2 lg:p-3 rounded-lg border ${correctMcq.includes(ele._id) && optionIndex + 1 === ele.selected
-																		? "bg-green-50 border-green-300"
-																		: wrongMcq.includes(ele._id) && optionIndex + 1 === ele.selected
-																			? "bg-red-50 border-red-300"
-																			: "bg-gray-50 border-gray-200"
+																			? "bg-green-50 border-green-300"
+																			: wrongMcq.includes(ele._id) && optionIndex + 1 === ele.selected
+																				? "bg-red-50 border-red-300"
+																				: "bg-gray-50 border-gray-200"
 																		}`}
 																>
 																	<div className="flex items-center gap-3">
@@ -1078,10 +1082,10 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 																		<div
 																			key={optionIndex}
 																			className={`p-2 lg:p-3 rounded-lg border ${correctMcq.includes(ele._id) && optionIndex + 1 === ele.selected
-																				? "bg-green-50 border-green-300"
-																				: wrongMcq.includes(ele._id) && optionIndex + 1 === ele.selected
-																					? "bg-red-50 border-red-300"
-																					: "bg-gray-50 border-gray-200"
+																					? "bg-green-50 border-green-300"
+																					: wrongMcq.includes(ele._id) && optionIndex + 1 === ele.selected
+																						? "bg-red-50 border-red-300"
+																						: "bg-gray-50 border-gray-200"
 																				}`}
 																		>
 																			<div className="flex items-center gap-3">
