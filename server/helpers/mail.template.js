@@ -1,6 +1,45 @@
-export const generateEmailHTML = ({ type, token, domain, username = 'User' }) => {
-  const actionText = type === 'VERIFY' ? 'Verify Your Email' : 'Reset Your Password';
-  const actionUrl = type === 'VERIFY' ? `${domain}/verifyemail?token=${token}` : `${domain}/resetpassword?token=${token}`;
+export const generateEmailHTML = ({ type, token, domain, username = 'User', courseName = '' }) => {
+  const actionText =
+    type === 'VERIFY'
+      ? 'Verify Your Email'
+      : type === 'RESET'
+        ? 'Reset Your Password'
+        : type === 'COURSE_EXPIRED'
+          ? 'Your Course Access Has Expired'
+          : '';
+
+  const actionUrl =
+    type === 'VERIFY'
+      ? `${domain}/verifyemail?token=${token}`
+      : type === 'RESET'
+        ? `${domain}/resetpassword?token=${token}`
+        : `${domain}/courses`;
+
+  const bodyContent =
+    type === 'COURSE_EXPIRED'
+      ? `
+        <h2 style="margin-top: 0;">${actionText}</h2>
+        <p>Hi ${username},</p>
+        <p>We hope you enjoyed learning with us!</p>
+        <p>Your access to the course <strong>${courseName}</strong> has now expired.</p>
+        <p>If you'd like to renew or continue your learning, please click below to explore available options:</p>
+        <p style="text-align: center;">
+          <a href="${actionUrl}" class="email-button">View Courses</a>
+        </p>
+        <p>If you have any questions or need support, don't hesitate to reply to this email.</p>
+      `
+      : `
+        <h2>${actionText}</h2>
+        <p>Hi ${username},</p>
+        <p>To ${type === 'VERIFY' ? 'verify your email address' : 'reset your password'
+      }, please click the button below:</p>
+        <p style="text-align: center;">
+          <a href="${actionUrl}" class="email-button">${actionText}</a>
+        </p>
+        <p>If the button above doesn't work, copy and paste the following link into your browser:</p>
+        <p><a href="${actionUrl}">${actionUrl}</a></p>
+        <p>If you did not request this, please ignore this email.</p>
+      `;
 
   return `
     <!DOCTYPE html>
@@ -34,9 +73,6 @@ export const generateEmailHTML = ({ type, token, domain, username = 'User' }) =>
           padding: 30px;
           color: #333333;
         }
-        .email-body h2 {
-          margin-top: 0;
-        }
         .email-button {
           display: inline-block;
           margin: 20px 0;
@@ -54,11 +90,6 @@ export const generateEmailHTML = ({ type, token, domain, username = 'User' }) =>
           font-size: 12px;
           color: #7f8c8d;
         }
-        @media (max-width: 600px) {
-          .email-body {
-            padding: 20px;
-          }
-        }
       </style>
     </head>
     <body>
@@ -67,15 +98,7 @@ export const generateEmailHTML = ({ type, token, domain, username = 'User' }) =>
           <h1>Accountdeal.com</h1>
         </div>
         <div class="email-body">
-          <h2>${actionText}</h2>
-          <p>Hi ${username},</p>
-          <p>To ${type === 'VERIFY' ? 'verify your email address' : 'reset your password'}, please click the button below:</p>
-          <p style="text-align: center;">
-            <a href="${actionUrl}" class="email-button">${actionText}</a>
-          </p>
-          <p>If the button above doesn't work, copy and paste the following link into your browser:</p>
-          <p><a href="${actionUrl}">${actionUrl}</a></p>
-          <p>If you did not request this, please ignore this email.</p>
+          ${bodyContent}
         </div>
         <div class="email-footer">
           &copy; ${new Date().getFullYear()} accountdeal. All rights reserved.

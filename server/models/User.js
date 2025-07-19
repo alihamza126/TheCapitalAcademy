@@ -34,6 +34,23 @@ const userSchema = new mongoose.Schema({
 		default: 'user'
 	},
 
+	//courses schemas
+	isMdcat: {
+		type: Boolean,
+		default: false,
+		required: false,
+	},
+	isNums: {
+		type: Boolean,
+		default: false,
+		required: false,
+	},
+	isMdcatNums: {
+		type: Boolean,
+		default: false,
+		required: false,
+	},
+
 	firstName: { type: String, default: null },
 	lastName: { type: String, default: null },
 	phone: { type: String, default: null },
@@ -47,13 +64,12 @@ const userSchema = new mongoose.Schema({
 	freeTrialExpiry: { type: Date, default: null },
 	isActive: { type: Boolean, default: true },
 
-	// address: {
-	// 	street: { type: String, default: null },
-	// 	city: { type: String, default: null },
-	// 	state: { type: String, default: null },
-	// 	country: { type: String, default: null },
-	// 	zip: { type: String, default: null },
-	// },
+	
+	city: { type: String, default: null },
+	aggPercentage: {
+		type: Number,
+		required: false,
+	},
 
 
 	forgotPasswordToken: String,

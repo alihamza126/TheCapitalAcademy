@@ -34,7 +34,9 @@ export const sendEmail = async ({ email, emailType, userId, username }) => {
 			from: 'alihamzageo75@mailtrap.com',
 			to: email,
 			subject:
-				emailType === 'VERIFY' ? 'Verify your email' : 'Reset your password',
+				emailType === 'VERIFY' ? 'Verify your email'
+					: emailType === 'RESET' ? 'Reset your password'
+						: 'Course Expired - Reactivate Now!',
 			html: generateEmailHTML({
 				type: emailType,
 				token: hashedToken,

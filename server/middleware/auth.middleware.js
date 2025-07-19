@@ -1,19 +1,17 @@
-import { getToken } from "next-auth/jwt";
+import jwt from "jsonwebtoken";
 
-export const authenticateUser = async (req, res, next) => {
+export const authUser = async (req, res, next) => {
     try {
-    
-        const token = await getToken({
-            req,
-            secret: process.env.NEXTAUTH_SECRET,
-        });
+        const token = req.headers.authorization?.split(' ')[1]
+        if (!token) return res.status(401).json({ error: 'Token missing' })
 
-        if (!token) {
-            return res.status(401).json({ message: "Unauthorized" });
+        try {
+            const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET)
+            req.user = decoded
+            next()
+        } catch (err) {
+            return res.status(401).json({ error: 'Invalid token' })
         }
-
-        req.user = token; // Attach token data to req
-        next();
     } catch (error) {
         console.error("Auth middleware error:", error);
         return res.status(500).json({ message: "Internal server error" });

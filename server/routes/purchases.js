@@ -1,18 +1,18 @@
 import express from 'express'
 import { asyncWrapper } from '../helpers/asyncWrapper.js';
-import { authenticateUser } from '../middleware/auth.middleware.js';
 import PurchaseModel from '../models/purchase.js'
 import UserModel from '../models/User.js';
 import EarningsModel from '../models/earning.js';
+import { authUser } from '../middleware/auth.middleware.js';
 
 
 const PurchaseRouter = express.Router();
 // finalPrice, course, refCode, fileURL 
 
 
-PurchaseRouter.post('/course', authenticateUser, asyncWrapper(async (req, res) => {
+PurchaseRouter.post('/course', authUser, asyncWrapper(async (req, res) => {
     let { finalPrice, course, refCode, fileURL } = req.body;
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const user = await UserModel.findById(userId);
     if (user) {
         finalPrice = parseInt(finalPrice);
@@ -32,7 +32,7 @@ PurchaseRouter.post('/course', authenticateUser, asyncWrapper(async (req, res) =
 }));
 
 // get purchase for user dashbaord
-PurchaseRouter.get('/dashboard', authenticateUser, asyncWrapper(async (req, res) => {
+PurchaseRouter.get('/dashboard', authUser, asyncWrapper(async (req, res) => {
     try {
         const documents = await PurchaseModel.find({ user: req.user.id });
         const extractedData = documents.map(doc => {

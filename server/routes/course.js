@@ -1,11 +1,43 @@
 import express from 'express'
 import CourseModel from '../models/course.js';
 import { asyncWrapper } from '../helpers/asyncWrapper.js';
-import { authenticateUser } from '../middleware/auth.middleware.js';
+import { authUser } from '../middleware/auth.middleware.js';
+import UserModel from '../models/User.js';
 
 const courseRouter = express.Router();
 
 
+
+
+// for user course status
+courseRouter.get('/active-courses', authUser, async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.user.userId)
+        if (!user) return res.status(404).json({ error: 'User not found' })
+
+        const activeCourses = []
+
+        if (user.isMdcat) {
+            activeCourses.push('mdcat')
+        }
+        if (user.isNums) {
+            activeCourses.push('nums')
+        }
+        if (user.isMdcatNums) {
+            activeCourses.push('mdcatNums')
+        }
+        if (user.isFreeTrial) {
+            activeCourses.push('trial')
+        }
+
+        res.status(200).json({
+            activeCourses
+        })
+    } catch (err) {
+        // console.error(err)
+        res.status(500).json({ error: 'Server error' })
+    }
+})
 
 courseRouter.post('/', asyncWrapper(async (req, res) => {
     const { courseName, courseDescription, coursePrice } = req.body;
@@ -67,6 +99,8 @@ courseRouter.get('/:cname', asyncWrapper(async (req, res) => {
         return res.status(500).json({ error: "Internal server error" }); // Return a 500 error for any other errors
     }
 }));
+
+
 
 
 

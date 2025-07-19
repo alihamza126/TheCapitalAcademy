@@ -1,8 +1,11 @@
+import StudyPlanner from '@/components/dashboard/StudyPlanner'
 import React from 'react'
 
 const page = () => {
   return (
-    <div>page</div>
+    <div>
+      <StudyPlanner />
+    </div>
   )
 }
 

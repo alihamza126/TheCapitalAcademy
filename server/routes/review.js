@@ -2,7 +2,6 @@
 import express from 'express'
 import ReviewModel  from '../models/reviews.js';
 import { asyncWrapper } from '../helpers/asyncWrapper.js';
-import { authenticateUser } from '../middleware/auth.middleware.js';
 
 const reviewRouter = express.Router();
 

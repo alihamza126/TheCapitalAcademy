@@ -13,15 +13,16 @@ import { useEffect, useState } from "react";
 import statsImg from '/public/stats.gif'
 import ReactSpeedometer from "react-d3-speedometer";
 import Axios from "@/lib/Axios";
+import { useSession } from "next-auth/react";
 
 export default function AppView() {
-  let user = "";
-  user = user?.user?.user || "";
   const [statsData, setStatsData] = useState({});
   const [pieChartData, setPieChartData] = useState([]);
   const [error, setError] = useState(null);
   const [meterValue, setMetervalue] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { data: session } = useSession();
+  const user = session?.user;
 
   useEffect(() => {
     // const fetchData = async () => {
@@ -55,7 +56,7 @@ export default function AppView() {
     <Container maxWidth="xl">
       <Typography variant="h4" className="ps-2" sx={{ mb: 5, mt: 2 }}>
         Hi, Welcome back{" "}
-        <span className="text-primary fw-bold">username</span>👋
+        <span className="text-primary fw-bold">{user?.name}</span>👋
       </Typography>
 
       {error && (

@@ -4,7 +4,7 @@ import UserModel from '../models/User.js';
 import bcrypt from "bcryptjs";
 import { registerSchema } from '../validators/users.validation.js';
 import { sendEmail } from '../helpers/mailer.js';
-import { authenticateUser } from '../middleware/auth.middleware.js';
+import { authUser } from '../middleware/auth.middleware.js';
 
 const userRouter = express.Router();
 
@@ -159,8 +159,8 @@ userRouter.post('/resetpassword', asyncWrapper(async (req, res) => {
 
 
 // authenticateUser,
-userRouter.patch('/update', authenticateUser, asyncWrapper(async (req, res) => {
-    const id=req.user.id;
+userRouter.patch('/update', authUser, asyncWrapper(async (req, res) => {
+    const id = req.user.id;
     const updatedUser = await UserModel.findByIdAndUpdate(id, req.body, { new: true })
     res.status(200).json({ updatedUser, success: true });
 }));
@@ -173,6 +173,7 @@ userRouter.get('/me/:id', asyncWrapper(async (req, res) => {
     const user = await UserModel.findById(id)
     res.status(200).json({ user, success: true });
 }));
+
 
 
 

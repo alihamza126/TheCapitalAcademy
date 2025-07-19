@@ -2,7 +2,6 @@
 import express from 'express'
 import { Home } from '../models/common.js';
 import { asyncWrapper } from '../helpers/asyncWrapper.js';
-import { authenticateUser } from '../middleware/auth.middleware.js';
 
 const commonRouter = express.Router();
 

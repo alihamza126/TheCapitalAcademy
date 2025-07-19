@@ -8,7 +8,7 @@ export default withAuth(
       const { pathname } = req.nextUrl;
       const token = req.nextauth?.token;
 
-      if (token && pathname == "/register") {
+      if (token && pathname == "/signin") {
          return NextResponse.redirect(new URL("/", req.url));
       }
       // Check for public paths first
@@ -64,9 +64,8 @@ export default withAuth(
 
 // More specific matcher for better performance
 export const config = {
-   matcher: [
-      "/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$|.*\\.jpg$|.*\\.svg$).*)",
-      "/admin/:path*",
-   ],
-   unstable_allowDynamic: ["**/node_modules/mongoose/dist/browser.umd.js"],
-};
+	matcher: ['/((?!api|trpc|_next|_vercel|.*\\..*).*)'],
+	unstable_allowDynamic: [
+		'**/node_modules/mongoose/dist/browser.umd.js',
+	],
+}
