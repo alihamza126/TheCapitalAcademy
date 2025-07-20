@@ -20,6 +20,7 @@ import {
   LogOut,
   Bell,
 } from "lucide-react"
+import { easeInOut } from "framer-motion";
 
 const menuItems = [
   {
@@ -35,10 +36,10 @@ const menuItems = [
     description: "Learning paths",
   },
   {
-    text: "Analytics",
+    text: "Stats", // Renamed from Analytics for clarity
     icon: BarChart3,
     path: "/dashboard/analytics",
-    description: "Data insights",
+    description: "User MCQ Progress Stats",
   },
   {
     text: "Study Planner",
@@ -78,14 +79,14 @@ const sidebarVariants = {
     width: 280,
     transition: {
       duration: 0.4,
-      ease: [0.4, 0, 0.2, 1],
+      ease: easeInOut,
     },
   },
   collapsed: {
     width: 72,
     transition: {
       duration: 0.4,
-      ease: [0.4, 0, 0.2, 1],
+      ease: easeInOut,
     },
   },
 }
@@ -96,7 +97,7 @@ const mobileMenuVariants = {
     opacity: 0,
     transition: {
       duration: 0.3,
-      ease: [0.4, 0, 0.2, 1],
+      ease: easeInOut,
     },
   },
   visible: {
@@ -104,7 +105,7 @@ const mobileMenuVariants = {
     opacity: 1,
     transition: {
       duration: 0.3,
-      ease: [0.4, 0, 0.2, 1],
+      ease: easeInOut,
     },
   },
 }

@@ -1,172 +1,99 @@
-"use client";
+'use client'
 
-import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
-// import AppCurrentVisits from "./app-current-visits";
-import AppWidgetSummary from "./app-widget-summary";
-import right from "/public/png/right.png";
-import wrong from "/public/png/wrong.png";
-import { Box, Grid } from "@mui/material";
-import SubjectOverview from "./app-subject-overview";
-import { Row } from "react-bootstrap";
-import { useEffect, useState } from "react";
-import statsImg from '/public/stats.gif'
-import ReactSpeedometer from "react-d3-speedometer";
-import Axios from "@/lib/Axios";
-import { useSession } from "next-auth/react";
+import { useState, useEffect } from 'react'
+import { Card, CardBody } from '@heroui/react'
+import SubjectBreakdown from './subject-breakdown'
+import PerformanceCharts from './performance-charts'
+import ProgressSpeedometer from './progress-speedometer'
+import StatsOverview from './stats-overview'
+import Axios from '@/lib/Axios'
 
-export default function AppView() {
-  const [statsData, setStatsData] = useState({});
-  const [pieChartData, setPieChartData] = useState([]);
-  const [error, setError] = useState(null);
-  const [meterValue, setMetervalue] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const { data: session } = useSession();
-  const user = session?.user;
+// Mock data based on your API response
+const mockStatsData = {
+  totalSolved: 30,
+  totalWrong: 12,
+  totalSave: 4,
+  lastSaveAt: "2025-07-20T12:00:00Z",
+  subjects: [
+    {
+      subject: "Physics",
+      solved: 10,
+      wrong: 4
+    },
+    {
+      subject: "Math",
+      solved: 20,
+      wrong: 8
+    }
+  ]
+}
+
+export default function StatsPage() {
+  const [statsData, setStatsData] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // const fetchData = async () => {
-    //   try {
-    //     setLoading(true)
-    //     const res = await Axios.post("/mcq/stats", { userId: user._id });
-    //     setStatsData(res.data);
-    //     setError(null);
-    //     setLoading(false);
-    //   } catch (error) {
-    //     setError("Failed to fetch statistics data. Please try again later.");
-    //     setLoading(false);
-    //   }
-    // }
-    // fetchData();
-  }, []);
+    // Simulate API call
+    const fetchStats = async () => {
+      try {
+        // Replace with your actual API call
+        const response = await Axios.get('/api/v1/mcq/stats')
+        const data = response.data;
+        setStatsData(data)
+        setLoading(false)
+      } catch (error) {
+        console.error('Error fetching stats:', error)
+        setLoading(false)
+      }
+    }
 
-  // useEffect(() => {
-  //   if (statsData?.combinedSubjectCounts) {
-  //     const series = statsData.combinedSubjectCounts.map(subjectData => ({
-  //       label: subjectData?.subject,
-  //       value: (subjectData?.correctCount || 0) + (subjectData?.wrongCount || 0),
-  //     }));
-  //     setPieChartData(series);
-  //     const value = (statsData.solvedLength / (statsData.solvedLength + statsData.wrongLength)) * 100;
-  //     setMetervalue(value)
-  //   }
-  // }, [statsData]);
+    fetchStats()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your stats...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!statsData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <Card className="p-8">
+          <CardBody className="text-center">
+            <p className="text-gray-600">No stats data available</p>
+          </CardBody>
+        </Card>
+      </div>
+    )
+  }
 
   return (
-    <Container maxWidth="xl">
-      <Typography variant="h4" className="ps-2" sx={{ mb: 5, mt: 2 }}>
-        Hi, Welcome back{" "}
-        <span className="text-primary fw-bold">{user?.name}</span>👋
-      </Typography>
+    <div className="min-h-screen md:p-4">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">Learning Progress Dashboard</h1>
+          <p className="text-gray-600">Track your performance and achievements</p>
+        </div>
 
-      {error && (
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="body1" color="error">
-            {error}
-          </Typography>
-        </Box>
-      )}
-      {
-        (statsData.solvedLength > 0 || statsData.wrongLength > 0) &&
-        <Grid container spacing={2}>
-          <Grid xs={12} sm={6} md={6} className="px-2 px-md-1">
-            <AppWidgetSummary
-              title="Attempted Right MCQS"
-              total={statsData.solvedLength}
-              color="success"
-              icon={<img alt="icon" src={right} height={83} />}
-            />
-          </Grid>
+        {/* Overview Cards */}
+        <StatsOverview data={statsData} />
 
-          <Grid xs={12} className="mt-md-0 mt-2 px-2 px-md-2" sm={6} md={6}>
-            <AppWidgetSummary
-              title=" "
-              total={22}
-              color="info"
-              icon={<img alt="icon" src={null} height={90} />}
-            />
-          </Grid>
+        {/* Speedometer and Performance Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <ProgressSpeedometer data={statsData} />
+          <PerformanceCharts data={statsData} />
+        </div>
 
-          <Grid xs={12} sm={12} md={12}>
-            <Typography variant="h4" sx={{ mb: 2, mt: 4, textAlign: "center" }}>
-              <span className="text-primary fw-bold">Subjects Overview 📚</span>
-            </Typography>
-          </Grid>
-
-          <Row className="hamza w-100">
-            {statsData?.combinedSubjectCounts ? (
-              statsData.combinedSubjectCounts.map((ele, index) => (
-                <Grid xs={12} md={4} lg={4} sm={6} key={index}>
-                  <SubjectOverview data={ele} />
-                </Grid>
-              ))
-            ) : (
-              "Solve Mcqs to see stats"
-            )}
-          </Row>
-
-          <Grid xs={12} md={6} lg={6} p={1}>
-            <div className="bg-white rounded-3 overflow-hidden shadow-sm ">
-              {/* <AppCurrentVisits
-                title="Subject Wise Attempted MCQs"
-                className="h-100"
-
-                chart={{
-                  series: pieChartData,
-                }}
-              /> */}
-            </div>
-          </Grid>
-          <Grid xs={12} md={6} lg={6} p={1}>
-            <div className="overflow-hidden bg-white h-100 shadow-sm rounded-3 d-flex flex-column  align-items-center justify-content-between">
-              <div style={{ padding: ".88rem 3rem", fontFamily: 'fredoka', fontSize: '1.5rem' }} className="row w-100 bg-primary px-3 text-white">Performance</div>
-              <div style={{ position: "relative", width: "385px" }}>
-                <ReactSpeedometer
-                  width={385}
-                  maxSegmentLabels={0}
-                  segments={5555}
-                  needleHeightRatio={0.7}
-                  forceRender
-                  value={meterValue}
-                  minValue={0}
-                  maxValue={100}
-                  currentValueText={meterValue.toFixed(2)}
-                  ringWidth={57}
-                  needleTransitionDuration={3333}
-                  needleTransition="easeElastic"
-                  needleColor={'#90f2ff'}
-                  textColor={'#aaa'}
-                  ariaLabel={'Performance Speedometer'}
-                />
-              </div>
-            </div>
-          </Grid>
-
-        </Grid>
-      }
-      <>
-        {
-          (statsData?.solvedLength < 1 && statsData?.wrongLength < 1) &&
-          <div className="col-md-12">
-            <div className="nav-shoadow py-1 rounded-5">
-              <div className="row justify-content-center">
-                <span className='w-auto mt-0'>
-                  <img src={statsImg} height="180" alt="" />
-                </span>
-              </div>
-              <p className='text-center fw-bold fs-5 text-dark' style={{ fontFamily: 'inter' }}>Attempt MCQ's to View statistics</p>
-              <div className="row justify-content-center">
-                <button class="button w-auto">
-                  <div class="hoverEffect">
-                    <div>
-                    </div>
-                  </div>
-                </button>
-              </div>
-            </div>
-          </div>
-        }
-      </>
-    </Container>
-  );
+        {/* Subject Breakdown */}
+        <SubjectBreakdown data={statsData} />
+      </div>
+    </div>
+  )
 }

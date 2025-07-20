@@ -273,75 +273,55 @@ mcqRouter.post('/count', authUser, asyncWrapper(async (req, res) => {
 
 
 // ===============================stats====================
-mcqRouter.post('/stats', asyncWrapper(async (req, res) => {
-    const userId = req.body?.userId;
+mcqRouter.get('/stats', authUser, asyncWrapper(async (req, res) => {
+    const userId = req.user.userId;
 
-    try {
-        // Fetch user's solved and wrong McqModels
-        const user = await UserModel.findById(userId).select('solved_mcqs wrong_mcqs');
-        const solvedMcqModelIds = user.solved_mcqs;
-        const wrongMcqModelIds = user.wrong_mcqs;
-
-        // Calculate lengths
-        const solvedLength = solvedMcqModelIds.length;
-        const wrongLength = wrongMcqModelIds.length;
-
-        // Aggregate unique subjects and their counts from solved McqModels
-        const solvedSubjectCounts = await McqModel.aggregate([
-            { $match: { _id: { $in: solvedMcqModelIds } } },
-            { $group: { _id: "$subject", count: { $sum: 1 } } }
-        ]);
-
-        // Aggregate unique subjects and their counts from wrong McqModels
-        const wrongSubjectCounts = await McqModel.aggregate([
-            { $match: { _id: { $in: wrongMcqModelIds } } },
-            { $group: { _id: "$subject", count: { $sum: 1 } } }
-        ]);
-
-        // Aggregate the total count of McqModels per subject
-        const totalSubjectCounts = await McqModel.aggregate([
-            { $group: { _id: "$subject", totalCount: { $sum: 1 } } }
-        ]);
-
-        // Merge the counts into a single object for each subject
-        const subjectCounts = {};
-
-        // Initialize subject counts with total McqModel counts
-        totalSubjectCounts.forEach(({ _id, totalCount }) => {
-            subjectCounts[_id] = { subject: _id, correctCount: 0, wrongCount: 0, totalCount };
+    const progress = await UserProgress.findOne({ userId });
+    if (!progress) {
+        return res.status(200).json({
+            totalSolved: 0,
+            totalWrong: 0,
+            totalSave: 0,
+            lastSaveAt: null,
+            subjects: []
         });
-
-        // Add correct counts to the respective subjects
-        solvedSubjectCounts.forEach(({ _id, count }) => {
-            if (!subjectCounts[_id]) {
-                subjectCounts[_id] = { subject: _id, correctCount: 0, wrongCount: 0, totalCount: 0 };
-            }
-            subjectCounts[_id].correctCount += count;
-        });
-
-        // Add wrong counts to the respective subjects
-        wrongSubjectCounts.forEach(({ _id, count }) => {
-            if (!subjectCounts[_id]) {
-                subjectCounts[_id] = { subject: _id, correctCount: 0, wrongCount: 0, totalCount: 0 };
-            }
-            subjectCounts[_id].wrongCount += count;
-        });
-
-        // Convert the object to an array
-        const combinedSubjectCounts = Object.values(subjectCounts);
-
-        // Prepare the final result
-        const result = {
-            solvedLength,
-            wrongLength,
-            combinedSubjectCounts
-        };
-
-        res.json(result);
-    } catch (error) {
-        res.status(500).send('Internal Server Error');
     }
+
+    const { solved, wrong, totalSave, lastSaveAt } = progress;
+
+    const allMcqIds = [...new Set([...solved, ...wrong])];
+
+    const mcqs = await McqModel.find({ _id: { $in: allMcqIds } }, '_id subject');
+
+    const subjectMap = {};
+
+    mcqs.forEach(mcq => {
+        const subject = mcq.subject || 'Unknown';
+
+        if (!subjectMap[subject]) {
+            subjectMap[subject] = { subject, solved: 0, wrong: 0 };
+        }
+
+        if (solved.includes(mcq._id)) {
+            subjectMap[subject].solved += 1;
+        }
+
+        if (wrong.includes(mcq._id)) {
+            subjectMap[subject].wrong += 1;
+        }
+    });
+
+    const subjectStats = Object.values(subjectMap);
+
+    res.status(200).json({
+        totalSolved: solved.length,
+        totalWrong: wrong.length,
+        totalSave,
+        lastSaveAt,
+        subjects: subjectStats
+    });
 }));
+
 
 
 
