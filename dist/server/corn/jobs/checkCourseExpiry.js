@@ -4,7 +4,7 @@ import UserModel from '../../models/User.js';
 import { sendEmail } from '../../helpers/mailer.js';
 // Run every 6 hours
 export const checkCourseExpiry = () => {
-    cron.schedule('* * * * *', async () => {
+    cron.schedule('* */6 * * *', async () => {
         try {
             const now = new Date();
             const expiredPurchases = await PurchaseModel.find({

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "install": "npm install --legacy-peer-deps",
     "dev": "next dev",
     "dev:server": "NODE_OPTIONS='--trace-warnings' nodemon server.mjs",
     "build": "next build",
@@ -60,7 +61,7 @@
     "react": "18.2.0",
     "react-bootstrap": "^2.10.10",
     "react-bootstrap-sweetalert": "^5.2.0",
-    "react-d3-speedometer": "^3.1.1",
+   "react-d3-speedometer": "^3.1.1",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.56.3",
     "react-hot-toast": "^2.5.2",
@@ -87,5 +88,12 @@
     "tailwindcss": "^3.3.0",
     "typescript": "^5"
   },
-  "type": "module"
+  "type": "module",
+  "pnpm": {
+    "overrides": {
+      "react-d3-speedometer>react": "18.2.0",
+      "react-d3-speedometer>react-dom": "18.2.0",
+      "@heroui/theme>tailwindcss": "3.3.0"
+    }
+  }
 }
