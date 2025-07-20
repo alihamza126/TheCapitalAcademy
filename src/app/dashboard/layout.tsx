@@ -205,7 +205,7 @@ export default function DashboardLayout({
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="lg:hidden backdrop-blur-2xl bg-white/80 border-b border-white/30 shadow-lg relative z-50 sticky top-0"
+        className="lg:hidden backdrop-blur-2xl bg-white/80 border-b border-white/30 shadow-sm relative z-50 sticky top-0"
       >
         <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
@@ -299,12 +299,12 @@ export default function DashboardLayout({
               animate="visible"
               exit="hidden"
               variants={mobileMenuVariants}
-              className="lg:hidden fixed left-0 top-0 bottom-0 z-50 w-full max-w-sm backdrop-blur-2xl bg-white/90 border-r border-white/30 shadow-2xl"
+              className="lg:hidden fixed left-0 top-0 bottom-0 z-50 w-full max-w-sm backdrop-blur-2xl bg-white/90 border-r border-white/30 shadow-sm"
             >
               {/* Mobile Menu Header */}
               <div className="p-6 border-b border-white/30">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-sm">
                     <LayoutDashboard className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -327,7 +327,7 @@ export default function DashboardLayout({
                       whileTap={{ scale: 0.98 }}
                       onClick={() => handleNavigation(item.path)}
                       className={`w-full flex items-center gap-4 px-4 py-4 rounded-xl text-left transition-all duration-200 group touch-manipulation ${isActive(item.path)
-                        ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-700 shadow-lg backdrop-blur-sm border border-blue-200/50"
+                        ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-700 shadow-sm backdrop-blur-sm border border-blue-200/50"
                         : "text-slate-700 hover:bg-white/60 backdrop-blur-sm"
                         }`}
                     >
@@ -380,7 +380,7 @@ export default function DashboardLayout({
         <motion.aside
           variants={sidebarVariants}
           animate={sidebarCollapsed ? "collapsed" : "expanded"}
-          className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 backdrop-blur-2xl bg-white/70 border-r border-white/30 shadow-2xl z-30"
+          className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 backdrop-blur-2xl bg-white/70 border-r border-white/30 shadow-sm z-30"
         >
           {/* Desktop Sidebar Header */}
           <motion.div layout className="p-4 xl:p-6 border-b border-white/30">
@@ -394,7 +394,7 @@ export default function DashboardLayout({
                     transition={{ duration: 0.2 }}
                     className="flex items-center gap-3"
                   >
-                    <div className="w-8 h-8 xl:w-9 xl:h-9 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
+                    <div className="w-8 h-8 xl:w-9 xl:h-9 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-sm">
                       <LayoutDashboard className="w-4 h-4 xl:w-5 xl:h-5 text-white" />
                     </div>
                   </motion.div>
@@ -432,7 +432,7 @@ export default function DashboardLayout({
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleNavigation(item.path)}
                     className={`w-full flex items-center gap-3 px-3 xl:px-4 py-3 xl:py-3.5 rounded-xl text-left transition-all duration-200 backdrop-blur-sm relative overflow-hidden group ${isActive(item.path)
-                      ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-700 shadow-lg border border-blue-200/50"
+                      ? "bg-gradient-to-r from-blue-500/20 to-indigo-500/20 text-blue-700 shadow-sm border border-blue-200/50"
                       : "text-slate-700 hover:bg-white/60"
                       } ${sidebarCollapsed ? "justify-center px-2" : ""}`}
                   >
@@ -493,7 +493,7 @@ export default function DashboardLayout({
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="hidden lg:flex lg:items-center lg:justify-between px-6 xl:px-8 py-4 xl:py-6 backdrop-blur-2xl bg-white/60 border-b border-white/30 shadow-lg sticky top-0 z-20"
+            className="hidden lg:flex lg:items-center lg:justify-between px-6 xl:px-8 py-4 xl:py-6 backdrop-blur-2xl bg-white/60 border-b border-white/30 shadow-sm sticky top-0 z-20"
           >
             <div className="flex-1 min-w-0">
               {/* <motion.h1
@@ -513,7 +513,7 @@ export default function DashboardLayout({
                 whileHover="hover"
                 whileTap="tap"
                 onClick={() => router.push("/")}
-                className="flex items-center gap-2 px-4 xl:px-5 py-2 rounded-xl text-slate-600 hover:text-slate-800 hover:bg-white/60 backdrop-blur-sm transition-all duration-200 border border-white/40 shadow-lg"
+                className="flex items-center gap-2 px-4 xl:px-5 py-2 rounded-xl text-slate-600 hover:text-slate-800 hover:bg-white/60 backdrop-blur-sm transition-all duration-200 border border-white/40 shadow-sm"
               >
                 <Home className="w-4 h-4" />
                 <span className="font-medium hidden sm:inline">Home</span>
@@ -522,7 +522,7 @@ export default function DashboardLayout({
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-9 h-9 xl:w-10 xl:h-10 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white text-sm font-medium cursor-pointer shadow-lg ring-2 ring-white/50 hover:ring-blue-300/50 transition-all duration-200"
+                className="w-9 h-9 xl:w-10 xl:h-10 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white text-sm font-medium cursor-pointer shadow-sm ring-2 ring-white/50 hover:ring-blue-300/50 transition-all duration-200"
               >
                 JD
               </motion.div>
@@ -538,7 +538,7 @@ export default function DashboardLayout({
           >
             <motion.div
               layout
-              className="backdrop-blur-xl bg-white/50 rounded-2xl xl:rounded-3xl border border-white/30 shadow-2xl min-h-[calc(100vh-8rem)] lg:min-h-[calc(100vh-12rem)] relative overflow-hidden"
+              className="backdrop-blur-xl bg-white/50 rounded-2xl xl:rounded-3xl border border-white/30 shadow-sm min-h-[calc(100vh-8rem)] lg:min-h-[calc(100vh-12rem)] relative overflow-hidden"
             >
               {/* Content Background Pattern */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-blue-500/5 pointer-events-none"></div>
