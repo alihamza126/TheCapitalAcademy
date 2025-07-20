@@ -28,27 +28,27 @@ const Page = async ({ params }) => {
         {
             name: "BIOLOGY",
             img: bio,
-            link: '/dashboard/subject/nums/biology'
+            link: '/dashboard/courses/nums/biology'
         },
         {
             name: "CHEMISTRY",
             img: chem,
-            link: '/dashboard/subject/nums/chemistry'
+            link: '/dashboard/courses/nums/chemistry'
         },
         {
             name: "PHYSICS",
             img: phy,
-            link: '/dashboard/subject/nums/physics'
+            link: '/dashboard/courses/nums/physics'
         },
         {
             name: "ENGLISH",
             img: eng,
-            link: '/dashboard/subject/nums/english'
+            link: '/dashboard/courses/nums/english'
         },
         {
             name: "MOCK TESTS",
             img: mock,
-            link: '/dashboard/subject/nums/mock/test'
+            link: '/dashboard/courses/nums/mock/test'
         },
     ];
 
@@ -56,32 +56,32 @@ const Page = async ({ params }) => {
         {
             name: "BIOLOGY",
             img: bio,
-            link: '/dashboard/subject/mdcat/biology'
+            link: '/dashboard/courses/mdcat/biology'
         },
         {
             name: "CHEMISTRY",
             img: chem,
-            link: '/dashboard/subject/mdcat/chemistry'
+            link: '/dashboard/courses/mdcat/chemistry'
         },
         {
             name: "PHYSICS",
             img: phy,
-            link: '/dashboard/subject/mdcat/physics'
+            link: '/dashboard/courses/mdcat/physics'
         },
         {
             name: "ENGLISH",
             img: eng,
-            link: '/dashboard/subject/mdcat/english'
+            link: '/dashboard/courses/mdcat/english'
         },
         {
             name: "LOGICAL REASONING",
             img: logic,
-            link: '/dashboard/subject/mdcat/logic'
+            link: '/dashboard/courses/mdcat/logic'
         },
         {
             name: "MOCK TESTS",
             img: mock,
-            link: '/dashboard/subject/mdcat/mock/test'
+            link: '/dashboard/courses/mdcat/mock/test'
         },
     ];
 

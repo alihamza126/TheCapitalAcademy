@@ -1,45 +1,36 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from "react"
 
-const Timer = ({ initialTimeInMinutes }) => {
-  // Convert initial time to seconds for easy countdown calculation
-  const initialTimeInSeconds = initialTimeInMinutes * 60;
+interface TimerProps {
+  initialTimeInMinutes: number
+  handleSaveAndExit: () => void
+}
 
-  // Set initial state: starting from 0 seconds
-  const [timePassed, setTimePassed] = useState(0);
-  const [timerFinished, setTimerFinished] = useState(false);
+const Timer = ({ initialTimeInMinutes, handleSaveAndExit }: TimerProps) => {
+  const [timeRemaining, setTimeRemaining] = useState(initialTimeInMinutes * 60)
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimePassed(prevTime => prevTime + 1);
-      if (timePassed+1 == initialTimeInSeconds) {
-        setTimerFinished(true);
-      }
-    }, 1000);
+      setTimeRemaining((prevTime) => prevTime - 1)
+    }, 1000)
 
-    return () => clearInterval(timer);
-  }, [timePassed, initialTimeInSeconds]);
+    return () => clearInterval(timer)
+  }, [])
 
   useEffect(() => {
-    if (timerFinished) {
-      // Play a bell sound
-      const audio = new Audio('/bell.wav');
-      audio.play();
+    if (timeRemaining <= 0) {
+      handleSaveAndExit()
     }
-  }, [timerFinished]);
+  }, [timeRemaining, handleSaveAndExit])
 
-  const hours = Math.floor((timePassed / 60) / 60);
-  const leftMinutes = Math.floor((timePassed / 60) % 60);
-  const seconds = timePassed % 60;
+  const formatTime = (timeInSeconds: number): string => {
+    const minutes = Math.floor(timeInSeconds / 60)
+    const seconds = timeInSeconds % 60
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
+  }
 
-  return (
-    <div style={{ color: timerFinished ? '#D53D51' : '#1F63BE' }}>
-        <div>
-          {(hours < 10) && '0'}{hours} : {(leftMinutes < 10) && '0'}{leftMinutes} : {(seconds < 10) && '0'}{seconds}
-        </div>
-    </div>
-  );
-};
+  return <div>{formatTime(timeRemaining)}</div>
+}
 
-export default Timer;
+export default Timer

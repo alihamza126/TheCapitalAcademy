@@ -1,15 +1,20 @@
-const mongoose = require('mongoose');
-const wrapAsync = require('../../utils/wrapAsync.js');
-const MCQ = require('../../models/mcq.js');
-const userModel = require('../../models/user.js');
-const { isBuyCourse, checkTrialStatus } = require('../../utils/middleware.js');
-const router = require('express').Router();
+
+import express from 'express'
+import { asyncWrapper } from '../helpers/asyncWrapper.js';
+import UserModel from '../models/User.js';
+import { authUser } from '../middleware/auth.middleware.js';
+import UserProgress from '../models/UserProgress.js';
+import McqModel from '../models/mcq.js';
+import { checkTrialStatus } from '../middleware/course.js';
 
 
 
-// Add all MCQs
-router.post('/add', (req, res) => {
-    const mcq = new MCQ(req.body);
+
+const mcqRouter = express.Router();
+
+// Add all McqModels
+mcqRouter.post('/add', (req, res) => {
+    const mcq = new McqModel(req.body);
     mcq.save().then(() => {
         res.send(mcq);
     }).catch((err) => {
@@ -18,7 +23,7 @@ router.post('/add', (req, res) => {
 });
 
 
-router.post('/get', checkTrialStatus, wrapAsync(async (req, res) => {
+mcqRouter.post('/get', checkTrialStatus, asyncWrapper(async (req, res) => {
     const course = req.body.course?.trim();
     const subject = req.body.subject?.trim();
     const chapter = req.body.chapter?.trim();
@@ -54,23 +59,23 @@ router.post('/get', checkTrialStatus, wrapAsync(async (req, res) => {
                 if (category === 'past') {
                     pipeline.unshift({ $match: { ...queryCriteria, category: category } });
                 } else if (category === 'unsolved') {
-                    const userSolvedMCQs = await userModel.findById(userId).select(['solved_mcqs', 'wrong_mcqs']);
-                    const solvedMCQIds = userSolvedMCQs.solved_mcqs;
-                    const wrongMCQIds = userSolvedMCQs.wrong_mcqs;
-                    pipeline.unshift({ $match: { ...queryCriteria, _id: { $nin: [...solvedMCQIds, ...wrongMCQIds] } } });
+                    const userSolvedMcqModels = await UserModel.findById(userId).select(['solved_mcqs', 'wrong_mcqs']);
+                    const solvedMcqModelIds = userSolvedMcqModels.solved_mcqs;
+                    const wrongMcqModelIds = userSolvedMcqModels.wrong_mcqs;
+                    pipeline.unshift({ $match: { ...queryCriteria, _id: { $nin: [...solvedMcqModelIds, ...wrongMcqModelIds] } } });
                 } else if (category === 'solved') {
-                    const userSolvedId = await userModel.findById(userId).select('solved_mcqs');
+                    const userSolvedId = await UserModel.findById(userId).select('solved_mcqs');
                     pipeline.unshift({ $match: { ...queryCriteria, _id: { $in: userSolvedId.solved_mcqs } } });
                 } else if (category === 'wrong') {
-                    const userWrongId = await userModel.findById(userId).select('wrong_mcqs');
+                    const userWrongId = await UserModel.findById(userId).select('wrong_mcqs');
                     pipeline.unshift({ $match: { ...queryCriteria, _id: { $in: userWrongId.wrong_mcqs } } });
                 } else if (category === 'all') {
                     // No additional match needed, the pipeline already handles this
                 }
-                mcqs = await MCQ.aggregate(pipeline);
+                mcqs = await McqModel.aggregate(pipeline);
                 return res.json(mcqs);
             } catch (error) {
-                return res.status(500).json({ message: 'An error occurred while retrieving MCQs', error });
+                return res.status(500).json({ message: 'An error occurred while retrieving McqModels', error });
             }
         }
 
@@ -87,15 +92,15 @@ router.post('/get', checkTrialStatus, wrapAsync(async (req, res) => {
 
             try {
                 for (const [subject, size] of Object.entries(sampleSizes)) {
-                    const subjectMCQs = await MCQ.aggregate([
+                    const subjectMcqModels = await McqModel.aggregate([
                         { $match: { ...queryCriteria, subject } },
                         { $sample: { size } }
                     ]);
-                    mcqs.push(...subjectMCQs);
+                    mcqs.push(...subjectMcqModels);
                 }
                 return res.status(200).json(mcqs);
             } catch (error) {
-                return res.status(500).json({ error: 'Failed to fetch MCQs', details: error });
+                return res.status(500).json({ error: 'Failed to fetch McqModels', details: error });
             }
         }
 
@@ -108,26 +113,26 @@ router.post('/get', checkTrialStatus, wrapAsync(async (req, res) => {
 
 
 //delete mcqs data form model database
-router.delete('/delete', wrapAsync(async (req, res) => {
+mcqRouter.delete('/delete', asyncWrapper(async (req, res) => {
     const ids = req.body.ids; // Assuming the request body contains an array of IDs
     if (!Array.isArray(ids)) {
         return res.status(400).json({ message: 'Invalid input: ids should be an array' });
     }
     try {
-        const result = await MCQ.deleteMany({ _id: { $in: ids } });
+        const result = await McqModel.deleteMany({ _id: { $in: ids } });
         if (result.deletedCount === 0) {
-            return res.status(404).json({ message: 'No MCQs found to delete' });
+            return res.status(404).json({ message: 'No McqModels found to delete' });
         }
-        res.json({ message: `${result.deletedCount} MCQs deleted` });
+        res.json({ message: `${result.deletedCount} McqModels deleted` });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 }));
 
 //update mcq data
-router.put('/update', wrapAsync(async (req, res) => {
+mcqRouter.put('/update', asyncWrapper(async (req, res) => {
     try {
-        await MCQ.findByIdAndUpdate(req.body.id,
+        await McqModel.findByIdAndUpdate(req.body.id,
             {
                 question: req.body.formData.question,
                 options: req.body.formData.options,
@@ -150,15 +155,15 @@ router.put('/update', wrapAsync(async (req, res) => {
 }));
 
 //get pages mcqs
-router.get('/pages', wrapAsync(async (req, res) => {
+mcqRouter.get('/pages', asyncWrapper(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 500;
     try {
-        const mcqs = await MCQ.find()
+        const mcqs = await McqModel.find()
             .sort({ subject: 1 })  // Static sort order: descending by createdAt
             .skip((page - 1) * limit)
             .limit(limit);
-        const totalCount = await MCQ.countDocuments();
+        const totalCount = await McqModel.countDocuments();
         res.json({
             mcqs,
             totalPages: Math.ceil(totalCount / limit),
@@ -170,11 +175,11 @@ router.get('/pages', wrapAsync(async (req, res) => {
 }));
 
 //get specifc search mcqs
-router.get('/search', wrapAsync(async (req, res) => {
+mcqRouter.get('/search', asyncWrapper(async (req, res) => {
     const question = req.query.question;
     try {
         // Use a regular expression to match the question partially
-        const mcqs = await MCQ.find({ question: { $regex: question, $options: 'i' } });
+        const mcqs = await McqModel.find({ question: { $regex: question, $options: 'i' } });
         res.json({ mcqs });
     } catch (err) {
         console.log(err);
@@ -184,154 +189,65 @@ router.get('/search', wrapAsync(async (req, res) => {
 
 
 
-router.put('/solved', wrapAsync(async (req, res) => {
-    const correctMcqIds = req.body?.correctMcq || [];
-    const wrongMcqIds = req.body?.wrongMcq || [];
-    const userId = req.body?.userId;
-
-    if (userId) {
-        try {
-            // First update: Pull correct MCQs from wrong_mcqs and wrong MCQs from solved_mcqs arrays
-            const pullResult = await userModel.updateOne(
-                { _id: userId },
-                {
-                    $pull: {
-                        wrong_mcqs: { $in: correctMcqIds },
-                        solved_mcqs: { $in: wrongMcqIds }
-                    }
-                }
-            );
-
-            if (pullResult.matchedCount === 0) {
-                return res.status(404).json({ message: 'User not found' });
-            }
-
-            // Second update: Add correct MCQs to solved_mcqs and wrong MCQs to wrong_mcqs
-            const addToSetResult = await userModel.updateOne(
-                { _id: userId },
-                {
-                    $addToSet: {
-                        solved_mcqs: { $each: correctMcqIds },
-                        wrong_mcqs: { $each: wrongMcqIds }
-                    }
-                }
-            );
-
-            if (addToSetResult.nModified === 0) {
-                return res.status(404).json({ message: 'No changes made' });
-            }
-
-            res.json(addToSetResult);
-        } catch (err) {
-            res.status(500).json({ message: 'Internal Server Error', error: err });
-        }
-    } else {
-        res.status(401).json({ message: 'User Id validation Failed' });
-    }
-}));
-
 //
-router.post('/cout', wrapAsync(async (req, res) => {
+mcqRouter.post('/count', authUser, asyncWrapper(async (req, res) => {
     try {
         const course = req.body.course?.trim();
         const subject = req.body.subject?.trim();
         const chapter = req.body.chapter?.trim();
-        const category = req.body.catagory?.trim(); // past, normal, solved, unsolved
-        const userId = req.body?.userId; // userId
+        const category = req.body.category?.trim();
         const topics = req.body?.topic; // array of topics
+        const userId = req.user.userId;
 
-        let matchCriteria = {
-            course: course,
-            subject: subject,
-            chapter: chapter,
-        };
+        let matchCriteria = { course, subject, chapter };
 
-        // Only add the topics condition if the subject is not 'english' or 'logic'
-        if (subject !== 'mock') {
-            if (subject !== 'english' && subject !== 'logic') {
-                matchCriteria.topic = {
-                    $in: topics
-                };
-            }
+        // Get user progress once
+        const userProgress = await UserProgress.findOne({ userId }).select('solved wrong');
+        const solvedIds = userProgress?.solved || [];
+        const wrongIds = userProgress?.wrong || [];
 
-            // Add category condition based on category type
-            if (category === "past") {
-                matchCriteria.category = category;
+        // Topic condition (if not english or logic)
+        if (subject !== 'english' && subject !== 'logic' && subject !== 'mock') {
+            matchCriteria.topic = { $in: topics };
+        }
 
-            } else if (category === "solved") {
-                const userSolvedMCQs = await userModel.findById(userId).select('solved_mcqs');
-                const solvedMCQIds = userSolvedMCQs.solved_mcqs;
-                // Add condition to match only solved MCQs
-                matchCriteria._id = { $in: solvedMCQIds };
+        // Add category filters
+        if (category === 'past') {
+            matchCriteria.category = 'past';
+        } else if (category === 'solved') {
+            matchCriteria._id = { $in: solvedIds };
+        } else if (category === 'unsolved') {
+            matchCriteria._id = { $nin: [...solvedIds, ...wrongIds] };
+        } else if (category === 'wrong') {
+            matchCriteria._id = { $in: wrongIds };
+        }
 
-            } else if (category === "unsolved") {
-                const userSolvedMCQs = await userModel.findById(userId).select(['solved_mcqs', 'wrong_mcqs']);
-                const solvedMCQIds = userSolvedMCQs.solved_mcqs;
-                const wrongMCQIds = userSolvedMCQs.wrong_mcqs;
-                // Add condition to exclude solved MCQs
-                matchCriteria._id = { $nin: [...solvedMCQIds, ...wrongMCQIds] };
-            }
-            else if (category === "wrong") {
-                const userWrongMCQs = await userModel.findById(userId).select('wrong_mcqs');
-                const wrongMCQIds = userWrongMCQs.wrong_mcqs;
-                // Add condition to exclude solved MCQs
-                matchCriteria._id = { $in: wrongMCQIds };
-            }
-            else if (category === "all") {
-                // const userWrongMCQs = await userModel.findById(userId).select('wrong_mcqs');
-                // const wrongMCQIds = userWrongMCQs.wrong_mcqs;
-                // // Add condition to exclude solved MCQs
-                // matchCriteria._id = { $in: wrongMCQIds };
+        // For mock subject: only filter by course + category
+        if (subject === 'mock') {
+            matchCriteria = { course };
+            if (category === 'past') {
+                matchCriteria.category = 'past';
+            } else if (category === 'solved') {
+                matchCriteria._id = { $in: solvedIds };
+            } else if (category === 'unsolved') {
+                matchCriteria._id = { $nin: [...solvedIds, ...wrongIds] };
+            } else if (category === 'wrong') {
+                matchCriteria._id = { $in: wrongIds };
             }
         }
 
-        // ================================To check mock counts ==============
-        else if (subject === 'mock') {
-            matchCriteria = {
-                course: course,
-            }
-
-            if (category === "past") {
-                matchCriteria.category = category;
-
-            } else if (category === "solved") {
-                const userSolvedMCQs = await userModel.findById(userId).select('solved_mcqs');
-                const solvedMCQIds = userSolvedMCQs.solved_mcqs;
-                // Add condition to match only solved MCQs
-                matchCriteria._id = { $in: solvedMCQIds };
-            } else if (category === "unsolved") {
-                const userSolvedMCQs = await userModel.findById(userId).select(['solved_mcqs', 'wrong_mcqs']);
-                const solvedMCQIds = userSolvedMCQs.solved_mcqs;
-                const wrongMCQIds = userSolvedMCQs.wrong_mcqs;
-                // Add condition to exclude solved MCQs
-                matchCriteria._id = { $nin: [...solvedMCQIds, ...wrongMCQIds] };
-            } else if (category === "wrong") {
-                const userWrongMCQs = await userModel.findById(userId).select('wrong_mcqs');
-                const wrongMCQIds = userWrongMCQs.wrong_mcqs;
-                // Add condition to exclude solved MCQs
-                matchCriteria._id = { $in: wrongMCQIds };
-            } else if (category === "all") {
-                //do nothing here
-            }
-
-        }
-
-
-        // ==================Aggerate counts==================
-        // Aggregate data from MCQ collection
-        const data = await MCQ.aggregate([
-            {
-                $match: matchCriteria
-            },
+        // ================== Aggregate counts ===================
+        const data = await McqModel.aggregate([
+            { $match: matchCriteria },
             {
                 $group: {
-                    _id: subject !== 'english' && subject !== 'logic' ? "$topic" : null,
+                    _id: subject !== 'english' && subject !== 'logic' ? '$topic' : null,
                     count: { $sum: 1 }
                 }
             }
         ]);
 
-        // Convert aggregated data to a dictionary for easier lookup
+        // Convert to usable format
         const topicCounts = data.reduce((acc, item) => {
             if (subject !== 'english' && subject !== 'logic') {
                 acc[item._id] = item.count;
@@ -341,56 +257,56 @@ router.post('/cout', wrapAsync(async (req, res) => {
             return acc;
         }, {});
 
-        // Prepare the final result ensuring all topics are included
-        const result = subject !== 'english' && subject !== 'logic'
-            ? topics.map(topic => ({
-                topic,
-                count: topicCounts[topic] || 0
-            }))
-            : [{ subject, count: topicCounts.total || 0 }];
+        // Final response format
+        const result =
+            subject !== 'english' && subject !== 'logic'
+                ? topics.map(topic => ({ topic, count: topicCounts[topic] || 0 }))
+                : [{ subject, count: topicCounts.total || 0 }];
 
         res.json(result);
     } catch (error) {
+        console.error(error);
         res.status(500).send('Internal Server Error');
     }
 }));
 
 
+
 // ===============================stats====================
-router.post('/stats', wrapAsync(async (req, res) => {
+mcqRouter.post('/stats', asyncWrapper(async (req, res) => {
     const userId = req.body?.userId;
 
     try {
-        // Fetch user's solved and wrong MCQs
-        const user = await userModel.findById(userId).select('solved_mcqs wrong_mcqs');
-        const solvedMCQIds = user.solved_mcqs;
-        const wrongMCQIds = user.wrong_mcqs;
+        // Fetch user's solved and wrong McqModels
+        const user = await UserModel.findById(userId).select('solved_mcqs wrong_mcqs');
+        const solvedMcqModelIds = user.solved_mcqs;
+        const wrongMcqModelIds = user.wrong_mcqs;
 
         // Calculate lengths
-        const solvedLength = solvedMCQIds.length;
-        const wrongLength = wrongMCQIds.length;
+        const solvedLength = solvedMcqModelIds.length;
+        const wrongLength = wrongMcqModelIds.length;
 
-        // Aggregate unique subjects and their counts from solved MCQs
-        const solvedSubjectCounts = await MCQ.aggregate([
-            { $match: { _id: { $in: solvedMCQIds } } },
+        // Aggregate unique subjects and their counts from solved McqModels
+        const solvedSubjectCounts = await McqModel.aggregate([
+            { $match: { _id: { $in: solvedMcqModelIds } } },
             { $group: { _id: "$subject", count: { $sum: 1 } } }
         ]);
 
-        // Aggregate unique subjects and their counts from wrong MCQs
-        const wrongSubjectCounts = await MCQ.aggregate([
-            { $match: { _id: { $in: wrongMCQIds } } },
+        // Aggregate unique subjects and their counts from wrong McqModels
+        const wrongSubjectCounts = await McqModel.aggregate([
+            { $match: { _id: { $in: wrongMcqModelIds } } },
             { $group: { _id: "$subject", count: { $sum: 1 } } }
         ]);
 
-        // Aggregate the total count of MCQs per subject
-        const totalSubjectCounts = await MCQ.aggregate([
+        // Aggregate the total count of McqModels per subject
+        const totalSubjectCounts = await McqModel.aggregate([
             { $group: { _id: "$subject", totalCount: { $sum: 1 } } }
         ]);
 
         // Merge the counts into a single object for each subject
         const subjectCounts = {};
 
-        // Initialize subject counts with total MCQ counts
+        // Initialize subject counts with total McqModel counts
         totalSubjectCounts.forEach(({ _id, totalCount }) => {
             subjectCounts[_id] = { subject: _id, correctCount: 0, wrongCount: 0, totalCount };
         });
@@ -428,38 +344,12 @@ router.post('/stats', wrapAsync(async (req, res) => {
 }));
 
 
-//mcq group by topics 
-router.get('/topics', wrapAsync(async (req, res) => {
-    course = 'nums';
-    const data = await MCQ.aggregate([
-        {
-            $group: {
-                _id: {
-                    topic: "$topic",
-                    chapter: "$chapter",
-                    subject: "$subject"
-                }
-            }
-        },
-        {
-            $project: {
-                _id: 0,
-                topic: "$_id.topic",
-                chapter: "$_id.chapter",
-                subject: "$_id.subject"
-            }
-        }
-    ])
-
-    res.send("okkk")
-
-}));
 
 
-router.put('/bookmark', wrapAsync(async (req, res) => {
+mcqRouter.put('/bookmark', asyncWrapper(async (req, res) => {
     try {
         const { mcqId } = req.body;
-        const user = await userModel.updateOne(
+        const user = await UserModel.updateOne(
             { _id: req.user._id },
             {
                 $addToSet: { bookmarked_mcqs: mcqId }
@@ -471,14 +361,14 @@ router.put('/bookmark', wrapAsync(async (req, res) => {
     }
 }));
 
-router.put('/unbookmark', wrapAsync(async (req, res) => {
+mcqRouter.put('/unbookmark', asyncWrapper(async (req, res) => {
     try {
         const { mcqId } = req.body;
         console.log(mcqId)
-        const user = await userModel.updateOne(
+        const user = await UserModel.updateOne(
             { _id: req.user._id },
             {
-                $pull: { bookmarked_mcqs:mcqId }
+                $pull: { bookmarked_mcqs: mcqId }
             }
         );
         console.log(user)
@@ -488,16 +378,16 @@ router.put('/unbookmark', wrapAsync(async (req, res) => {
     }
 }));
 
-router.get('/bookmarks', wrapAsync(async (req, res) => {
+mcqRouter.get('/bookmarks', asyncWrapper(async (req, res) => {
     try {
-        const user = await userModel.findById(req.user._id).select('bookmarked_mcqs');
-        const mcqs= await MCQ.find({_id:{$in:user.bookmarked_mcqs}});
+        const user = await UserModel.findById(req.user._id).select('bookmarked_mcqs');
+        const mcqs = await McqModel.find({ _id: { $in: user.bookmarked_mcqs } });
         res.json(mcqs);
     } catch (error) {
         console.log(error)
     }
 }));
 
-		
 
-module.exports = router;
+
+export default mcqRouter;

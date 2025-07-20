@@ -15,6 +15,8 @@ import cookieParser from 'cookie-parser';
 import courseRouter from './server/routes/course.js';
 import referalRouter from './server/routes/referal.js';
 import PurchaseRouter from './server/routes/purchases.js';
+import progressRouter from './server/routes/userProgress.js';
+import mcqRouter from './server/routes/mcq.js';
 dotenv.config({
   path: "./.env.local",
 }); // 👈 
@@ -50,6 +52,8 @@ app.prepare().then(() => {
   expressApp.use("/api/v1/course", courseRouter);
   expressApp.use("/api/v1/referral", referalRouter);
   expressApp.use("/api/v1/purchase", PurchaseRouter);
+  expressApp.use("/api/v1/progress", progressRouter);
+  expressApp.use("/api/v1/mcq", mcqRouter);
 
 
   // for next front-end requests

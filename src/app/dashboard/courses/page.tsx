@@ -5,7 +5,7 @@ import React from 'react'
 
 
 const page = async () => {
-  let activeCourses = null;
+  let activeCourses = [];
   try {
     const res = await Axios.get('/api/v1/course/active-courses');
     activeCourses = res?.data?.activeCourses;
@@ -28,7 +28,7 @@ const page = async () => {
 
   return (
     <>
-      <MyCourses activeCourses={['mdcat', 'nums', 'mdcatNums', 'trial']} />
+      <MyCourses activeCourses={activeCourses||[]} />
     </>
   )
 }

@@ -1,4 +1,5 @@
 "use client"
+
 import { useEffect, useRef, useState } from "react"
 import {
 	Card,
@@ -21,7 +22,7 @@ import {
 	useDisclosure,
 	ScrollShadow,
 } from "@heroui/react"
-import { ArrowLeft, X, ChevronLeft, ChevronRight } from "lucide-react"
+import { ArrowLeft, X, ChevronLeft, ChevronRight, Cloud } from "lucide-react"
 import {
 	Question,
 	BookmarkSimple,
@@ -36,7 +37,7 @@ import {
 	Info as PhosphorInfo,
 	List,
 	Timer as PhosphorTimer,
-} from "phosphor-react"
+} from "@phosphor-icons/react"
 import FsLightbox from "fslightbox-react"
 import { MathJax, MathJaxContext } from "better-react-mathjax"
 import Timer from "./Timer"
@@ -51,9 +52,17 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 	const [wrongMcq, setWrongMcq] = useState([])
 	const [attempted, setAttempted] = useState([])
 	const [showMockModel, setShowMockModel] = useState(false)
-	const [loading, setLoading] = useState(false)
-	const { data: session } = useSession()
+	const [loading, setLoading] = useState(true);
+	const [isSaving, setIsSaving] = useState(false)
+
+	const { data: session } = useSession();
+	console.log(session)
 	const userId = session?.user?.id
+
+	// Auto-save related state
+	const [lastSavedCorrect, setLastSavedCorrect] = useState([])
+	const [lastSavedWrong, setLastSavedWrong] = useState([])
+	const autoSaveIntervalRef = useRef(null)
 
 	const [lightboxController, setLightboxController] = useState({
 		toggler: false,
@@ -91,7 +100,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 	// Touch/swipe handling for mobile
 	const [touchStart, setTouchStart] = useState(null)
 	const [touchEnd, setTouchEnd] = useState(null)
-
 	const minSwipeDistance = 50
 
 	const onTouchStart = (e) => {
@@ -106,7 +114,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 		const distance = touchStart - touchEnd
 		const isLeftSwipe = distance > minSwipeDistance
 		const isRightSwipe = distance < -minSwipeDistance
-
 		if (isLeftSwipe && index < mcqs.length - 1) {
 			nextOption()
 		}
@@ -127,6 +134,71 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 		}
 	}
 
+	// Auto-save function
+	const autoSaveProgress = async () => {
+		// Check if there are new answers to save
+
+		const hasNewCorrect =
+			correctMcq.length !== lastSavedCorrect.length || !correctMcq.every((id) => lastSavedCorrect.includes(id))
+		const hasNewWrong =
+			wrongMcq.length !== lastSavedWrong.length || !wrongMcq.every((id) => lastSavedWrong.includes(id))
+		console.log("has new correct", hasNewCorrect)
+		console.log("has new wrong", hasNewWrong)
+		if ((hasNewCorrect || hasNewWrong) && (correctMcq.length > 0 || wrongMcq.length > 0)) {
+			console.log("saaving auto")
+			try {
+				if (subject === "mock") {
+					return // Don't auto-save for mock tests
+				}
+				setIsSaving(true)
+				const response = await Axios.put("/api/v1/progress/save", {
+					correctMcq,
+					wrongMcq,
+					autoSave: true, // Flag to indicate this is an auto-save
+				})
+				setIsSaving(false)
+				console.log("auto saved")
+				if (response.data.acknowledged) {
+					setLastSavedCorrect([...correctMcq])
+					setLastSavedWrong([...wrongMcq])
+					toast.success("Progress auto-saved", { duration: 1500 })
+				}
+
+			} catch (error) {
+				setIsSaving(false)
+				console.error("Auto-save failed:", error)
+				// Don't show error notification for auto-save failures to avoid disrupting user experience
+			}
+		}
+	}
+
+	// Set up auto-save interval
+	useEffect(() => {
+		// Start auto-save after test begins (not during instruction modal)
+		if (!testStart && subject !== "mock") {
+			autoSaveIntervalRef.current = setInterval(() => {
+				autoSaveProgress()
+			}, 60000) // Save every minute (60000ms)
+		}
+
+		// Cleanup interval on component unmount or when test ends
+		return () => {
+			if (autoSaveIntervalRef.current) {
+				clearInterval(autoSaveIntervalRef.current)
+			}
+		}
+	}, [testStart, correctMcq, wrongMcq, subject])
+
+	// Clear interval when test ends or component unmounts
+	useEffect(() => {
+		setLoading(false)
+		return () => {
+			if (autoSaveIntervalRef.current) {
+				clearInterval(autoSaveIntervalRef.current)
+			}
+		}
+	}, [])
+
 	useEffect(() => {
 		setMcqs(data?.map((mcq) => ({ ...mcq, selected: null, lock: false })))
 	}, [data])
@@ -138,12 +210,21 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 	}, [testStart, onTestStartOpen])
 
 	const saveMcqData = async () => {
+		// Clear auto-save interval when manually saving
+		if (autoSaveIntervalRef.current) {
+			clearInterval(autoSaveIntervalRef.current)
+		}
+
 		if (correctMcq.length > 0 || wrongMcq.length > 0) {
 			try {
 				if (subject === "mock") {
 					return router.back()
 				}
-				const response = await Axios.put("/mcq/solved", { correctMcq, wrongMcq, userId })
+				const response = await Axios.put("/api/v1/progress/save", {
+					correctMcq,
+					wrongMcq,
+					finalSave: true, // Flag to indicate this is the final save
+				})
 				if (response.data.acknowledged) {
 					showNotification("Check Stats In Dashboard", "success")
 				}
@@ -219,7 +300,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 				e.target.classList.add("correct")
 				setCorrectMcq((prevMcq) => [...prevMcq, mcqs[index]._id])
 				setAttempted([...attempted, index])
-
 				if (subject == "mock") {
 					if (index < 68) {
 						setBioCorrectCount((e) => e + 1)
@@ -251,6 +331,11 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 				e.current.classList.remove("wrong")
 			})
 		} else {
+			// Clear auto-save interval when test ends
+			if (autoSaveIntervalRef.current) {
+				clearInterval(autoSaveIntervalRef.current)
+			}
+
 			if (subject === "mock") {
 				setMockPercentageCout(bioCorrectCout + phyCorrectCount + chemCorrectCout + engCorrectCount + logicCorrectCount)
 				return showMockResult()
@@ -293,6 +378,11 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 	}
 
 	const handleSaveAndExit = () => {
+		// Clear auto-save interval when manually saving and exiting
+		if (autoSaveIntervalRef.current) {
+			clearInterval(autoSaveIntervalRef.current)
+		}
+
 		if (subject == "mock") {
 			return router.back()
 		}
@@ -334,6 +424,18 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 		return "bordered"
 	}
 
+	if (mcqData.length === 0) {
+		return (
+			<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-100 px-4">
+				<div className="text-center">
+					<h2 className="text-2xl font-semibold text-gray-700 mb-2">No MCQs Found</h2>
+					<p className="text-gray-500">Try changing your filters or check back later.</p>
+				</div>
+			</div>
+		);
+	}
+
+
 	return (
 		<MathJaxContext version={3} config={config}>
 			<div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 to-blue-50 overflow-hidden">
@@ -343,13 +445,17 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 						<Button isIconOnly variant="light" onPress={() => router.back()} className="text-blue-600" size="sm">
 							<ArrowLeft size={20} />
 						</Button>
-
 						<div className="flex items-center gap-2">
-								<span className="text-sm font-semibold">
-									{index + 1}/{mcqs?.length}
-								</span>
+							<span className="text-sm font-semibold">
+								{index + 1}/{mcqs?.length}
+							</span>
+							{/* Auto-save indicator */}
+							{subject !== "mock" && (
+								<Chip size="sm" color="success" variant="flat" className="text-xs">
+									{isSaving ? "Saving..." : "Standby"}
+								</Chip>
+							)}
 						</div>
-
 						<div className="flex items-center gap-1">
 							<Button isIconOnly variant="light" onPress={onSidebarOpen} className="text-blue-600" size="sm">
 								<List size={20} />
@@ -359,7 +465,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 							</Button>
 						</div>
 					</div>
-
 					<div className="px-4 pb-3">
 						<Progress
 							value={((index + 1) / mcqs.length) * 100}
@@ -386,16 +491,23 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 								>
 									Back
 								</Button>
-								<Button
-									color="primary"
-									startContent={<FloppyDisk size={18} />}
-									onClick={handleSaveAndExit}
-									className="font-medium"
-								>
-									Save & Exit
-								</Button>
+								<div className="flex items-center gap-3">
+									{/* Auto-save indicator for desktop */}
+									{subject !== "mock" && (
+										<Chip size="sm" color="success" variant="flat" className="text-xs">
+											{isSaving ? <div className="flex items-center gap-1"><Cloud size={18} /> Saving</div> : "Auto-saving every minute"}
+										</Chip>
+									)}
+									<Button
+										color="primary"
+										startContent={<FloppyDisk size={18} />}
+										onClick={handleSaveAndExit}
+										className="font-medium"
+									>
+										Save & Exit
+									</Button>
+								</div>
 							</div>
-
 							<Progress
 								value={((index + 1) / mcqs.length) * 100}
 								color="primary"
@@ -659,7 +771,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 										{index === mcqs?.length - 1 ? (subject === "mock" ? "Result" : "Submit") : "Next"}
 									</Button>
 								</div>
-
 								<div className="grid grid-cols-3 gap-2">
 									<Button
 										variant={isReportOpen ? "solid" : "bordered"}
@@ -670,7 +781,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 									>
 										Report
 									</Button>
-
 									{chapter !== "test" && (
 										<Button
 											variant="bordered"
@@ -681,7 +791,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 											{isFlip ? "Question" : "Explain"}
 										</Button>
 									)}
-
 									<Button variant="bordered" startContent={<PhosphorEye size={16} />} onClick={onSidebarOpen} size="sm">
 										Overview
 									</Button>
@@ -699,7 +808,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 									>
 										Previous
 									</Button>
-
 									<div className="flex gap-2">
 										<Tooltip content="Report this question">
 											<Button
@@ -711,14 +819,12 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 												<FlagBanner size={18} />
 											</Button>
 										</Tooltip>
-
 										{chapter !== "test" && (
 											<Button variant="bordered" startContent={<ArrowsClockwise size={18} />} onClick={handleFlip}>
 												{isFlip ? "Question" : "Explanation"}
 											</Button>
 										)}
 									</div>
-
 									<Button color="primary" endContent={<ChevronRight size={18} />} onClick={nextOption}>
 										{index === mcqs?.length - 1 ? (subject === "mock" ? "View Result" : "Submit") : "Next"}
 									</Button>
@@ -729,7 +835,14 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 				</div>
 
 				{/* Mobile Sidebar Drawer */}
-				<Modal isOpen={isSidebarOpen} hideCloseButton onClose={onSidebarClose} placement="bottom" className="lg:hidden" size="full">
+				<Modal
+					isOpen={isSidebarOpen}
+					hideCloseButton
+					onClose={onSidebarClose}
+					placement="bottom"
+					className="lg:hidden"
+					size="full"
+				>
 					<ModalContent>
 						<ModalHeader className="flex justify-between items-center">
 							<h4 className="text-lg font-semibold">Questions Overview</h4>
@@ -814,6 +927,12 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 											You can solve only {subject === "mock" ? "200" : "100"} MCQs in one go
 										</li>
 										<li className="flex items-start gap-2">
+											<span className="text-blue-600 font-bold">💾</span>
+											{subject === "mock"
+												? "Mock test results are shown immediately after completion"
+												: "Your progress is automatically saved every minute"}
+										</li>
+										<li className="flex items-start gap-2">
 											<span className="text-blue-600 font-bold">📊</span>
 											{subject === "mock"
 												? "Check Mock-test result after completion"
@@ -824,7 +943,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 											Swipe left/right to navigate between questions
 										</li>
 									</ul>
-
 								</CardBody>
 							</Card>
 						</ModalBody>
@@ -860,7 +978,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 											</span>
 											<span className="text-xs lg:text-sm opacity-90">of {mcqs?.length}</span>
 										</div>
-
 										<div>
 											<h4 className="text-lg lg:text-xl font-bold mb-2">
 												{subject === "mock"
@@ -891,7 +1008,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 										</div>
 									</CardBody>
 								</Card>
-
 								<Card>
 									<CardHeader>
 										<h4 className="text-lg lg:text-xl font-bold">Summary</h4>
@@ -907,7 +1023,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 													</p>
 												</CardBody>
 											</Card>
-
 											<Card className="bg-orange-50 border-l-4 border-l-orange-500">
 												<CardBody className="text-center py-3">
 													<PhosphorInfo size={24} className="text-orange-600 mx-auto mb-2" />
@@ -919,7 +1034,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 													</p>
 												</CardBody>
 											</Card>
-
 											<Card className="bg-red-50 border-l-4 border-l-red-500">
 												<CardBody className="text-center py-3">
 													<PhosphorXCircle size={24} className="text-red-600 mx-auto mb-2" />
@@ -929,7 +1043,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 													</p>
 												</CardBody>
 											</Card>
-
 											<Card className="bg-blue-50 border-l-4 border-l-blue-500">
 												<CardBody className="text-center py-3">
 													<div className="text-xl lg:text-2xl text-blue-600 mx-auto mb-2">%</div>
@@ -941,7 +1054,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 													</p>
 												</CardBody>
 											</Card>
-
 											{subject === "mock" && (
 												<Card className="bg-purple-50 border-l-4 border-l-purple-500 col-span-2">
 													<CardBody className="text-center py-3">
@@ -951,7 +1063,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 												</Card>
 											)}
 										</div>
-
 										<Spacer y={4} />
 										<div className="flex flex-col lg:flex-row gap-3 lg:gap-4 justify-center">
 											<Button color="primary" onPress={onReviewOpen} className="w-full lg:w-auto">
@@ -988,7 +1099,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 																{ele.question}
 															</MathJax>
 														</div>
-
 														<div className="space-y-2">
 															{ele.options.map((option, optionIndex) => (
 																<div
@@ -1011,7 +1121,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 																</div>
 															))}
 														</div>
-
 														<div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-2">
 															<div>
 																{correctMcq.includes(ele._id) && (
@@ -1038,7 +1147,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 																)}
 															</div>
 														</div>
-
 														<Divider />
 														<div>
 															<p className="font-semibold text-gray-600 mb-2 text-sm lg:text-base">Explanation:</p>
@@ -1072,7 +1180,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 																		{ele.question}
 																	</MathJax>
 																</div>
-
 																<div className="space-y-2">
 																	{ele.options.map((option, optionIndex) => (
 																		<div
@@ -1095,7 +1202,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 																		</div>
 																	))}
 																</div>
-
 																<div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-2">
 																	<div>
 																		{correctMcq.includes(ele._id) && (
@@ -1122,7 +1228,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 																		)}
 																	</div>
 																</div>
-
 																<Divider />
 																<div>
 																	<p className="font-semibold text-gray-600 mb-2 text-sm lg:text-base">Explanation:</p>
@@ -1142,24 +1247,20 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 					</ModalContent>
 				</Modal>
 			</div>
-
 			<style jsx>{`
         .mcq-option:hover {
           border-color: #3b82f6 !important;
           box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
           transform: translateY(-1px);
         }
-        
         .mcq-option.correct {
           background: #f0fdf4 !important;
           border-color: #22c55e !important;
         }
-        
         .mcq-option.wrong {
           background: #fef2f2 !important;
           border-color: #ef4444 !important;
         }
-
         @media (max-width: 1024px) {
           .mcq-option:active {
             transform: scale(0.98);
