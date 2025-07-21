@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "install": "npm install --legacy-peer-deps",
     "dev": "next dev",
     "dev:server": "NODE_OPTIONS='--trace-warnings' nodemon server.mjs",
     "build": "next build",
@@ -16,10 +15,10 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@heroui/button": "^2.2.19",
-    "@heroui/react": "^2.7.8",
+    "@heroicons/react": "^2.2.0",
+    "@heroui/react": "^2.7.6",
+    "@heroui/select": "^2.4.15",
     "@heroui/system": "^2.4.15",
-    "@heroui/table": "^2.2.18",
     "@heroui/theme": "^2.4.15",
     "@hookform/resolvers": "^5.0.1",
     "@iconify/react": "^6.0.0",
@@ -27,7 +26,11 @@
     "@mui/material": "^7.1.1",
     "@phosphor-icons/react": "^2.0.14",
     "@radix-ui/react-label": "^2.1.7",
+    "@types/node": "20.9.2",
+    "@types/react": "18.2.37",
+    "@types/react-dom": "18.2.15",
     "antd": "^5.26.5",
+    "autoprefixer": "^10.4.16",
     "axios": "^1.9.0",
     "bcryptjs": "^3.0.2",
     "better-react-mathjax": "^2.3.0",
@@ -43,6 +46,7 @@
     "express": "^5.1.0",
     "framer-motion": "^12.10.5",
     "fslightbox-react": "^1.8.0",
+    "heroui-cli": "^1.2.3",
     "jose": "^6.0.11",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.509.0",
@@ -58,10 +62,10 @@
     "nprogress": "^0.2.0",
     "numeral": "^2.0.6",
     "phosphor-react": "^1.4.1",
+    "postcss": "^8.4.31",
     "react": "18.2.0",
     "react-bootstrap": "^2.10.10",
     "react-bootstrap-sweetalert": "^5.2.0",
-   "react-d3-speedometer": "^3.1.1",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.56.3",
     "react-hot-toast": "^2.5.2",
@@ -71,29 +75,12 @@
     "sass": "^1.69.5",
     "sonner": "^2.0.3",
     "swiper": "^11.2.8",
-    "tailwind-merge": "^3.3.0",
+    "tailwind-merge": "^3.2.0",
+    "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
+    "typescript": "5.2.2",
     "vaul": "^1.1.2",
     "zod": "^3.24.4"
   },
-  "devDependencies": {
-    "@types/jsonwebtoken": "^9.0.9",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "autoprefixer": "^10.0.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.0.3",
-    "postcss": "^8",
-    "tailwindcss": "^3.3.0",
-    "typescript": "^5"
-  },
-  "type": "module",
-  "pnpm": {
-    "overrides": {
-      "react-d3-speedometer>react": "18.2.0",
-      "react-d3-speedometer>react-dom": "18.2.0",
-      "@heroui/theme>tailwindcss": "3.3.0"
-    }
-  }
+  "type": "module"
 }
