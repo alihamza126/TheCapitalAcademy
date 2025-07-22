@@ -228,7 +228,7 @@ const MyCourses = ({ activeCourses }) => {
                                                 as={Link}
                                                 href="/checkout?course=mdcat"
                                                 startContent={<Target size={20} />}
-                                                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition-all duration-300 shadow-lg"
+                                                className="bg-gradient-to-r from-blue-500 to-purple hover:from-blue-600 hover:to-purple transition-all duration-300 shadow-lg"
                                                 onPress={() => toast.success("Redirecting to store...")}
                                             >
                                                 Visit Store

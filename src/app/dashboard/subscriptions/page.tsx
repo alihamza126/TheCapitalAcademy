@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Typography } from '@mui/material'
 import {
   Table,
@@ -18,24 +17,32 @@ const CourseDetails = () => {
   const [rowData, setRowData] = useState([])
 
   const user = "";
-  const isMdcat = user?.isMdcat || false
-  const isNums = user?.isNums || false
-  const isMdcatNums = user?.isMdcatNums || false
-  const isTrial = user?.isTrialActive || false
+  const [activeCourses, setActiveCourses] = useState([]);
 
   const getCourseStatus = () => {
-    if (isMdcat && isNums) return 'Mdcat & Nums Course Active'
-    if (isMdcat) return 'Mdcat Course Active'
-    if (isNums) return 'Nums Course Active'
-    if (isMdcatNums) return 'Mdcat & Nums Course Active'
-    if (isTrial && !isMdcat && !isNums && !isMdcatNums) return 'Free Trial Active'
+    if (activeCourses.includes('mdcatNums')) return 'Mdcat & Nums Course Active'
+    if (activeCourses.includes('mdcat')) return 'Mdcat Course Active'
+    if (activeCourses.includes('nums')) return 'Nums Course Active'
+    if (activeCourses.includes('trial')) return 'Mdcat & Nums Course Active'
     return 'No Active Course'
+  }
+  const fetchActiveCourses = async () => {
+    try {
+      const res = await Axios.get('/api/v1/course/active-courses')
+      const activeCourses = res?.data?.activeCourses;
+      setActiveCourses(activeCourses);
+      if (activeCourses && activeCourses.length > 0) {
+        getCourseStatus();
+      }
+    } catch (error) {
+      console.error('Error fetching active courses:', error)
+    }
   }
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await Axios.get('/purchase/dashboard')
+        const res = await Axios.get('/api/v1/purchase/dashboard')
         const currentDate = new Date()
         const newData = res.data.map((e) => {
           const purchaseDate = new Date(e.purchaseDate)
@@ -55,6 +62,7 @@ const CourseDetails = () => {
       }
     }
     fetchData()
+    fetchActiveCourses()
   }, [])
 
   return (

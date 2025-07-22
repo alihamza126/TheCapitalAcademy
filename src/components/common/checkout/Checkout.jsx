@@ -21,7 +21,6 @@ import bank from '/src/assets/bank.png'
 import receipt from '/src/assets/receipt.png'
 import { useSelector } from 'react-redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
-import axiosInstance from '../../baseUrl.js'
 
 
 const Checkout = (props) => {

@@ -25,6 +25,20 @@ export const NavLink = ({ href, children, className = "", activeClassName = "", 
     </Link>
   )
 }
+export const Logo= () => {
+  return (
+    <Link href="/" className="flex-shrink-0">
+      <Image
+        src={logo || "/placeholder.svg"}
+        alt="Logo"
+        width={120}
+        height={40}
+        className="h-10 w-auto"
+        priority
+      />
+    </Link>
+  )
+}
 
 const Navbar = () => {
 

@@ -34,7 +34,7 @@ PurchaseRouter.post('/course', authUser, asyncWrapper(async (req, res) => {
 // get purchase for user dashbaord
 PurchaseRouter.get('/dashboard', authUser, asyncWrapper(async (req, res) => {
     try {
-        const documents = await PurchaseModel.find({ user: req.user.id });
+        const documents = await PurchaseModel.find({ user: req.user.userId });
         const extractedData = documents.map(doc => {
             const { course, status, price, purchaseDate, expiryDate } = doc;
             return {
@@ -60,7 +60,7 @@ PurchaseRouter.get('/', asyncWrapper(async (req, res, next) => {
         const { _id, course, status, price, purchaseDate, paymentScreenshot, expiryDate } = doc;
         const user = doc.user || {}; // Handle cases where user object might be null or missing
         const username = user.username || null;
-        const profileUrl = user.profileUrl || null;
+        const profileUrl = user.image || null;
 
         return {
             id: _id,

@@ -21,18 +21,21 @@ import {
   Bell,
 } from "lucide-react"
 import { easeInOut } from "framer-motion";
+import { Avatar } from "@heroui/react"
+import { useSession } from "next-auth/react"
+import { Logo } from "@/components/common/navbar/Navbar"
 
 const menuItems = [
-  {
-    text: "Dashboard",
-    icon: LayoutDashboard,
-    path: "/dashboard",
-    description: "Overview & analytics",
-  },
+  // {
+  //   text: "Dashboard",
+  //   icon: LayoutDashboard,
+  //   path: "/dashboard",
+  //   description: "Overview & analytics",
+  // },
   {
     text: "My Courses",
     icon: GraduationCap,
-    path: "/dashboard/courses",
+    path: "/dashboard",
     description: "Learning paths",
   },
   {
@@ -146,7 +149,8 @@ export default function DashboardLayout({
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
+  const [isMobile, setIsMobile] = useState(false);
+  const { data: session } = useSession();
 
   // Handle responsive behavior
   useEffect(() => {
@@ -253,7 +257,7 @@ export default function DashboardLayout({
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <motion.button
+            {/* <motion.button
               variants={iconVariants}
               initial="rest"
               whileHover="hover"
@@ -261,7 +265,7 @@ export default function DashboardLayout({
               className="p-2 sm:p-2.5 rounded-xl text-slate-600 hover:text-slate-800 hover:bg-white/60 backdrop-blur-sm transition-all duration-200 touch-manipulation"
             >
               <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
-            </motion.button>
+            </motion.button> */}
             <motion.button
               variants={iconVariants}
               initial="rest"
@@ -272,13 +276,7 @@ export default function DashboardLayout({
             >
               <Home className="w-4 h-4 sm:w-5 sm:h-5" />
             </motion.button>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white text-xs sm:text-sm font-medium cursor-pointer shadow-lg ring-2 ring-white/50 backdrop-blur-sm touch-manipulation"
-            >
-              JD
-            </motion.div>
+            <Avatar size="sm" src={session?.user?.image} alt={session?.user?.name} />
           </div>
         </div>
       </motion.nav>
@@ -304,17 +302,16 @@ export default function DashboardLayout({
               {/* Mobile Menu Header */}
               <div className="p-6 border-b border-white/30">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-sm">
-                    <LayoutDashboard className="w-5 h-5 text-white" />
+                  <div className="w-10 h-10  flex items-center justify-center shadow-sm">
+                    <Logo />
                   </div>
                   <div>
-
                   </div>
                 </div>
               </div>
 
               {/* Mobile Menu Items */}
-              <div className="flex-1 overflow-y-auto py-6">
+              <div className="flex-1 overflow-y-auto py-5">
                 <div className="px-6 space-y-2">
                   {menuItems.map((item, index) => (
                     <motion.button
@@ -394,8 +391,8 @@ export default function DashboardLayout({
                     transition={{ duration: 0.2 }}
                     className="flex items-center gap-3"
                   >
-                    <div className="w-8 h-8 xl:w-9 xl:h-9 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-sm">
-                      <LayoutDashboard className="w-4 h-4 xl:w-5 xl:h-5 text-white" />
+                    <div className="w-6 h-6 xl:w-9 xl:h-9   flex items-center justify-center">
+                      <Logo />
                     </div>
                   </motion.div>
                 )}
@@ -519,32 +516,16 @@ export default function DashboardLayout({
                 <span className="font-medium hidden sm:inline">Home</span>
               </motion.button>
               <div className="w-px h-6 xl:h-8 bg-slate-300/50"></div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-9 h-9 xl:w-10 xl:h-10 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white text-sm font-medium cursor-pointer shadow-sm ring-2 ring-white/50 hover:ring-blue-300/50 transition-all duration-200"
-              >
-                JD
-              </motion.div>
+              <Avatar src={session?.user?.image} alt={session?.user?.name} />
             </div>
           </motion.header>
 
           {/* Page Content */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="p-3"
+          <div
+            className="backdrop-blur-xl bg-gray-50  border border-white/30 shadow-sm min-h-[calc(100vh-8rem)] lg:min-h-[calc(100vh-12rem)] relative overflow-hidden"
           >
-            <motion.div
-              layout
-              className="backdrop-blur-xl bg-white/50 rounded-2xl xl:rounded-3xl border border-white/30 shadow-sm min-h-[calc(100vh-8rem)] lg:min-h-[calc(100vh-12rem)] relative overflow-hidden"
-            >
-              {/* Content Background Pattern */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-blue-500/5 pointer-events-none"></div>
-              <div className="relative z-10 p-4 sm:p-6 lg:p-6 xl:p-8">{children}</div>
-            </motion.div>
-          </motion.div>
+            <div className="relative z-10 p-0 sm:p-0 lg:p-6 xl:p-8">{children}</div>
+          </div>
         </motion.main>
       </div>
     </div>

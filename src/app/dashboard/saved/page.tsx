@@ -5,6 +5,7 @@ import { MathJax, MathJaxContext } from 'better-react-mathjax'
 import { Button, IconButton, Typography } from '@mui/material'
 import { Close } from '@mui/icons-material'
 import { enqueueSnackbar, closeSnackbar } from 'notistack'
+import Axios from '@/lib/Axios'
 
 const CourseDetails = () => {
   const [mcqs, setMcqs] = useState([])
@@ -34,7 +35,7 @@ const CourseDetails = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axiosInstance.get('/mcq/bookmarks')
+        const res = await Axios.get('/mcq/bookmarks')
         if (res.data) setMcqs(res.data)
       } catch (err) {
         console.error('Error fetching data:', err)
@@ -46,7 +47,7 @@ const CourseDetails = () => {
 
   const handleUnbookmark = async (mcqId) => {
     try {
-      await axiosInstance.put('/mcq/unbookmark', { mcqId })
+      await Axios.put('/mcq/unbookmark', { mcqId })
       setMcqs(prev => prev.filter(mcq => mcq._id !== mcqId))
       showSnackbar('Removed from bookmarks.', 'info')
     } catch (error) {
