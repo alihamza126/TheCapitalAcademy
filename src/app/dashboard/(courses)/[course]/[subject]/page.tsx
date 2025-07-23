@@ -5,7 +5,12 @@ import { notFound } from "next/navigation";
 
 
 const Page = async ({ params }) => {
-    const { course, subject } = params;
+    const { course, subject } =await params;
+    console.log(course, subject);
+    console.log(params);
+    if (!['nums', 'mdcat'].includes(course)) {
+        notFound();
+    }
     let chapters = []
 
     if (course === 'nums') {
@@ -41,7 +46,7 @@ const Page = async ({ params }) => {
                         SELECT YOUR CHAPTER
                     </h1>
                 </div>
-                <div className="flex flex-wrap gap-4 justify-center w-full">
+                <div className="flex flex-wrap gap-3 md:gap-4 justify-center w-full">
                     {chapters.map((ele, index) => (
                         <Chapter course={course} subject={subject} chapter={ele.name} key={index} name={ele.name} img={ele.image} isLocked={false} />
                     ))}

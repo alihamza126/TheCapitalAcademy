@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Loader2, Sparkles, Trophy, Star, BookOpen } from "lucide-react"
 import { UnifiedAnimation } from "./animation"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
+import { LightningIcon } from "@phosphor-icons/react/dist/ssr"
 
 interface User {
   isMdcat?: boolean
@@ -19,9 +21,10 @@ interface User {
 interface HeaderProps {
   user?: User | null
   onTrialActivate?: () => Promise<void>
+  isActiveCourse?: boolean
 }
 
-const Header = ({ user, onTrialActivate }: HeaderProps) => {
+const Header = ({ user, onTrialActivate, isActiveCourse }: HeaderProps) => {
   const [loading, setLoading] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [currentText, setCurrentText] = useState("")
@@ -116,10 +119,7 @@ const Header = ({ user, onTrialActivate }: HeaderProps) => {
         </div>
 
         <div className="relative z-10 container mx-auto px-4 py-4 md:py-2" ref={ref}>
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            animate={inView ? "visible" : "hidden"}
+          <div
             className="flex flex-col lg:flex-row items-center min-h-[90vh] gap-8"
           >
             {/* Left Content - Takes up left side */}
@@ -142,13 +142,11 @@ const Header = ({ user, onTrialActivate }: HeaderProps) => {
                   Boost Your{" "}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#e260a2] relative">
                     {currentText}
-                    <motion.span
-                      animate={{ opacity: [1, 0, 1] }}
-                      transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY }}
-                      className="text-primary overflow-hidden"
+                    <span
+                      className="text-primary overflow-hidden py-2 box-border h-[90%]"
                     >
                       |
-                    </motion.span>
+                    </span>
                   </span>
                   <br />
                   Prep With{" "}
@@ -198,7 +196,18 @@ const Header = ({ user, onTrialActivate }: HeaderProps) => {
                         <Loader2 className="mr-3 h-6 w-6 animate-spin" />
                         Activating Magic...
                       </>
-                    ) : (
+                    ) : isActiveCourse ?
+                      <Link href="/dashboard">
+                        Resume Course
+                        <motion.span
+                          className="ml-3 inline-block text-2xl group-hover:translate-x-1 transition-transform"
+                          animate={{ x: [0, 6, 0] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                        >
+                          <LightningIcon className="inline-block h-6 w-6" />
+                        </motion.span>
+                      </Link>
+                      :
                       <>
                         Start Free Trial
                         <motion.span
@@ -209,7 +218,7 @@ const Header = ({ user, onTrialActivate }: HeaderProps) => {
                           →
                         </motion.span>
                       </>
-                    )}
+                    }
                   </Button>
                 </motion.div>
               )}
@@ -220,7 +229,7 @@ const Header = ({ user, onTrialActivate }: HeaderProps) => {
             <motion.div variants={fadeInUp} className="hidden md:flex flex-1 w-full h-full">
               <UnifiedAnimation />
             </motion.div>
-          </motion.div>
+          </div>
         </div>
       </section>
 

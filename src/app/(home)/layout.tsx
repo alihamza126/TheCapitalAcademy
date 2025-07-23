@@ -1,6 +1,7 @@
 import StickyNav from "@/components/stickyNav/StickyNav";
 import Footer from '@/components/footer/Footer'
 import Axios from "@/lib/Axios";
+import FloatingWhatsApp from "@/components/common/whatsppFloat/Whatsapp";
 
 
 
@@ -22,6 +23,7 @@ export default async function RootLayout({
   return (
     <>
       <StickyNav content={content} />
+      <FloatingWhatsApp />
       {children}
       <Footer />
     </>

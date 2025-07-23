@@ -11,8 +11,10 @@ import Image from "next/image"
 import logo from "/public/logo.png"
 import { ChevronDown } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, NavbarContent, user } from "@heroui/react"
+import { Avatar, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, NavbarContent, user } from "@heroui/react"
 import { signOut, useSession } from "next-auth/react"
+import { Books } from "@phosphor-icons/react/dist/ssr"
+import { Book, ChartDonutIcon, UserCircleGearIcon } from "@phosphor-icons/react"
 
 // Custom NavLink component for Next.js
 export const NavLink = ({ href, children, className = "", activeClassName = "", ...props }) => {
@@ -25,7 +27,7 @@ export const NavLink = ({ href, children, className = "", activeClassName = "", 
     </Link>
   )
 }
-export const Logo= () => {
+export const Logo = () => {
   return (
     <Link href="/" className="flex-shrink-0">
       <Image
@@ -306,23 +308,23 @@ const Navbar = () => {
                     <Link
                       href="/dashboard"
                       onClick={closeAllDropdowns}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#f0f6fd] hover:text-[#1757ab] transition-colors duration-150"
+                      className="px-4 flex items-center py-2 text-sm text-gray-700 hover:bg-[#f0f6fd] hover:text-[#1757ab] transition-colors duration-150"
                     >
-                      My Courses
+                      <Book className="mr-2 h-4 w-4" /> MY COURSES
                     </Link>
                     <Link
-                      href="/dashboard/stats"
+                      href="/dashboard/analytics"
                       onClick={closeAllDropdowns}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#f0f6fd] hover:text-[#1757ab] transition-colors duration-150"
+                      className=" flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-[#f0f6fd] hover:text-[#1757ab] transition-colors duration-150"
                     >
-                      Statistics
+                      <ChartDonutIcon className="mr-2 h-4 w-4" /> VIEW ANALYTICS
                     </Link>
                     <Link
                       href="/dashboard/profile"
                       onClick={closeAllDropdowns}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#f0f6fd] hover:text-[#1757ab] transition-colors duration-150"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-[#f0f6fd] hover:text-[#1757ab] transition-colors duration-150"
                     >
-                      My Account
+                      <UserCircleGearIcon className="mr-2 h-4 w-4" /> PROFILE
                     </Link>
                   </motion.div>
                 )}
@@ -393,9 +395,10 @@ const Navbar = () => {
                     as="button"
                     className="transition-transform"
                     color="secondary"
-                    name="Jason Hughes"
+                    name={session?.user?.name || "User"}
+                    icon={<Books className="h-4 w-4" />}
                     size="sm"
-                    src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                    src={session?.user?.image}
                   />
                 </DropdownTrigger>
                 <DropdownMenu aria-label="Profile Actions" variant="flat">
@@ -403,7 +406,7 @@ const Navbar = () => {
                     <p className="font-semibold">Signed in as</p>
                     <p className="">{session?.user?.email}</p>
                   </DropdownItem>
-                  <DropdownItem key="help_and_feedback"><Link href={'/profile'}>Profile Settings</Link></DropdownItem>
+                  <DropdownItem key="help_and_feedback"><Link href={'/dashboard/profile'}>Profile Settings</Link></DropdownItem>
                   {/* <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem> */}
                   <DropdownItem key="logout" color="danger" onPress={() => signOut()}>
                     Log Out
@@ -469,8 +472,11 @@ const Navbar = () => {
 
               <div className="px-4 py-6 space-y-1 overflow-y-auto  h-[calc(100vh-70px)]  w-full bg-white rounded-md bg-clip-padding backdrop-filter backdrop-blur-2xl bg-opacity-100 border border-gray-100">
                 {/* Mobile nav items with staggered animations */}
+            
                 {[
                   { href: "/", label: "Home", delay: 0.1 },
+                  { href: "/about", label: "About", delay: 0.1 },
+                  { href: "/contact", label: "Contact Us", delay: 0.1 },
                   { href: "/calculator", label: "Aggregate Calculator", delay: 0.15 },
                 ].map((item, index) => (
                   <motion.div
@@ -500,7 +506,7 @@ const Navbar = () => {
                   }}
                   className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors duration-200"
                 >
-                  NUMS MCQs
+                  NUMS Bank
                 </motion.button>
 
                 <motion.button
@@ -567,75 +573,102 @@ const Navbar = () => {
                       </motion.div>
                     )}
                   </AnimatePresence>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.35, duration: 0.3 }}
+                  >
+                  </motion.div>
                 </motion.div>
+
+
 
                 {/* Mobile Dashboard Dropdown */}
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.35, duration: 0.3 }}
-                >
-                  <button
-                    onClick={() => setIsMobileDashboardOpen(!isMobileDashboardOpen)}
-                    className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors duration-200"
+                <div className="mt-10">
+                  <Divider className="my-2" />
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3, duration: 0.3 }}
                   >
-                    Dashboard
-                    <motion.div
-                      animate={{ rotate: isMobileDashboardOpen ? 180 : 0 }}
-                      transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+                    <button
+                      onClick={() => setIsDashboardDropdownOpen(!isDashboardDropdownOpen)}
+                      className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors duration-200"
                     >
-                      <ChevronDown className="h-4 w-4" />
-                    </motion.div>
-                  </button>
-                  <AnimatePresence>
-                    {isMobileDashboardOpen && (
+                      Dashboard
                       <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
+                        animate={{ rotate: isDashboardDropdownOpen ? 180 : 0 }}
                         transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-                        className="ml-4 mt-1 space-y-1 overflow-hidden"
                       >
-                        <Link
-                          href="/dashboard"
-                          className="block px-3 py-2 rounded-md text-sm text-gray-600 hover:text-primary-600 hover:bg-gray-50 transition-colors duration-200"
-                          onClick={toggleMobileMenu}
-                        >
-                          My Courses
-                        </Link>
-                        <Link
-                          href="/dashboard/stats"
-                          className="block px-3 py-2 rounded-md text-sm text-gray-600 hover:text-primary-600 hover:bg-gray-50 transition-colors duration-200"
-                          onClick={toggleMobileMenu}
-                        >
-                          Statistics
-                        </Link>
-                        <Link
-                          href="/dashboard/profile"
-                          className="block px-3 py-2 rounded-md text-sm text-gray-600 hover:text-primary-600 hover:bg-gray-50 transition-colors duration-200"
-                          onClick={toggleMobileMenu}
-                        >
-                          My Account
-                        </Link>
+                        <ChevronDown className="h-4 w-4" />
                       </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
+                    </button>
+                    {
+                      isDashboardDropdownOpen &&
+                      <AnimatePresence>
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+                          className="ml-4 mt-1 space-y-1 overflow-hidden"
+                        >
+                          <Link
+                            href="/dashboard"
+                            onClick={closeAllDropdowns}
+                            className="px-4 flex items-center py-2 text-sm text-gray-700 hover:bg-[#f0f6fd] hover:text-[#1757ab] transition-colors duration-150"
+                          >
+                            <Book className="mr-2 h-4 w-4" /> MY COURSES
+                          </Link>
+                          <Link
+                            href="/dashboard/analytics"
+                            onClick={closeAllDropdowns}
+                            className=" flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-[#f0f6fd] hover:text-[#1757ab] transition-colors duration-150"
+                          >
+                            <ChartDonutIcon className="mr-2 h-4 w-4" /> VIEW ANALYTICS
+                          </Link>
+                          <Link
+                            href="/dashboard/profile"
+                            onClick={closeAllDropdowns}
+                            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-[#f0f6fd] hover:text-[#1757ab] transition-colors duration-150"
+                          >
+                            <UserCircleGearIcon className="mr-2 h-4 w-4" /> PROFILE
+                          </Link>
+                        </motion.div>
+                      </AnimatePresence>
+                    }
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.35, duration: 0.3 }}
+                    >
+                    </motion.div>
+                  </motion.div>
 
-                {/* Mobile Sign In/Sign Up Buttons */}
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4, duration: 0.3 }}
-                  className="pt-4 border-t border-gray-200 mt-4 space-y-3"
-                >
-                  <button className="block w-full text-center px-4 py-2.5 rounded-lg text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors duration-200 border border-gray-300">
-                    Sign In
-                  </button>
-                  <button className="block w-full text-center px-4 py-2.5 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary-700 transition-colors duration-200 shadow-sm">
-                    Sign Up
-                  </button>
-                </motion.div>
+
+
+                  {/* Mobile Sign In/Sign Up Buttons */}
+                  {
+                    !isLogin ?
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.4, duration: 0.3 }}
+                        className="pt-4 border-t border-gray-200 mt-4 space-y-3"
+                      >
+                        <button className="block w-full text-center px-4 py-2.5 rounded-lg text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors duration-200 border border-gray-300">
+                          Sign In
+                        </button>
+                        <button className="block w-full text-center px-4 py-2.5 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary-700 transition-colors duration-200 shadow-sm">
+                          Sign Up
+                        </button>
+                      </motion.div>
+                      :
+                      <button onClick={() => signOut()} className="block mt-8 bg-rose-400 text-white w-full text-center px-4 py-2.5 rounded-lg text-base font-medium text-g700ray- hover:text-primary-600 hover:bg-gray-50 transition-colors duration-200 border ">
+                        Sign Out
+                      </button>
+                  }
+                </div>
               </div>
             </motion.div>
           </motion.div>

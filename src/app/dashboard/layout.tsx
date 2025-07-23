@@ -5,24 +5,21 @@ import { useState, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  LayoutDashboard,
   BarChart3,
   Calendar,
   Bookmark,
-  Calculator,
   GraduationCap,
   User,
   Home,
   Menu,
   X,
   ChevronRight,
-  Settings,
   LogOut,
   Bell,
 } from "lucide-react"
 import { easeInOut } from "framer-motion";
 import { Avatar } from "@heroui/react"
-import { useSession } from "next-auth/react"
+import { signOut, useSession } from "next-auth/react"
 import { Logo } from "@/components/common/navbar/Navbar"
 
 const menuItems = [
@@ -67,13 +64,13 @@ const menuItems = [
     text: "Subscriptions",
     icon: Bell,
     path: "/dashboard/subscriptions",
-    description: "Account settings",
+    description: "Subscriptions",
   },
   {
     text: "Profile",
     icon: User,
     path: "/dashboard/profile",
-    description: "Account settings",
+    description: "Profile",
   },
 ]
 
@@ -194,7 +191,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-50 relative">
+    <div className="min-h-screen relative bg-gray-50">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 opacity-20 pointer-events-none"
@@ -205,10 +202,7 @@ export default function DashboardLayout({
       />
 
       {/* Mobile Navigation Header */}
-      <motion.nav
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+      <div
         className="lg:hidden backdrop-blur-2xl bg-white/80 border-b border-white/30 shadow-sm relative z-50 sticky top-0"
       >
         <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
@@ -279,7 +273,7 @@ export default function DashboardLayout({
             <Avatar size="sm" src={session?.user?.image} alt={session?.user?.name} />
           </div>
         </div>
-      </motion.nav>
+      </div>
 
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
@@ -353,15 +347,8 @@ export default function DashboardLayout({
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 hover:bg-white/60 backdrop-blur-sm transition-all duration-200 touch-manipulation"
-                >
-                  <Settings className="w-5 h-5" />
-                  <span className="font-medium">Settings</span>
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 backdrop-blur-sm transition-all duration-200 touch-manipulation"
+                  onClick={()=>signOut()}
+                  className="w-full flex items-center gap-3 bg-rose-400 text-white px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 backdrop-blur-sm transition-all duration-200 touch-manipulation"
                 >
                   <LogOut className="w-5 h-5" />
                   <span className="font-medium">Sign Out</span>
@@ -377,7 +364,7 @@ export default function DashboardLayout({
         <motion.aside
           variants={sidebarVariants}
           animate={sidebarCollapsed ? "collapsed" : "expanded"}
-          className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 backdrop-blur-2xl bg-white/70 border-r border-white/30 shadow-sm z-30"
+          className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 backdrop-blur-2xl bg-white/70 border-r border-gray-200 shadow-sm z-30"
         >
           {/* Desktop Sidebar Header */}
           <motion.div layout className="p-4 xl:p-6 border-b border-white/30">
@@ -478,8 +465,7 @@ export default function DashboardLayout({
         </motion.aside>
 
         {/* Main Content */}
-        <motion.main
-          layout
+        <div
           className={`flex-1 transition-all duration-400 ${sidebarCollapsed ? "lg:ml-18" : "lg:ml-70"} min-h-screen`}
           style={{
             marginLeft: isMobile ? 0 : sidebarCollapsed ? "72px" : "280px",
@@ -522,11 +508,11 @@ export default function DashboardLayout({
 
           {/* Page Content */}
           <div
-            className="backdrop-blur-xl bg-gray-50  border border-white/30 shadow-sm min-h-[calc(100vh-8rem)] lg:min-h-[calc(100vh-12rem)] relative overflow-hidden"
+            className="container my-4 bg-gray-50  border border-white/30 shadow-sm min-h-[calc(100vh-8rem)] lg:min-h-[calc(100vh-12rem)] relative overflow-hidden"
           >
             <div className="relative z-10 p-0 sm:p-0 lg:p-6 xl:p-8">{children}</div>
           </div>
-        </motion.main>
+        </div>
       </div>
     </div>
   )

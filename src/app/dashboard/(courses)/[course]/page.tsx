@@ -13,7 +13,7 @@ const Page = async ({ params }) => {
     const res = await Axios.get('/api/v1/course/active-courses');
     const activeCourses = res.data.activeCourses;
     if (!activeCourses.includes(course)) {
-        return redirect('/dashboard/courses')
+        return redirect('/dashboard')
     }
 
     const bio = '/subjects/1.png'
@@ -28,27 +28,27 @@ const Page = async ({ params }) => {
         {
             name: "BIOLOGY",
             img: bio,
-            link: '/dashboard/courses/nums/biology'
+            link: '/dashboard/nums/biology'
         },
         {
             name: "CHEMISTRY",
             img: chem,
-            link: '/dashboard/courses/nums/chemistry'
+            link: '/dashboard/nums/chemistry'
         },
         {
             name: "PHYSICS",
             img: phy,
-            link: '/dashboard/courses/nums/physics'
+            link: '/dashboard/nums/physics'
         },
         {
             name: "ENGLISH",
             img: eng,
-            link: '/dashboard/courses/nums/english'
+            link: '/dashboard/nums/english'
         },
         {
             name: "MOCK TESTS",
             img: mock,
-            link: '/dashboard/courses/nums/mock/test'
+            link: '/dashboard/nums/mock/test'
         },
     ];
 
@@ -56,32 +56,32 @@ const Page = async ({ params }) => {
         {
             name: "BIOLOGY",
             img: bio,
-            link: '/dashboard/courses/mdcat/biology'
+            link: '/dashboard/mdcat/biology'
         },
         {
             name: "CHEMISTRY",
             img: chem,
-            link: '/dashboard/courses/mdcat/chemistry'
+            link: '/dashboard/mdcat/chemistry'
         },
         {
             name: "PHYSICS",
             img: phy,
-            link: '/dashboard/courses/mdcat/physics'
+            link: '/dashboard/mdcat/physics'
         },
         {
             name: "ENGLISH",
             img: eng,
-            link: '/dashboard/courses/mdcat/english'
+            link: '/dashboard/mdcat/english'
         },
         {
             name: "LOGICAL REASONING",
             img: logic,
-            link: '/dashboard/courses/mdcat/logic'
+            link: '/dashboard/mdcat/logic'
         },
         {
             name: "MOCK TESTS",
             img: mock,
-            link: '/dashboard/courses/mdcat/mock/test'
+            link: '/dashboard/mdcat/mock/test'
         },
     ];
 
@@ -94,7 +94,7 @@ const Page = async ({ params }) => {
 
     return (
         <>
-            <div className="container h-full">
+            <div className="h-full w-full flex flex-col items-center justify-center md:p-4">
                 <div className="flex justify-center pb-10">
                     <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple  to-pink bg-clip-text text-transparent">
                         SELECT YOUR SUBJECT

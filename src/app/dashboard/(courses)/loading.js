@@ -3,7 +3,7 @@ import React from 'react'
 
 const loading = () => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-[90vh]">
       <div className="text-center">
         <Skeleton className="h-12 w-80 mx-auto rounded-2xl" />
       </div>

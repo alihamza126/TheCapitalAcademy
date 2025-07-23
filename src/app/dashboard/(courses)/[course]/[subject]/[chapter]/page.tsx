@@ -133,7 +133,7 @@ const Page = ({ params }: PageProps) => {
   ]
 
   return (
-    <div className="mx-auto px-0 md:px-4 py-8 md:max-w-4xl">
+    <div className="mx-auto py-8 md:max-w-4xl">
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-white bg-gradient-to-r from-blue-600 to-purple rounded-2xl py-4 px-6 shadow-lg">

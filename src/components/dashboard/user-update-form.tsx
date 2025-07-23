@@ -172,7 +172,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <div className="min-h-screen flex items-center justify-center ">
         <div className="flex flex-col items-center space-y-6">
           <Spinner size="lg" color="primary" />
           <div className="text-center">

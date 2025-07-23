@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardBody } from '@heroui/react'
+import { Card, CardBody, Spinner } from '@heroui/react'
 import SubjectBreakdown from './subject-breakdown'
 import PerformanceCharts from './performance-charts'
 import ProgressSpeedometer from './progress-speedometer'
@@ -52,9 +52,9 @@ export default function StatsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-[70vh] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <Spinner variant="wave" size="lg" className="text-blue-600 mb-4" />
           <p className="text-gray-600">Loading your stats...</p>
         </div>
       </div>
@@ -63,7 +63,7 @@ export default function StatsPage() {
 
   if (!statsData) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-[70vh] flex items-center justify-center">
         <Card className="p-8">
           <CardBody className="text-center">
             <p className="text-gray-600">No stats data available</p>
@@ -78,7 +78,7 @@ export default function StatsPage() {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">Learning Progress Dashboard</h1>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple  to-pink bg-clip-text text-transparent mb-2">Learning Progress Dashboard</h1>
           <p className="text-gray-600">Track your performance and achievements</p>
         </div>
 

@@ -67,14 +67,14 @@ const CourseDetails = () => {
 
   return (
     <div className="max-w-full mx-auto px-4 py-10 space-y-6">
-      <Card className="shadow border bg-white">
+      <Card className="shadow-sm border bg-white">
         <CardContent className="py-6 text-center">
           <Typography variant="h4" className="text-primary font-bold">
             Course Details
           </Typography>
         </CardContent>
       </Card>
-      <Card className="shadow border bg-white">
+      <Card className="shadow-sm border bg-white">
         <CardContent className="overflow-x-auto p-0">
           <Table>
             <TableHeader>

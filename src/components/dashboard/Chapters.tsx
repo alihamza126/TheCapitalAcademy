@@ -19,9 +19,9 @@ interface ChapterProps {
 const Chapter = ({ course = null, subject, chapter, name, img, isLocked = false }: ChapterProps) => {
 
     return (
-        <div className="w-[260px] p-2">
+        <div className="w-[48%] md:w-[260px] md:p-1">
             <Link
-                href={isLocked ? '#' : `/dashboard/courses/${course}/${subject}/${name?.toLowerCase()}`}
+                href={isLocked ? '#' : `/dashboard/${course}/${subject}/${name?.toLowerCase()}`}
                 className="no-underline"
             >
                 <Card className="rounded-2xl overflow-hidden shadow hover:shadow-lg relative">

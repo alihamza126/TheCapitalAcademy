@@ -86,7 +86,7 @@ const Boards = () => {
 
         {/* Boards Grid */}
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-6"
+          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-y-4 gap-2 md:gap-6 lg:gap-6"
           variants={containerVariants}
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
@@ -102,7 +102,7 @@ const Boards = () => {
               }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="relative overflow-hidden rounded-3xl bg-white shadow-lg group-hover:shadow-2xl transition-all duration-500 border border-gray-100">
+              <div className="relative overflow-hidden rounded-xl md:rounded-3xl bg-white shadow-lg group-hover:shadow-2xl transition-all duration-500 border border-gray-100">
                 {/* Image Container */}
                 <div className="relative aspect-[5/3] overflow-hidden">
                   <Image
@@ -122,13 +122,13 @@ const Boards = () => {
                 </div>
 
                 {/* Card Footer */}
-                <div className="p-6">
+                <div className="p-3 md:-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
                         {board.title}
                       </h3>
-                      <p className="text-gray-600 text-sm/2 mt-1">{board.description}</p>
+                      <p className="text-gray-600 text-sm/2 mt-1 line-clamp-2">{board.description}</p>
                     </div>
                   </div>
                 </div>

@@ -124,7 +124,7 @@ const MyCourses = ({ activeCourses }) => {
             <div className="absolute bottom-40 left-20 w-12 h-12 bg-gradient-to-r from-green-300 to-emerald-300 rounded-full opacity-20 animate-pulse"></div>
             <div className="absolute bottom-20 right-10 w-24 h-24 bg-gradient-to-r from-yellow-300 to-orange-300 rounded-full opacity-20 animate-bounce"></div>
 
-            <div className="relative z-10 container mx-auto px-4 py-8 lg:py-12">
+            <div className="relative z-10 mx-auto py-8 lg:py-12">
                 <div className="space-y-8">
                     {/* Header */}
                     <motion.div
@@ -148,7 +148,7 @@ const MyCourses = ({ activeCourses }) => {
                     {hasAnyCourse ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                             {nums && (
-                                <Link href={`/dashboard/courses/nums`}>
+                                <Link href={`/dashboard/nums`}>
                                     <CourseCard
                                         title="NUMS"
                                         subtitle="National University of Medical Sciences"
@@ -161,7 +161,7 @@ const MyCourses = ({ activeCourses }) => {
                             )}
 
                             {mdcat && (
-                                <Link href={`/dashboard/courses/mdcat`}>
+                                <Link href={`/dashboard/mdcat`}>
                                     <CourseCard
                                         title="MDCAT"
                                         subtitle="Medical & Dental College Admission Test"
@@ -174,7 +174,7 @@ const MyCourses = ({ activeCourses }) => {
                             )}
 
                             {mdcatNums && (
-                                <Link href={`/dashboard/courses/mdcatNums`}>
+                                <Link href={`/dashboard/mdcatNums`}>
                                     <CourseCard
                                         title="MDCAT + NUMS"
                                         subtitle="Combined preparation for both exams"
@@ -208,7 +208,7 @@ const MyCourses = ({ activeCourses }) => {
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.5 }}
                         >
-                            <Card className="bg-gradient-to-br from-white/90 via-blue-50/90 to-purple-50/90 backdrop-blur-xl border-0">
+                            <Card shadow="none" className="border-0 shadow-sm">
                                 <CardBody className="text-center py-12 lg:py-16">
                                     <div className="space-y-6">
                                         <div className="w-32 h-32 mx-auto bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
