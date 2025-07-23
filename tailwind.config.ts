@@ -19,7 +19,7 @@ const config: Config = {
             // brand & utility
             green: "#D2EF9A",
             black: "#1F1F1F",
-            primary:"#1757ab",
+            primary: "#1757ab",
             secondary: { DEFAULT: "#696C70", foreground: "#000000" },
             secondary2: "#A0A0A0",
             white: "#ffffff",
@@ -153,6 +153,10 @@ const config: Config = {
                   transform: "rotate3d(0, 1, 0, 360deg)",
                },
             },
+            loadingBar: {
+               "0%": { transform: "translateX(-100%)" },
+               "100%": { transform: "translateX(100%)" },
+            },
          },
          animation: {
             "accordion-down": "accordion-down 0.2s ease-out",
@@ -163,6 +167,7 @@ const config: Config = {
             glow: "glow 2s ease-in-out infinite alternate",
             pulse3d: "pulse3d 2s ease-in-out infinite",
             rotate3d: "rotate3d 10s linear infinite",
+            loadingBar: "loadingBar 2s infinite linear",
          },
          transformStyle: {
             "preserve-3d": "preserve-3d",
@@ -175,46 +180,46 @@ const config: Config = {
    plugins: [
       heroui({
          themes: {
-           light: {
-             colors: {
-               primary: {
-                 50: "#FFF5F5",
-                 100: "#FED7D7",
-                 200: "#FEB2B2",
-                 300: "#FC8181",
-                 400: "#F56565",
-                 500: "#E53E3E", // This is your main primary color
-                 600: "#C53030",
-                 700: "#9B2C2C",
-                 800: "#822727",
-                 900: "#63171B",
-                 DEFAULT: "#E53E3E",
-                 foreground: "#FFFFFF",
+            light: {
+               colors: {
+                  primary: {
+                     50: "#FFF5F5",
+                     100: "#FED7D7",
+                     200: "#FEB2B2",
+                     300: "#FC8181",
+                     400: "#F56565",
+                     500: "#E53E3E", // This is your main primary color
+                     600: "#C53030",
+                     700: "#9B2C2C",
+                     800: "#822727",
+                     900: "#63171B",
+                     DEFAULT: "#E53E3E",
+                     foreground: "#FFFFFF",
+                  },
+                  secondary: {
+                     50: "#F0FFF4",
+                     100: "#C6F6D5",
+                     200: "#9AE6B4",
+                     300: "#68D391",
+                     400: "#48BB78",
+                     500: "#38A169", // This is your main secondary color
+                     600: "#2F855A",
+                     700: "#276749",
+                     800: "#22543D",
+                     900: "#1C4532",
+                     DEFAULT: "#38A169",
+                     foreground: "#FFFFFF",
+                  },
                },
-               secondary: {
-                 50: "#F0FFF4",
-                 100: "#C6F6D5",
-                 200: "#9AE6B4",
-                 300: "#68D391",
-                 400: "#48BB78",
-                 500: "#38A169", // This is your main secondary color
-                 600: "#2F855A",
-                 700: "#276749",
-                 800: "#22543D",
-                 900: "#1C4532",
-                 DEFAULT: "#38A169",
-                 foreground: "#FFFFFF",
+            },
+            // You can also define a dark theme if needed
+            dark: {
+               colors: {
+                  // ... dark theme colors
                },
-             },
-           },
-           // You can also define a dark theme if needed
-           dark: {
-             colors: {
-               // ... dark theme colors
-             },
-           },
+            },
          },
-       }),
+      }),
       require("tailwindcss-animate"),
    ],
 };

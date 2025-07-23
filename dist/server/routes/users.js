@@ -133,4 +133,94 @@ userRouter.get('/me/:id', asyncWrapper(async (req, res) => {
     const user = await UserModel.findById(id);
     res.status(200).json({ user, success: true });
 }));
+userRouter.get("/me", authUser, asyncWrapper(async (req, res) => {
+    try {
+        const id = req.user.userId;
+        if (!id) {
+            return res.status(400).json({ error: "Invalid user ID" });
+        }
+        const user = await UserModel.findById(id).select("-password -forgotPasswordToken -verifyToken");
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        res.json({ user });
+    }
+    catch (error) {
+        console.error("Get user error:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}));
+userRouter.put("/me", authUser, async (req, res) => {
+    try {
+        const id = req.user.userId;
+        const { image, firstName, lastName, phone, gender, dob, city, aggPercentage, username } = req.body;
+        // Validate ObjectId
+        if (!id) {
+            return res.status(400).json({ error: "Invalid user ID" });
+        }
+        // Prepare update object
+        const updateData = {
+            updatedAt: new Date(),
+        };
+        // Only include fields that are provided
+        if (image !== undefined)
+            updateData.image = image;
+        if (firstName !== undefined)
+            updateData.firstName = firstName;
+        if (lastName !== undefined)
+            updateData.lastName = lastName;
+        if (phone !== undefined)
+            updateData.phone = phone;
+        if (gender !== undefined)
+            updateData.gender = gender;
+        if (dob !== undefined)
+            updateData.dob = new Date(dob);
+        if (city !== undefined)
+            updateData.city = city;
+        if (aggPercentage !== undefined)
+            updateData.aggPercentage = Number(aggPercentage);
+        if (username !== undefined) {
+            updateData.username = username;
+            updateData.usernameChangeAt = new Date();
+        }
+        // Validate gender if provided
+        if (gender && !["male", "female"].includes(gender)) {
+            return res.status(400).json({ error: "Gender must be either male or female" });
+        }
+        // Validate aggPercentage if provided
+        if (aggPercentage !== undefined && (aggPercentage < 0 || aggPercentage > 100)) {
+            return res.status(400).json({ error: "Aggregate percentage must be between 0 and 100" });
+        }
+        // Check if username is unique (if being updated)
+        if (username) {
+            const existingUser = await UserModel.findOne({
+                username,
+                _id: { $ne: id },
+            });
+            if (existingUser) {
+                return res.status(409).json({ error: "Username already exists" });
+            }
+        }
+        // Update user
+        const updatedUser = await UserModel.findByIdAndUpdate(id, updateData, {
+            new: true,
+            runValidators: true,
+            select: "-password -forgotPasswordToken -verifyToken",
+        });
+        if (!updatedUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        res.json({
+            message: "User updated successfully",
+            user: updatedUser,
+        });
+    }
+    catch (error) {
+        console.error("Update user error:", error);
+        if (error.code === 11000) {
+            return res.status(409).json({ error: "Username already exists" });
+        }
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 export default userRouter;

@@ -15,7 +15,7 @@ const mcqSchema = new mongoose.Schema({
     },
     difficulty: {
         type: String,
-        enum: ['easy', 'medium', 'hard'], // Only allow values 'easy', 'medium', or 'hard'
+        enum: ['easy', 'medium', 'hard'],
         required: true
     },
     subject: {
@@ -29,8 +29,8 @@ const mcqSchema = new mongoose.Schema({
     },
     // ----------------------------------------------------------------
     category: {
-        type: String, //need to change into text format
-        enum: ['past', 'normal'], // Only allow values 'past' or 'normal'
+        type: String,
+        enum: ['past', 'normal'],
         required: true
     },
     topic: {
@@ -39,7 +39,7 @@ const mcqSchema = new mongoose.Schema({
     },
     course: {
         type: String,
-        enum: ['mdcat', 'nums'], // Only allow values 'past' or 'normal'
+        enum: ['mdcat', 'nums'],
         required: true,
     },
     info: {
