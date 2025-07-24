@@ -72,12 +72,15 @@ const Header = ({ isActiveCourse }: HeaderProps) => {
 
   const handleFreeTrial = async () => {
     try {
+      if (isActiveCourse) {
+        return;
+      }
       setLoading(true)
       if (!session.user) {
         toast.error("Please sign in to start your free trial.")
         return redirect('/signin')
       }
-      const res=await Axios.post('/api/v1/purchase/trial') 
+      const res = await Axios.post('/api/v1/purchase/trial')
       if (res.status !== 200) {
         throw new Error("Failed to activate trial")
       }
