@@ -90,6 +90,34 @@ const Page = async ({ params }) => {
         data = numsSubjectData;
     } else if (course === "mdcat") {
         data = mdcatSubjectData;
+    } else if (course == "trial") {
+        data = [
+            {
+                name: "BIOLOGY",
+                img: bio,
+                link: '/dashboard/trial/biology'
+            },
+            {
+                name: "CHEMISTRY",
+                img: chem,
+                link: '/dashboard/trial/chemistry'
+            },
+            {
+                name: "PHYSICS",
+                img: phy,
+                link: '/dashboard/trial/physics'
+            },
+            {
+                name: "ENGLISH",
+                img: eng,
+                link: '/dashboard/trial/english'
+            },
+            {
+                name: "LOGICAL REASONING",
+                img: logic,
+                link: '/dashboard/trial/logic'
+            }
+        ]
     }
 
     return (

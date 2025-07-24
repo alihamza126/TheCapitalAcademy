@@ -57,7 +57,7 @@ const Page = ({ params }: PageProps) => {
 
   useEffect(() => {
     const loadTopics = () => {
-      if (course === "mdcat") {
+      if (course === "mdcat" || course == "trial") {
         if (subject === "biology") setTopics(bioTopicsNamesMdcat[chapterName] || [])
         else if (subject === "chemistry") setTopics(chemistryTopicsNamesMdcat[chapterName] || [])
         else if (subject === "physics") setTopics(physicsTopicsNamesMdcat[chapterName] || [])
@@ -80,7 +80,7 @@ const Page = ({ params }: PageProps) => {
     setIsLoading(true);
     const fetchData = async () => {
       const res = await Axios.post('/api/v1/mcq/count', {
-        course,
+        course: course === "trial" ? "mdcat" : course,
         subject,
         chapter: chapterName,
         topic: topics,

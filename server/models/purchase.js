@@ -10,13 +10,13 @@ const purchaseSchema = new Schema({
     },
     course: {
         type: String,
-        enum: ['nums', 'mdcat', 'mdcat+nums'],
+        enum: ['nums', 'mdcat', 'mdcat+nums', "trial"],
         default: null,
         required: false,
     },
     status: {
         type: String,
-        enum: ['pending', 'approved', 'rejected','expired'],
+        enum: ['pending', 'approved', 'rejected', 'expired'],
         default: 'pending'
     },
     price: {
@@ -29,11 +29,11 @@ const purchaseSchema = new Schema({
     },
     paymentScreenshot: {
         type: String,
-        required: true
+        required: false,
     },
-    refCode:{
-    	 type: String,
-    	 required:false,
+    refCode: {
+        type: String,
+        required: false,
     },
     isCheck: {
         type: Boolean,

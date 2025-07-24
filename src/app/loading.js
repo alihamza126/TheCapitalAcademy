@@ -4,7 +4,7 @@ const LoadingMinimal = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-[#f3e8ff] to-white relative">
       {/* Glassy overlay card */}
-      <div className="backdrop-blur-lg bg-white/10 border border-white/20 shadow-xl rounded-2xl px-10 py-12 flex flex-col items-center text-center">
+      <div className=" px-10 py-12 flex flex-col items-center text-center">
         {/* Spinner */}
         <div className="relative">
           <div className="w-20 h-20 border-4 border-[#d9b8ff] rounded-full" />

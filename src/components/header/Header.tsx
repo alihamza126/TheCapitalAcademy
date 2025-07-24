@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { useInView } from "react-intersection-observer"
 import { Button } from "@/components/ui/button"
@@ -10,6 +10,9 @@ import { UnifiedAnimation } from "./animation"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { LightningIcon } from "@phosphor-icons/react/dist/ssr"
+import { useSession } from "next-auth/react"
+import toast from "react-hot-toast"
+import Axios from "@/lib/Axios"
 
 interface User {
   isMdcat?: boolean
@@ -19,18 +22,19 @@ interface User {
 }
 
 interface HeaderProps {
-  user?: User | null
-  onTrialActivate?: () => Promise<void>
   isActiveCourse?: boolean
 }
 
-const Header = ({ user, onTrialActivate, isActiveCourse }: HeaderProps) => {
+const Header = ({ isActiveCourse }: HeaderProps) => {
   const [loading, setLoading] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [currentText, setCurrentText] = useState("")
   const [textIndex, setTextIndex] = useState(0)
   const [charIndex, setCharIndex] = useState(0)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { data: session } = useSession();
+  const user = session?.user || null;
+
 
   const router = useRouter()
   const texts = ["MDCAT", "NUMS"]
@@ -69,17 +73,21 @@ const Header = ({ user, onTrialActivate, isActiveCourse }: HeaderProps) => {
   const handleFreeTrial = async () => {
     try {
       setLoading(true)
-
-      if (!user) {
-        router.push("/signin")
-        return
+      if (!session.user) {
+        toast.error("Please sign in to start your free trial.")
+        return redirect('/signin')
       }
-
-      if (onTrialActivate) {
-        await onTrialActivate()
-        setShowSuccessModal(true)
+      const res=await Axios.post('/api/v1/purchase/trial') 
+      if (res.status !== 200) {
+        throw new Error("Failed to activate trial")
       }
+      toast.success("3-day trial activated successfully! Start exploring all subjects now.");
+      setShowSuccessModal(true);
+      setLoading(false)
     } catch (error) {
+      toast.error("Failed to activate trial. Please try again later.")
+      setShowSuccessModal(false)
+      setLoading(false)
       console.error("Trial activation failed:", error)
     } finally {
       setLoading(false)

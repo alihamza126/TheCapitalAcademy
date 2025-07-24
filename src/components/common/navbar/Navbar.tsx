@@ -472,7 +472,7 @@ const Navbar = () => {
 
               <div className="px-4 py-6 space-y-1 overflow-y-auto  h-[calc(100vh-70px)]  w-full bg-white rounded-md bg-clip-padding backdrop-filter backdrop-blur-2xl bg-opacity-100 border border-gray-100">
                 {/* Mobile nav items with staggered animations */}
-            
+
                 {[
                   { href: "/", label: "Home", delay: 0.1 },
                   { href: "/about", label: "About", delay: 0.1 },
@@ -592,7 +592,7 @@ const Navbar = () => {
                     transition={{ delay: 0.3, duration: 0.3 }}
                   >
                     <button
-                      onClick={() => setIsDashboardDropdownOpen(!isDashboardDropdownOpen)}
+                      onClick={toggleDashboardDropdown}
                       className="flex items-center justify-between w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors duration-200"
                     >
                       Dashboard
@@ -603,9 +603,10 @@ const Navbar = () => {
                         <ChevronDown className="h-4 w-4" />
                       </motion.div>
                     </button>
-                    {
-                      isDashboardDropdownOpen &&
-                      <AnimatePresence>
+
+                    <AnimatePresence>
+                      {
+                        isDashboardDropdownOpen &&
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
@@ -635,8 +636,8 @@ const Navbar = () => {
                             <UserCircleGearIcon className="mr-2 h-4 w-4" /> PROFILE
                           </Link>
                         </motion.div>
-                      </AnimatePresence>
-                    }
+                      }
+                    </AnimatePresence>
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -656,12 +657,16 @@ const Navbar = () => {
                         transition={{ delay: 0.4, duration: 0.3 }}
                         className="pt-4 border-t border-gray-200 mt-4 space-y-3"
                       >
-                        <button className="block w-full text-center px-4 py-2.5 rounded-lg text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors duration-200 border border-gray-300">
-                          Sign In
-                        </button>
-                        <button className="block w-full text-center px-4 py-2.5 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary-700 transition-colors duration-200 shadow-sm">
-                          Sign Up
-                        </button>
+                        <Link href={'/signin'}>
+                          <button className="block w-full text-center px-4 py-2.5 rounded-lg text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors duration-200 border border-gray-300">
+                            Sign In
+                          </button>
+                        </Link>
+                        <Link href={'/signup'}>
+                          <button className="block w-full text-center px-4 py-2.5 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary-700 transition-colors duration-200 shadow-sm">
+                            Sign Up
+                          </button>
+                        </Link>
                       </motion.div>
                       :
                       <button onClick={() => signOut()} className="block mt-8 bg-rose-400 text-white w-full text-center px-4 py-2.5 rounded-lg text-base font-medium text-g700ray- hover:text-primary-600 hover:bg-gray-50 transition-colors duration-200 border ">

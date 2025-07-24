@@ -22,7 +22,7 @@ progressRouter.post('/get', authUser, checkTrialStatus, asyncWrapper(async (req,
     const isMdcat = req.user?.isMdcat;
 
     let limit = 100;
-    if (isTrialActive && !isNums && !isMdcat) limit = 5;
+    if (isTrialActive && !isNums && !isMdcat) limit = 2;
 
     let mcqs = [];
 

@@ -188,7 +188,7 @@ const MyCourses = ({ activeCourses }) => {
                             )}
 
                             {trial && (
-                                <Link href={`/dashboard/courses/trail`}>
+                                <Link href={`/dashboard/trial`}>
                                     <CourseCard
                                         title="Trial Course"
                                         subtitle="Free trial access to course content"

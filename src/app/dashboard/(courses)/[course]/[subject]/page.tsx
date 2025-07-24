@@ -5,10 +5,10 @@ import { notFound } from "next/navigation";
 
 
 const Page = async ({ params }) => {
-    const { course, subject } =await params;
+    const { course, subject } = await params;
     console.log(course, subject);
     console.log(params);
-    if (!['nums', 'mdcat'].includes(course)) {
+    if (!['nums', 'mdcat', 'trial'].includes(course)) {
         notFound();
     }
     let chapters = []
@@ -35,7 +35,20 @@ const Page = async ({ params }) => {
         } else if (subject == 'logic') {
             chapters = mdcatLogicChapter;
         }
-    } 
+    } else if (course === 'trial') {
+        if (subject == 'biology') {
+            chapters = mdcatBioChapters;
+        } else if (subject == 'chemistry') {
+            chapters = mdcatChemistryChapters;
+        } else if (subject == 'physics') {
+            chapters = mdcatPhysicsChapters;
+        } else if (subject == 'english') {
+            chapters = mdcatEnglishChapters;
+        } else if (subject == 'logic') {
+            chapters = mdcatLogicChapter;
+        }
+    }
+
 
 
     return (
