@@ -1,4 +1,4 @@
-import StudyPlanner from '@/components/dashboard/StudyPlanner'
+import StudyPlanner from '@/components/dashboard/planner/study-planner'
 import React from 'react'
 
 const page = () => {

@@ -21,15 +21,15 @@ export default function StatsOverview({ data }: StatsOverviewProps) {
       title: "Questions Solved",
       value: data.totalSolved,
       icon: <TrophyIcon className="w-8 h-8 text-green-500" />,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
+      color: "text-green",
+      bgColor: "bg-green/50",
     },
     {
       title: "Wrong Answers",
       value: data.totalWrong,
-      icon: <XCircleIcon className="w-8 h-8 text-red-500" />,
-      color: "text-red-600",
-      bgColor: "bg-red-50",
+      icon: <XCircleIcon className="w-8 h-8 text-rose-500" />,
+      color: "text-red/60",
+      bgColor: "bg-red/30",
     },
     {
       title: "Saved Questions",
@@ -41,9 +41,9 @@ export default function StatsOverview({ data }: StatsOverviewProps) {
     {
       title: "Success Rate",
       value: `${successRate}%`,
-      icon: <ClockIcon className="w-8 h-8 text-purple-500" />,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
+      icon: <ClockIcon className="w-8 h-8 text-purple" />,
+      color: "text-purple",
+      bgColor: "bg-purple/50",
     },
   ]
 

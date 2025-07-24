@@ -63,7 +63,7 @@ export default function ProgressSpeedometer({ data }: ProgressSpeedometerProps) 
               <span>Accuracy</span>
               <span>{successRate.toFixed(1)}%</span>
             </div>
-            <Progress percent={successRate} strokeColor="#52c41a" />
+            <Progress showInfo={false} percent={successRate.toFixed(1)} strokeColor="#52c41a" />
           </div>
 
           <div>
@@ -71,7 +71,7 @@ export default function ProgressSpeedometer({ data }: ProgressSpeedometerProps) 
               <span>Questions Attempted</span>
               <span>{totalAttempted}</span>
             </div>
-            <Progress percent={Math.min((totalAttempted / 50) * 100, 100)} strokeColor="#1890ff" />
+            <Progress showInfo={false} percent={Math.min((totalAttempted / 50) * 100, 100)} strokeColor="#1890ff" />
           </div>
         </div>
       </CardBody>

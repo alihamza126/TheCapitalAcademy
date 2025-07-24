@@ -8,25 +8,6 @@ import ProgressSpeedometer from './progress-speedometer'
 import StatsOverview from './stats-overview'
 import Axios from '@/lib/Axios'
 
-// Mock data based on your API response
-const mockStatsData = {
-  totalSolved: 30,
-  totalWrong: 12,
-  totalSave: 4,
-  lastSaveAt: "2025-07-20T12:00:00Z",
-  subjects: [
-    {
-      subject: "Physics",
-      solved: 10,
-      wrong: 4
-    },
-    {
-      subject: "Math",
-      solved: 20,
-      wrong: 8
-    }
-  ]
-}
 
 export default function StatsPage() {
   const [statsData, setStatsData] = useState(null)
