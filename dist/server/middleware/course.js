@@ -9,6 +9,9 @@ export const checkTrialStatus = async (req, res, next) => {
                 await UserModel.findByIdAndUpdate(userId, { isFreeTrial: false });
                 req.user.isTrialActive = false;
             }
+            else if (user === null || user === void 0 ? void 0 : user.isFreeTrial) {
+                req.user.isTrialActive = true;
+            }
         }
         next();
     }

@@ -315,7 +315,7 @@ export default function LoginPage() {
               <p className="text-gray-600">
                 Forgot your password?{" "}
                 <Link
-                  href="/reset-password"
+                  href="/forgot"
                   className="text-red-500 hover:text-red-600 font-medium underline underline-offset-4"
                 >
                   Reset Password

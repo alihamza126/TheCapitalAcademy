@@ -8,15 +8,19 @@ import { checkTrialStatus } from '../middleware/course.js';
 const progressRouter = express.Router();
 progressRouter.post('/get', authUser, checkTrialStatus, asyncWrapper(async (req, res) => {
     var _a, _b, _c, _d, _e, _f, _g, _h;
-    const course = (_a = req.body.course) === null || _a === void 0 ? void 0 : _a.trim();
+    let course = (_a = req.body.course) === null || _a === void 0 ? void 0 : _a.trim();
     const subject = (_b = req.body.subject) === null || _b === void 0 ? void 0 : _b.trim();
     const chapter = (_c = req.body.chapter) === null || _c === void 0 ? void 0 : _c.trim();
     const topic = (_d = req.body.topic) === null || _d === void 0 ? void 0 : _d.trim();
     const category = (_e = req.body.catagory) === null || _e === void 0 ? void 0 : _e.trim(); // past, normal, solved, unsolved, wrong, all
     const userId = req.user.userId;
     const isTrialActive = ((_f = req.user) === null || _f === void 0 ? void 0 : _f.isTrialActive) || false;
+    console.log("req user", req.user);
     const isNums = (_g = req.user) === null || _g === void 0 ? void 0 : _g.isNums;
     const isMdcat = (_h = req.user) === null || _h === void 0 ? void 0 : _h.isMdcat;
+    if (course == "trial") {
+        course = 'mdcat';
+    }
     let limit = 100;
     if (isTrialActive && !isNums && !isMdcat)
         limit = 2;
