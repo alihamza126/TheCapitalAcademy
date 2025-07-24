@@ -1,6 +1,7 @@
 import Mcqs from '@/components/mcq/Mcqs';
 import Axios from '@/lib/Axios';
 import React from 'react'
+import FreeTrialTopBar from './FreeTrailTopbar';
 
 const page = async ({ searchParams }) => {
     let data = [];
@@ -34,6 +35,7 @@ const page = async ({ searchParams }) => {
 
     return (
         <div>
+            {course === "trial" && <FreeTrialTopBar isFreeTrial={course === "trial"} />}
             <Mcqs subject={subject} chapter={chapter} mcqData={data} />
         </div>
     )

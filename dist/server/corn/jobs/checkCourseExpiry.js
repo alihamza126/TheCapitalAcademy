@@ -24,6 +24,10 @@ export const checkCourseExpiry = () => {
                 else if (purchase.course === 'mdcat+nums') {
                     user.isMdcatNums = false;
                 }
+                else if (purchase.course === 'trial') {
+                    user.isFreeTrial = false;
+                    user.freeTrialExpiry = null;
+                }
                 await user.save();
                 await sendEmail({
                     email: user.email,

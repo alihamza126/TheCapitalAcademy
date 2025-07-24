@@ -47,6 +47,34 @@ PurchaseRouter.get('/dashboard', authUser, asyncWrapper(async (req, res) => {
         console.log(error);
     }
 }));
+PurchaseRouter.post('/trial', authUser, asyncWrapper(async (req, res) => {
+    const userId = req.user.userId;
+    const user = await UserModel.findById(userId);
+    if (user) {
+        // Check if the user already has a trial purchase
+        const existingTrialPurchase = await PurchaseModel.findOne({ user: userId, course: 'trial' });
+        if (existingTrialPurchase) {
+            return res.status(400).json({ error: "You already have a trial purchase." });
+        }
+        const newPurchase = new PurchaseModel({
+            user: userId,
+            course: 'trial',
+            price: 0,
+            status: 'approved',
+            purchaseDate: new Date(),
+            expiryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) // 3 days trial
+        });
+        await newPurchase.save();
+        // Update user status for trial
+        user.isFreeTrial = true;
+        user.freeTrialExpiry = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000); // 3 days trial
+        await user.save();
+        return res.json({ message: "trail activated successfully" });
+    }
+    else {
+        res.status(400).json({ error: "User not found." });
+    }
+}));
 //get all purchases for admin panel
 PurchaseRouter.get('/', asyncWrapper(async (req, res, next) => {
     const documents = await PurchaseModel.find({}).populate('user');

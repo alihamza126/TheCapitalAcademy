@@ -8,7 +8,7 @@ const purchaseSchema = new Schema({
     },
     course: {
         type: String,
-        enum: ['nums', 'mdcat', 'mdcat+nums'],
+        enum: ['nums', 'mdcat', 'mdcat+nums', "trial"],
         default: null,
         required: false,
     },
@@ -27,7 +27,7 @@ const purchaseSchema = new Schema({
     },
     paymentScreenshot: {
         type: String,
-        required: true
+        required: false,
     },
     refCode: {
         type: String,

@@ -19,7 +19,7 @@ progressRouter.post('/get', authUser, checkTrialStatus, asyncWrapper(async (req,
     const isMdcat = (_h = req.user) === null || _h === void 0 ? void 0 : _h.isMdcat;
     let limit = 100;
     if (isTrialActive && !isNums && !isMdcat)
-        limit = 5;
+        limit = 2;
     let mcqs = [];
     try {
         if (subject !== 'mock') {

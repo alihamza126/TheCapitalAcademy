@@ -10,7 +10,7 @@ const progressRouter = express.Router();
 
 
 progressRouter.post('/get', authUser, checkTrialStatus, asyncWrapper(async (req, res) => {
-    const course = req.body.course?.trim();
+    let course = req.body.course?.trim();
     const subject = req.body.subject?.trim();
     const chapter = req.body.chapter?.trim();
     const topic = req.body.topic?.trim();
@@ -18,8 +18,12 @@ progressRouter.post('/get', authUser, checkTrialStatus, asyncWrapper(async (req,
     const userId = req.user.userId;
 
     const isTrialActive = req.user?.isTrialActive || false;
+    console.log("req user", req.user)
     const isNums = req.user?.isNums;
     const isMdcat = req.user?.isMdcat;
+    if (course == "trial") {
+        course = 'mdcat';
+    }
 
     let limit = 100;
     if (isTrialActive && !isNums && !isMdcat) limit = 2;
