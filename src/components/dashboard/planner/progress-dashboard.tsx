@@ -36,12 +36,12 @@ export default function ProgressDashboard({
         </CardBody>
       </Card>
 
-      <Card className="shadow-lg bg-gradient-to-br from-green-500 to-green-600">
+      <Card className="shadow-lg bg-gradient-to-br from-green to-lime-600">
         <CardBody className="p-6 text-white">
           <div className="flex items-center gap-3">
             <TrendingUp className="h-8 w-8" />
             <div>
-              <p className="text-green-100 text-sm">Progress</p>
+              <p className="text-green/70 text-sm">Progress</p>
               <p className="text-2xl font-bold">{Math.round(progressPercentage)}%</p>
             </div>
           </div>
@@ -60,13 +60,13 @@ export default function ProgressDashboard({
         </CardBody>
       </Card>
 
-      <Card className="shadow-lg bg-gradient-to-br from-purple-500 to-purple-600">
+      <Card className="shadow-lg bg-gradient-to-br from-purple to-purple/95">
         <CardBody className="p-6 text-white">
           <div className="flex items-center gap-3">
             <Calendar className="h-8 w-8" />
             <div>
               <p className="text-purple-100 text-sm">End Date</p>
-              <p className="text-lg font-bold">{endDate.toLocaleDateString()}</p>
+              <p className="text-sm font-bold">{endDate.toLocaleDateString()}</p>
             </div>
           </div>
         </CardBody>

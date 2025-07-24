@@ -16,9 +16,9 @@ interface WeekCardProps {
 
 const SUBJECT_COLORS = {
   biology: {
-    bg: "bg-green-50",
-    border: "border-green-200",
-    text: "text-green",
+    bg: "bg-green/30",
+    border: "border-green",
+    text: "text-lime-600",
     chip: "success" as const,
   },
   chemistry: {
@@ -34,16 +34,16 @@ const SUBJECT_COLORS = {
     chip: "primary" as const,
   },
   english: {
-    bg: "bg-red-50",
+    bg: "bg-rose-100",
     border: "border-red",
     text: "text-red",
     chip: "danger" as const,
   },
   logic: {
-    bg: "bg-purple-50",
-    border: "border-purple-200",
+    bg: "bg-purple/40",
+    border: "border-purple",
     text: "text-purple",
-    chip: "secondary" as const,
+    chip: "primary" as const,
   },
 }
 
@@ -72,7 +72,7 @@ export default function WeekCard({
   return (
     <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
       <Card
-        className={`shadow-lg overflow-hidden ${isCompleted ? "bg-green-50 border-2 border-green-200" : "bg-white"}`}
+        className={`shadow-lg overflow-hidden ${isCompleted ? "bg-green/20 border-2 border-green" : "bg-white"}`}
         radius="lg"
       >
         <CardBody className="p-0">
@@ -81,8 +81,8 @@ export default function WeekCard({
             <div
               className={`lg:w-48 p-6 ${
                 isCompleted
-                  ? "bg-gradient-to-br from-green-400 to-green-500"
-                  : "bg-gradient-to-br from-indigo-500 to-purple-600"
+                  ? "bg-gradient-to-br from-green/70 to-lime-500"
+                  : "bg-gradient-to-br from-indigo-500 to-purple"
               } text-white flex flex-col items-center justify-center`}
             >
               <div className="text-center mb-4">

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import WeekCard from "./week-card"
 import PlannerHeader from "./planner-header"
 import ProgressDashboard from "./progress-dashboard"
+import Axios from "@/lib/Axios"
 
 // Your existing hardcoded subjects data
 const COURSE_DATA = {
@@ -156,8 +157,9 @@ export default function StudyPlanner() {
   const loadStudyPlan = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`/api/planner/load/${user.id}`)
-      const data = await response.json()
+      const response = await Axios.get(`/api/v1/planner/load`)
+      const data = await response.data;
+      console.log(response)
 
       if (data.success && data.studyPlan) {
         setCourseType(data.studyPlan.courseType)
@@ -176,16 +178,11 @@ export default function StudyPlanner() {
   const saveStudyPlan = async (planData: any) => {
     try {
       setLoading(true)
-      const response = await fetch("/api/planner/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user.id,
-          studyPlanId,
-          ...planData,
-        }),
+      const response = await Axios.post("/api/v1/planner/save", {
+        studyPlanId,
+        ...planData,
       })
-      const data = await response.json()
+      const data = response.data;
 
       if (data.success && data.studyPlan) {
         setStudyPlanId(data.studyPlan._id)
@@ -230,8 +227,8 @@ export default function StudyPlanner() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="min-h-screen ">
+      <div className="mx-auto px-4 py-8 max-w-7xl">
         {/* Header */}
         <PlannerHeader
           courseType={courseType}

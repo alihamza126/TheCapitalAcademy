@@ -63,10 +63,10 @@ export default function PlannerHeader({
                 size="lg"
                 radius="lg"
               >
-                <SelectItem key="nums" value="nums">
+                <SelectItem key="nums" title="nums">
                   NUMS
                 </SelectItem>
-                <SelectItem key="mdcat" value="mdcat">
+                <SelectItem key="mdcat" title="mdcat" >
                   MDCAT
                 </SelectItem>
               </Select>
@@ -87,7 +87,7 @@ export default function PlannerHeader({
                 radius="lg"
               >
                 {Array.from({ length: 11 }, (_, i) => i + 6).map((week) => (
-                  <SelectItem key={week.toString()} value={week.toString()}>
+                  <SelectItem key={week.toString()} title={week.toString()}>
                     {week} Weeks
                   </SelectItem>
                 ))}
