@@ -18,6 +18,7 @@ import PurchaseRouter from './server/routes/purchases.js';
 import progressRouter from './server/routes/userProgress.js';
 import mcqRouter from './server/routes/mcq.js';
 import plannerRouter from './server/routes/planner.js';
+import reportRouter from './server/routes/report.js';
 dotenv.config({
   path: "./.env.local",
 }); // 👈 
@@ -56,6 +57,7 @@ app.prepare().then(() => {
   expressApp.use("/api/v1/progress", progressRouter);
   expressApp.use("/api/v1/mcq", mcqRouter);
   expressApp.use("/api/v1/planner", plannerRouter);
+  expressApp.use("/api/v1/report", reportRouter);
 
 
   // for next front-end requests

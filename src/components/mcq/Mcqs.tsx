@@ -235,11 +235,11 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 	}
 
 	const handleBookmarked = async () => {
-		const res = await Axios.put("/mcq/bookmark", { mcqId: mcqs[index]._id })
+		const res = await Axios.put("/api/v1/mcq/bookmark", { mcqId: mcqs[index]._id })
 		if (res.status == 200) {
-			showNotification("MCQ Bookmarked", "success")
+			toast.success("MCQ Bookmarked", { duration: 1500 })
 		} else {
-			showNotification("Something Went Wrong", "error")
+			toast.error("Something Went Wrong", { duration: 1500 })
 		}
 	}
 
@@ -258,16 +258,19 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 			return
 		}
 		try {
-			const response = await Axios.post("/report", reportData)
+			const response = await Axios.post("/api/v1/report", reportData)
 			if (response.status == 201) {
 				onReportClose()
 				setReportData({ msg: "" })
 				showNotification("We will review it shortly", "success")
+				toast.success("Report submitted successfully", { duration: 1500 })
 			} else {
 				showNotification("Something Went Wrong", "error")
+				toast.error("Failed to submit report", { duration: 1500 })
 			}
 		} catch (error) {
 			showNotification("Something Went Wrong", "error")
+			toast.error("Failed to submit report", { duration: 1500 })
 		}
 	}
 

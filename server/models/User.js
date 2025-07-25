@@ -64,14 +64,14 @@ const userSchema = new mongoose.Schema({
 	freeTrialExpiry: { type: Date, default: null },
 	isActive: { type: Boolean, default: true },
 
-	
+
 	city: { type: String, default: null },
 	aggPercentage: {
 		type: Number,
 		required: false,
 	},
 
-
+	bookmarked_mcqs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MCQ' }],
 	forgotPasswordToken: String,
 	forgotPasswordTokenExpiry: Date,
 	verifyToken: String,

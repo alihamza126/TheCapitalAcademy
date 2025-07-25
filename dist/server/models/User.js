@@ -65,6 +65,7 @@ const userSchema = new mongoose.Schema({
         type: Number,
         required: false,
     },
+    bookmarked_mcqs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MCQ' }],
     forgotPasswordToken: String,
     forgotPasswordTokenExpiry: Date,
     verifyToken: String,

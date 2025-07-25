@@ -290,10 +290,11 @@ mcqRouter.get('/stats', authUser, asyncWrapper(async (req, res) => {
         subjects: subjectStats
     });
 }));
-mcqRouter.put('/bookmark', asyncWrapper(async (req, res) => {
+mcqRouter.put('/bookmark', authUser, asyncWrapper(async (req, res) => {
     try {
         const { mcqId } = req.body;
-        const user = await UserModel.updateOne({ _id: req.user._id }, {
+        const userId = req.user.userId;
+        const user = await UserModel.updateOne({ _id: userId }, {
             $addToSet: { bookmarked_mcqs: mcqId }
         });
         res.json(user);
@@ -302,11 +303,11 @@ mcqRouter.put('/bookmark', asyncWrapper(async (req, res) => {
         console.log(error);
     }
 }));
-mcqRouter.put('/unbookmark', asyncWrapper(async (req, res) => {
+mcqRouter.put('/unbookmark', authUser, asyncWrapper(async (req, res) => {
     try {
         const { mcqId } = req.body;
-        console.log(mcqId);
-        const user = await UserModel.updateOne({ _id: req.user._id }, {
+        const userId = req.user.userId;
+        const user = await UserModel.updateOne({ _id: userId }, {
             $pull: { bookmarked_mcqs: mcqId }
         });
         console.log(user);
@@ -316,9 +317,10 @@ mcqRouter.put('/unbookmark', asyncWrapper(async (req, res) => {
         console.log(error);
     }
 }));
-mcqRouter.get('/bookmarks', asyncWrapper(async (req, res) => {
+mcqRouter.get('/bookmarks', authUser, asyncWrapper(async (req, res) => {
     try {
-        const user = await UserModel.findById(req.user._id).select('bookmarked_mcqs');
+        const userId = req.user.userId;
+        const user = await UserModel.findById(userId).select('bookmarked_mcqs');
         const mcqs = await McqModel.find({ _id: { $in: user.bookmarked_mcqs } });
         res.json(mcqs);
     }

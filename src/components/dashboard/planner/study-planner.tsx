@@ -1,114 +1,32 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Button } from "@heroui/react"
+import { Button, Spinner } from "@heroui/react"
 import { motion, AnimatePresence } from "framer-motion"
 import WeekCard from "./week-card"
 import PlannerHeader from "./planner-header"
 import ProgressDashboard from "./progress-dashboard"
 import Axios from "@/lib/Axios"
+import { mdcatBioChapters, mdcatChemistryChapters, mdcatEnglishChapters, mdcatLogicChapter, mdcatPhysicsChapters, numsBioChapters, numsChemistryChapters, numsEnglishChapters, numsPhysicsChapters } from "@/data/chaperts"
 
 // Your existing hardcoded subjects data
 const COURSE_DATA = {
   nums: {
-    biology: [
-      "Cell Structure and Function",
-      "Cell Division",
-      "Biomolecules",
-      "Enzymes",
-      "Photosynthesis",
-      "Respiration",
-      "Genetics and Heredity",
-      "Molecular Genetics",
-      "Evolution",
-      "Ecology",
-      "Human Physiology",
-      "Plant Biology",
-      "Animal Biology",
-    ],
-    chemistry: [
-      "Atomic Structure",
-      "Chemical Bonding",
-      "States of Matter",
-      "Chemical Equilibrium",
-      "Acids and Bases",
-      "Thermodynamics",
-      "Electrochemistry",
-      "Organic Chemistry Basics",
-      "Hydrocarbons",
-      "Functional Groups",
-      "Alcohols and Phenols",
-      "Aldehydes and Ketones",
-    ],
-    physics: [
-      "Mechanics",
-      "Work and Energy",
-      "Waves and Oscillations",
-      "Sound",
-      "Light",
-      "Electricity",
-      "Magnetism",
-      "Modern Physics",
-      "Nuclear Physics",
-      "Electronics",
-    ],
-    english: [
-      "Grammar Fundamentals",
-      "Sentence Structure",
-      "Reading Comprehension",
-      "Vocabulary Building",
-      "Essay Writing",
-      "Paragraph Writing",
-      "Letter Writing",
-    ],
+    biology: numsBioChapters.map(chapter => chapter.name),
+    chemistry: numsChemistryChapters.map(chapter => chapter.name),
+    physics: numsPhysicsChapters.map(chapter => chapter.name),
+    english: numsEnglishChapters.map(chapter => chapter.name)
   },
   mdcat: {
-    biology: [
-      "Cell Biology",
-      "Biochemistry",
-      "Human Physiology",
-      "Genetics",
-      "Evolution",
-      "Ecology",
-      "Reproduction",
-      "Development",
-      "Immunity",
-      "Biotechnology",
-    ],
-    chemistry: [
-      "Atomic Structure",
-      "Chemical Bonding",
-      "Thermodynamics",
-      "Chemical Kinetics",
-      "Organic Chemistry",
-      "Biochemistry",
-      "Environmental Chemistry",
-      "Industrial Chemistry",
-    ],
-    physics: [
-      "Mechanics",
-      "Waves",
-      "Electricity",
-      "Modern Physics",
-      "Medical Physics",
-      "Thermodynamics",
-      "Optics",
-      "Electronics",
-    ],
-    english: ["Grammar", "Comprehension", "Vocabulary", "Essay Writing", "Paragraph Writing"],
-    logic: [
-      "Logical Reasoning",
-      "Critical Thinking",
-      "Problem Solving",
-      "Analytical Reasoning",
-      "Deductive Reasoning",
-      "Inductive Reasoning",
-    ],
+    biology: mdcatBioChapters.map(chapter => chapter.name),
+    chemistry: mdcatChemistryChapters.map(chapter => chapter.name),
+    physics: mdcatPhysicsChapters.map(chapter => chapter.name),
+    english: mdcatEnglishChapters.map(chapter => chapter.name),
+    logic: mdcatLogicChapter.map(chapter => chapter.name)
   },
 }
 
 export default function StudyPlanner() {
-  const [user, setUser] = useState({ id: "user123", name: "Student" }) // Replace with actual user data
   const [courseType, setCourseType] = useState("mdcat")
   const [totalWeeks, setTotalWeeks] = useState(12)
   const [completedWeeks, setCompletedWeeks] = useState<boolean[]>([])
@@ -116,10 +34,11 @@ export default function StudyPlanner() {
   const [startDate, setStartDate] = useState(new Date())
   const [loading, setLoading] = useState(false)
   const [studyPlanId, setStudyPlanId] = useState<string | null>(null)
+  const [hasLoaded, setHasLoaded] = useState(false)
 
   // Calculate progress
   const completedCount = completedWeeks.filter(Boolean).length
-  const progressPercentage = (completedCount / totalWeeks) * 100
+  const progressPercentage = totalWeeks > 0 ? Math.round((completedCount / totalWeeks) * 100) : 0
 
   // Divide topics into weeks
   const divideTopicsIntoWeeks = (topics: string[], weeks: number) => {
@@ -135,8 +54,8 @@ export default function StudyPlanner() {
     return result
   }
 
-  // Initialize weekly topics when course or weeks change
-  useEffect(() => {
+  // Initialize weekly topics based on current course and weeks
+  const initializeWeeklyTopics = () => {
     const courseData = COURSE_DATA[courseType as keyof typeof COURSE_DATA]
     const weeklyData: any = {}
 
@@ -145,36 +64,47 @@ export default function StudyPlanner() {
     })
 
     setWeeklyTopics(weeklyData)
-    setCompletedWeeks(new Array(totalWeeks).fill(false))
-  }, [courseType, totalWeeks])
+  }
 
-  // Load existing study plan on component mount
-  useEffect(() => {
-    loadStudyPlan()
-  }, [])
-
-  // API functions for MongoDB
+  // Load existing study plan
   const loadStudyPlan = async () => {
     try {
       setLoading(true)
       const response = await Axios.get(`/api/v1/planner/load`)
-      const data = await response.data;
-      console.log(response)
+      const data = await response.data
 
       if (data.success && data.studyPlan) {
+        // First set all the loaded data
         setCourseType(data.studyPlan.courseType)
         setTotalWeeks(data.studyPlan.totalWeeks)
-        setCompletedWeeks(data.studyPlan.completedWeeks || new Array(data.studyPlan.totalWeeks).fill(false))
+        setCompletedWeeks(data.studyPlan.completedWeeks)
         setStartDate(new Date(data.studyPlan.startDate))
         setStudyPlanId(data.studyPlan._id)
+
+        // Then initialize weekly topics based on loaded data
+        const courseData = COURSE_DATA[data.studyPlan.courseType as keyof typeof COURSE_DATA]
+        const weeklyData: any = {}
+        Object.entries(courseData).forEach(([subject, topics]) => {
+          weeklyData[subject] = divideTopicsIntoWeeks(topics, data.studyPlan.totalWeeks)
+        })
+        setWeeklyTopics(weeklyData)
+      } else {
+        // If no saved plan, initialize with defaults
+        initializeWeeklyTopics()
+        setCompletedWeeks(new Array(totalWeeks).fill(false))
       }
     } catch (error) {
       console.error("Error loading study plan:", error)
+      // Fallback to default initialization if load fails
+      initializeWeeklyTopics()
+      setCompletedWeeks(new Array(totalWeeks).fill(false))
     } finally {
       setLoading(false)
+      setHasLoaded(true)
     }
   }
 
+  // Save study plan to backend
   const saveStudyPlan = async (planData: any) => {
     try {
       setLoading(true)
@@ -182,7 +112,7 @@ export default function StudyPlanner() {
         studyPlanId,
         ...planData,
       })
-      const data = response.data;
+      const data = response.data
 
       if (data.success && data.studyPlan) {
         setStudyPlanId(data.studyPlan._id)
@@ -191,17 +121,18 @@ export default function StudyPlanner() {
       return data
     } catch (error) {
       console.error("Error saving study plan:", error)
+      throw error
     } finally {
       setLoading(false)
     }
   }
 
+  // Handle when a week is marked complete/incomplete
   const handleWeekComplete = async (weekIndex: number) => {
     const newCompletedWeeks = [...completedWeeks]
     newCompletedWeeks[weekIndex] = !newCompletedWeeks[weekIndex]
     setCompletedWeeks(newCompletedWeeks)
 
-    // Save to MongoDB
     await saveStudyPlan({
       courseType,
       totalWeeks,
@@ -211,6 +142,7 @@ export default function StudyPlanner() {
     })
   }
 
+  // Handle when the plan settings change
   const handlePlanChange = async () => {
     await saveStudyPlan({
       courseType,
@@ -218,16 +150,43 @@ export default function StudyPlanner() {
       completedWeeks,
       startDate: startDate.toISOString(),
     })
+    // Reinitialize topics with new settings
+    initializeWeeklyTopics()
   }
 
+  // Calculate the date for a specific week
   const getWeekDate = (weekIndex: number) => {
     const date = new Date(startDate)
     date.setDate(date.getDate() + weekIndex * 7)
     return date
   }
 
+  // Load data on component mount
+  useEffect(() => {
+    loadStudyPlan()
+  }, [])
+
+  // Update completed weeks array when total weeks changes
+  useEffect(() => {
+    if (hasLoaded) {
+      const newCompletedWeeks = [...completedWeeks]
+      if (totalWeeks > completedWeeks.length) {
+        // Add new weeks as incomplete
+        newCompletedWeeks.push(...new Array(totalWeeks - completedWeeks.length).fill(false))
+      } else if (totalWeeks < completedWeeks.length) {
+        // Remove extra weeks
+        newCompletedWeeks.splice(totalWeeks)
+      }
+      setCompletedWeeks(newCompletedWeeks)
+    }
+  }, [totalWeeks, hasLoaded])
+
+  if (!hasLoaded) {
+    return <div className="min-h-screen flex items-center justify-center"><Spinner variant="wave" /></div>
+  }
+
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen">
       <div className="mx-auto px-4 py-8 max-w-7xl">
         {/* Header */}
         <PlannerHeader
@@ -263,7 +222,7 @@ export default function StudyPlanner() {
                   weekDate={getWeekDate(index)}
                   topics={weeklyTopics}
                   topicIndex={index}
-                  isCompleted={completedWeeks[index]}
+                  isCompleted={completedWeeks[index] || false}
                   onComplete={() => handleWeekComplete(index)}
                   courseType={courseType}
                 />
@@ -275,7 +234,7 @@ export default function StudyPlanner() {
         {/* Save Button */}
         <div className="mt-8 text-center">
           <Button
-            onClick={handlePlanChange}
+            onPress={handlePlanChange}
             isLoading={loading}
             size="lg"
             className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold px-8 py-3"

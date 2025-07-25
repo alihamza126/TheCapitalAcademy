@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { MathJax, MathJaxContext } from 'better-react-mathjax'
-import { Button, IconButton, Typography } from '@mui/material'
+import {  IconButton, Typography } from '@mui/material'
 import { Close } from '@mui/icons-material'
 import { enqueueSnackbar, closeSnackbar } from 'notistack'
 import Axios from '@/lib/Axios'
@@ -35,7 +35,7 @@ const CourseDetails = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await Axios.get('/mcq/bookmarks')
+        const res = await Axios.get('/api/v1/mcq/bookmarks')
         if (res.data) setMcqs(res.data)
       } catch (err) {
         console.error('Error fetching data:', err)
@@ -47,7 +47,7 @@ const CourseDetails = () => {
 
   const handleUnbookmark = async (mcqId) => {
     try {
-      await Axios.put('/mcq/unbookmark', { mcqId })
+      await Axios.put('/api/v1/mcq/unbookmark', { mcqId })
       setMcqs(prev => prev.filter(mcq => mcq._id !== mcqId))
       showSnackbar('Removed from bookmarks.', 'info')
     } catch (error) {
@@ -73,7 +73,7 @@ const CourseDetails = () => {
                     Q{i + 1}) <MathJax inline>{mcq.question}</MathJax>
                   </div>
                   <IconButton onClick={() => handleUnbookmark(mcq._id)} title="Remove from bookmarks">
-                    <i className="fas fa-bookmark text-red-500 text-xl"></i>
+                    <i className="fas fa-bookmark text-red text-xl"></i>
                   </IconButton>
                 </div>
 
@@ -84,7 +84,7 @@ const CourseDetails = () => {
                       <div key={index} className="flex gap-2 items-start">
                         <div
                           className={`rounded-full px-2 py-1 text-xs font-bold ${
-                            isCorrect ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700'
+                            isCorrect ? 'bg-lime-400 text-white' : 'bg-gray-200 text-gray-700'
                           }`}
                         >
                           ({alphabets[index]})

@@ -2,6 +2,7 @@ import express from "express"
 import { StudyPlan, StudyAnalytics } from "../models/planner.js"
 import { authUser } from '../middleware/auth.middleware.js';
 import { asyncWrapper } from '../helpers/asyncWrapper.js';
+import { mdcatBioChapters, mdcatChemistryChapters, mdcatEnglishChapters, mdcatLogicChapter, mdcatPhysicsChapters, numsBioChapters, numsChemistryChapters, numsEnglishChapters, numsPhysicsChapters } from '../helpers/chaperts.js'
 
 
 const plannerRouter = express.Router()
@@ -9,99 +10,17 @@ const plannerRouter = express.Router()
 // Your hardcoded subjects data
 const COURSE_DATA = {
   nums: {
-    biology: [
-      "Cell Structure and Function",
-      "Cell Division",
-      "Biomolecules",
-      "Enzymes",
-      "Photosynthesis",
-      "Respiration",
-      "Genetics and Heredity",
-      "Molecular Genetics",
-      "Evolution",
-      "Ecology",
-      "Human Physiology",
-      "Plant Biology",
-      "Animal Biology",
-    ],
-    chemistry: [
-      "Atomic Structure",
-      "Chemical Bonding",
-      "States of Matter",
-      "Chemical Equilibrium",
-      "Acids and Bases",
-      "Thermodynamics",
-      "Electrochemistry",
-      "Organic Chemistry Basics",
-      "Hydrocarbons",
-      "Functional Groups",
-      "Alcohols and Phenols",
-      "Aldehydes and Ketones",
-    ],
-    physics: [
-      "Mechanics",
-      "Work and Energy",
-      "Waves and Oscillations",
-      "Sound",
-      "Light",
-      "Electricity",
-      "Magnetism",
-      "Modern Physics",
-      "Nuclear Physics",
-      "Electronics",
-    ],
-    english: [
-      "Grammar Fundamentals",
-      "Sentence Structure",
-      "Reading Comprehension",
-      "Vocabulary Building",
-      "Essay Writing",
-      "Paragraph Writing",
-      "Letter Writing",
-    ],
+    biology: numsBioChapters.map(chapter => chapter.name),
+    chemistry: numsChemistryChapters.map(chapter => chapter.name),
+    physics: numsPhysicsChapters.map(chapter => chapter.name),
+    english: numsEnglishChapters.map(chapter => chapter.name)
   },
   mdcat: {
-    biology: [
-      "Cell Biology",
-      "Biochemistry",
-      "Human Physiology",
-      "Genetics",
-      "Evolution",
-      "Ecology",
-      "Reproduction",
-      "Development",
-      "Immunity",
-      "Biotechnology",
-    ],
-    chemistry: [
-      "Atomic Structure",
-      "Chemical Bonding",
-      "Thermodynamics",
-      "Chemical Kinetics",
-      "Organic Chemistry",
-      "Biochemistry",
-      "Environmental Chemistry",
-      "Industrial Chemistry",
-    ],
-    physics: [
-      "Mechanics",
-      "Waves",
-      "Electricity",
-      "Modern Physics",
-      "Medical Physics",
-      "Thermodynamics",
-      "Optics",
-      "Electronics",
-    ],
-    english: ["Grammar", "Comprehension", "Vocabulary", "Essay Writing", "Paragraph Writing"],
-    logic: [
-      "Logical Reasoning",
-      "Critical Thinking",
-      "Problem Solving",
-      "Analytical Reasoning",
-      "Deductive Reasoning",
-      "Inductive Reasoning",
-    ],
+    biology: mdcatBioChapters.map(chapter => chapter.name),
+    chemistry: mdcatChemistryChapters.map(chapter => chapter.name),
+    physics: mdcatPhysicsChapters.map(chapter => chapter.name),
+    english: mdcatEnglishChapters.map(chapter => chapter.name),
+    logic: mdcatLogicChapter.map(chapter => chapter.name)
   },
 }
 
