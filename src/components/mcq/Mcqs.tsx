@@ -390,6 +390,7 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 			return router.back()
 		}
 		saveMcqData()
+		return router.back()
 	}
 
 	const handleFlip = () => {

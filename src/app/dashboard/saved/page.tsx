@@ -2,10 +2,12 @@
 
 import React, { useEffect, useState } from 'react'
 import { MathJax, MathJaxContext } from 'better-react-mathjax'
-import {  IconButton, Typography } from '@mui/material'
+import { IconButton, Typography } from '@mui/material'
 import { Close } from '@mui/icons-material'
 import { enqueueSnackbar, closeSnackbar } from 'notistack'
 import Axios from '@/lib/Axios'
+import { Button } from '@heroui/react'
+import { Bookmark } from 'lucide-react'
 
 const CourseDetails = () => {
   const [mcqs, setMcqs] = useState([])
@@ -72,9 +74,9 @@ const CourseDetails = () => {
                   <div className="text-gray-800 font-semibold">
                     Q{i + 1}) <MathJax inline>{mcq.question}</MathJax>
                   </div>
-                  <IconButton onClick={() => handleUnbookmark(mcq._id)} title="Remove from bookmarks">
-                    <i className="fas fa-bookmark text-red text-xl"></i>
-                  </IconButton>
+                  <Button size='sm' color="danger" variant="flat" isIconOnly onPress={() => handleUnbookmark(mcq._id)} title="Remove from bookmarks">
+                    <Bookmark className="fas fa-bookmark text-red text-xl"/>
+                  </Button>
                 </div>
 
                 <div className="space-y-2 pl-3">
@@ -83,9 +85,8 @@ const CourseDetails = () => {
                     return (
                       <div key={index} className="flex gap-2 items-start">
                         <div
-                          className={`rounded-full px-2 py-1 text-xs font-bold ${
-                            isCorrect ? 'bg-lime-400 text-white' : 'bg-gray-200 text-gray-700'
-                          }`}
+                          className={`rounded-full px-2 py-1 text-xs font-bold ${isCorrect ? 'bg-lime-400 text-white' : 'bg-gray-200 text-gray-700'
+                            }`}
                         >
                           ({alphabets[index]})
                         </div>
