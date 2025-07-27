@@ -1,5 +1,3 @@
-"use client";
-
 const LoadingMinimal = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-[#f3e8ff] to-white relative">
