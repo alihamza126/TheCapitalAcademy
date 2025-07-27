@@ -73,6 +73,7 @@ const authOptions: NextAuthOptions = {
          // If this is the first login, user will be defined
          if (user && account?.provider === "google") {
             // Check if user exists in DB
+            token.accessToken = user.accessToken;
             const existingUser = await UserModel.findOne({ email: user.email });
 
             if (!existingUser) {
@@ -86,9 +87,31 @@ const authOptions: NextAuthOptions = {
 
                token.id = newUser._id.toString();
                token.role = newUser.role;
+               const accessToken = jwt.sign(
+                  {
+                     userId: newUser._id.toString(),
+                     email: newUser.email,
+                     role: newUser.role,
+                  },
+
+                  process.env.NEXTAUTH_SECRET!,
+                  { expiresIn: "365d" } // Short expiration for access token
+               );
+               token.accessToken = accessToken;
             } else {
                token.id = existingUser._id.toString();
                token.role = existingUser.role;
+               const accessToken = jwt.sign(
+                  {
+                     userId: existingUser._id.toString(),
+                     email: existingUser.email,
+                     role: existingUser.role,
+                  },
+
+                  process.env.NEXTAUTH_SECRET!,
+                  { expiresIn: "365d" } // Short expiration for access token
+               );
+               token.accessToken = accessToken;
             }
 
             token.name = user.name;
