@@ -18,8 +18,13 @@ export default function LoginPage() {
 
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
   const { data: session, status } = useSession();
+  if(status === 'loading') return <Loader2 className="animate-spin h-6 w-6" />
+
+  if (session) {
+    router.push(callbackUrl);
+  }
 
   const {
     register,
