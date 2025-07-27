@@ -100,16 +100,6 @@ export default function LoginPage() {
       // Simulate Google OAuth
       await signIn("google",{callbackUrl:callbackUrl})
       toast.dismiss(loadingToastId)
-      toast.success("Google login successful!", {
-        icon: "🚀",
-        duration: 4000,
-        style: {
-          borderRadius: "10px",
-          background: "#10B981",
-          color: "#fff",
-        },
-      })
-
       setTimeout(() => {
         router.push(callbackUrl)
       }, 1000)
