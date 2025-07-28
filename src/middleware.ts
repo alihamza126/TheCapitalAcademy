@@ -67,5 +67,6 @@ export const config = {
 	matcher: ['/((?!api|trpc|_next|_vercel|.*\\..*).*)'],
 	unstable_allowDynamic: [
 		'**/node_modules/mongoose/dist/browser.umd.js',
+      "**/node_modules/bcryptjs/umd/index.js",
 	],
 }
