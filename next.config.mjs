@@ -1,26 +1,22 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-    reactStrictMode: false,
-    // compiler: {
-    //     removeConsole: process.env.NODE_ENV === 'production' ? true : false,
-    // },
+const config = {
+    compiler: {
+      removeConsole: process.env.NODE_ENV === 'production',
+    },
     images: {
-        remotePatterns: [
-            {
-                protocol: 'https',
-                hostname: '**', // Allow all hostnames
-            },
-        ],
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: '**',
+        },
+      ],
     },
     eslint: {
-        ignoreDuringBuilds: true,
+      ignoreDuringBuilds: true,
     },
     typescript: {
-        ignoreBuildErrors: true,
+      ignoreBuildErrors: true,
     },
-}
-
-
-
-
-export default nextConfig
+  }
+  
+  export default config
+  

@@ -1,46 +1,35 @@
-import { withAuth } from "next-auth/middleware"
-import { type NextRequest, NextResponse } from "next/server"
-import { publicPages } from "@/utils/publicpath"
-import authOptions from "./lib/auth"
+import { NextRequest, NextResponse } from 'next/server'
+import { withAuth } from 'next-auth/middleware'
+import authOptions from './lib/auth'
+import { publicPages } from './utils/publicpath'
 
-export default withAuth(
-  function middleware(req: NextRequest) {
-    const { pathname } = req.nextUrl
+// Middleware for next-auth with custom logic
+const authMiddleware = withAuth(
+  (req) => {
     const token = req.nextauth?.token
+    const url = req.nextUrl
+    const pathname = url.pathname
 
-    // Redirect authenticated users away from signin page
-    if (token && pathname === "/signin") {
-      return NextResponse.redirect(new URL("/", req.url))
-    }
-
-    // Check for public paths first
-    if (publicPages.some((path) => pathname === path || pathname.startsWith(path + "/"))) {
-      return NextResponse.next()
-    }
-
-    // Admin-only routes
-    if (pathname.startsWith("/admin")) {
-      if (!token) {
-        return NextResponse.redirect(new URL("/signin?callbackUrl=" + encodeURIComponent(pathname), req.url))
-      }
-
-      if (token.role !== "admin") {
-        return NextResponse.redirect(new URL("/unauthorized", req.url))
-      }
+    // Role-based route protection
+    if (pathname.includes('/admin') && token?.role !== 'admin') {
+      return NextResponse.rewrite(new URL('/unauthorized', req.url))
     }
 
     return NextResponse.next()
   },
   {
-    jwt: {
-      decode: authOptions.jwt?.decode,
-    },
+    jwt: { decode: authOptions.jwt?.decode },
     callbacks: {
       authorized: ({ token, req }) => {
         const { pathname } = req.nextUrl
 
         // Allow public pages without authentication
-        if (publicPages.some((path) => pathname === path || pathname.startsWith(path + "/"))) {
+        if (
+          publicPages.some(
+            (path) =>
+              path.includes(pathname) || pathname.startsWith(path + '/'),
+          )
+        ) {
           return true
         }
 
@@ -49,12 +38,38 @@ export default withAuth(
       },
     },
     pages: {
-      signIn: "/signin",
+      signIn: '/signin',
     },
-  },
+  }
 )
 
+export default function middleware(req: NextRequest) {
+  const pathname = req.nextUrl.pathname
+
+  const publicPathnameRegex = RegExp(
+    `^(${publicPages
+      .flatMap((p) => {
+        if (p === '/') return ['', '/']
+        if (p.includes(':path*')) {
+          const base = p.replace(':path*', '')
+          return [`${base}.*`, `${base}[^/]+.*`]
+        }
+        return p
+      })
+      .join('|')})/?$`,
+    'i'
+  )
+
+  const isPublicPage = publicPathnameRegex.test(pathname)
+
+  if (isPublicPage) {
+    return NextResponse.next()
+  } else {
+    return (authMiddleware as any)(req)
+  }
+}
+
 export const config = {
-  matcher: ["/((?!api|trpc|_next|_vercel|.*\\..*).*)"],
-  unstable_allowDynamic: ["**/node_modules/mongoose/dist/browser.umd.js", "**/node_modules/bcryptjs/umd/index.js"],
+  matcher: ['/((?!api|trpc|_next|_vercel|.*\\..*).*)'],
+  unstable_allowDynamic: ['**/node_modules/mongoose/dist/browser.umd.js'],
 }
