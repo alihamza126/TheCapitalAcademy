@@ -22,9 +22,9 @@ export default function LoginPage() {
   const { data: session, status } = useSession();
   if(status === 'loading') return <Loader2 className="animate-spin h-6 w-6" />
 
-  // if (session) {
-  //   router.push(callbackUrl);
-  // }
+  if (session) {
+    router.push(callbackUrl);
+  }
 
   const {
     register,
