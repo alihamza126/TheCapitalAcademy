@@ -18,11 +18,18 @@ export default function StatsOverview({ data }: StatsOverviewProps) {
 
   const stats = [
     {
-      title: "Questions Solved",
-      value: data.totalSolved,
+      title: "Total Attempted ",
+      value: totalAttempted,
       icon: <TrophyIcon className="w-8 h-8 text-green-500" />,
       color: "text-green",
       bgColor: "bg-green/50",
+    },
+    {
+      title: "Correct Answers",
+      value: data.totalSolved,
+      icon: <BookmarkIcon className="w-8 h-8 text-blue-500" />,
+      color: "text-blue-600",
+      bgColor: "bg-blue-50",
     },
     {
       title: "Wrong Answers",
@@ -30,13 +37,6 @@ export default function StatsOverview({ data }: StatsOverviewProps) {
       icon: <XCircleIcon className="w-8 h-8 text-rose-500" />,
       color: "text-red/60",
       bgColor: "bg-red/30",
-    },
-    {
-      title: "Saved Questions",
-      value: data.totalSave,
-      icon: <BookmarkIcon className="w-8 h-8 text-blue-500" />,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
     },
     {
       title: "Success Rate",

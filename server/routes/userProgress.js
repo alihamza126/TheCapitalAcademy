@@ -14,19 +14,26 @@ progressRouter.post('/get', authUser, checkTrialStatus, asyncWrapper(async (req,
     const subject = req.body.subject?.trim();
     const chapter = req.body.chapter?.trim();
     const topic = req.body.topic?.trim();
-    const category = req.body.catagory?.trim(); // past, normal, solved, unsolved, wrong, all
+    let category = req.body.catagory?.trim(); // past, normal, solved, unsolved, wrong, all
     const userId = req.user.id;
 
     const isTrialActive = req.user?.isTrialActive || false;
     console.log("req user", req.user)
     const isNums = req.user?.isNums;
     const isMdcat = req.user?.isMdcat;
+
+    let limit = 100;
+    limit = isTrialActive
+        ? (isMdcat || isNums ? 100 : 2)
+        : 100;
+    if (course == "trial") {
+        limit = 2;
+        category = "all"
+    }
+
     if (course == "trial") {
         course = 'mdcat';
     }
-
-    let limit = 100;
-    if (isTrialActive && !isNums && !isMdcat) limit = 2;
 
     let mcqs = [];
 

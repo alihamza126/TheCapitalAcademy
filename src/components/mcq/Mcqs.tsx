@@ -661,7 +661,7 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 								</CardHeader>
 
 								{/* Scrollable Content Area */}
-								<CardBody className="flex-1 overflow-hidden flex flex-col">
+								<CardBody className="flex-1 overflow-hidden shadow-sm flex flex-col">
 									<ScrollShadow className="flex-1">
 										<div className="space-y-4 lg:space-y-6 pb-4">
 											{/* Question - Fixed */}
@@ -694,7 +694,7 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 															<h5 className="text-sm lg:text-md font-medium text-gray-600 mb-4">
 																Choose the correct answer:
 															</h5>
-															<div className="space-y-3">
+															<div className="space-y-3 overflow-y-auto">
 																{mcqs[index]?.options.map((option, optionIndex) => (
 																	<div
 																		key={optionIndex}
@@ -723,14 +723,14 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 														</div>
 													) : (
 														// Explanation - Scrollable
-														<div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+														<div className="grid grid-cols-1 max-h-80 lg:grid-cols-3 gap-4 lg:gap-6">
 															<div className="lg:col-span-2 h-full">
 																<h5 className="text-base lg:text-lg font-semibold text-blue-600 mb-4">Explanation</h5>
-																<Card className="bg-green-50 h-full border-l-4 border-l-green-500">
+																<Card className="bg-green-50  overscroll-y-auto border-l-4 border-l-green-500">
 																	<CardBody className="py-3 lg:py-4">
 																		<MathJax
 																			dynamic={true}
-																			className="text-sm lg:text-base leading-relaxed whitespace-pre-line"
+																			className="text-sm   lg:text-base leading-relaxed whitespace-pre-line"
 																		>
 																			{mcqs[index]?.explain || "Explanation not available yet"}
 																		</MathJax>
@@ -765,7 +765,7 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 									<Button
 										variant="bordered"
 										startContent={<CaretLeft size={18} />}
-										onClick={prevOption}
+										onPress={prevOption}
 										isDisabled={index === 0}
 										className="h-12"
 									>
@@ -1092,159 +1092,198 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 						<ModalBody className="px-2 lg:px-6">
 							{subject !== "mock" ? (
 								<Accordion variant="splitted">
-									<AccordionItem key="1" title="Review MCQs" className="text-base lg:text-lg font-semibold">
-										<div className="space-y-4 lg:space-y-6">
-											{mcqs.map((ele, i) => (
-												<Card key={i} className="shadow-md">
-													<CardBody className="space-y-3 lg:space-y-4">
-														<div>
-															<span className="font-bold text-sm lg:text-base">Q:{i + 1}) </span>
-															<MathJax inline className="text-sm lg:text-base">
-																{ele.question}
-															</MathJax>
-														</div>
-														<div className="space-y-2">
-															{ele.options.map((option, optionIndex) => (
-																<div
-																	key={optionIndex}
-																	className={`p-2 lg:p-3 rounded-lg border ${correctMcq.includes(ele._id) && optionIndex + 1 === ele.selected
-																		? "bg-green-50 border-green-300"
-																		: wrongMcq.includes(ele._id) && optionIndex + 1 === ele.selected
-																			? "bg-red-50 border-red-300"
-																			: "bg-gray-50 border-gray-200"
-																		}`}
-																>
-																	<div className="flex items-center gap-3">
-																		<Chip size="sm" variant="flat">
-																			{alphabets[optionIndex]}
-																		</Chip>
-																		<MathJax inline className="text-sm lg:text-base">
-																			{option}
-																		</MathJax>
-																	</div>
-																</div>
-															))}
-														</div>
-														<div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-2">
-															<div>
-																{correctMcq.includes(ele._id) && (
-																	<Chip color="success" size="sm">
-																		Correct
-																	</Chip>
-																)}
-																{wrongMcq.includes(ele._id) && (
-																	<Chip color="danger" size="sm">
-																		Wrong
-																	</Chip>
-																)}
-																{!correctMcq.includes(ele._id) && !wrongMcq.includes(ele._id) && (
-																	<Chip color="default" size="sm">
-																		Not Attempted
-																	</Chip>
-																)}
-															</div>
-															<div>
-																{!correctMcq.includes(ele._id) && (
-																	<span className="text-xs lg:text-sm text-gray-600">
-																		Correct option: {ele.correctOption}
-																	</span>
-																)}
-															</div>
-														</div>
-														<Divider />
-														<div>
-															<p className="font-semibold text-gray-600 mb-2 text-sm lg:text-base">Explanation:</p>
-															<MathJax className="whitespace-pre-line text-sm lg:text-base" inline>
-																{ele.explain || "Not available"}
-															</MathJax>
-														</div>
-													</CardBody>
-												</Card>
-											))}
-										</div>
-									</AccordionItem>
-								</Accordion>
-							) : (
-								<Accordion variant="splitted">
-									{["biology", "chemistry", "physics", "english", "logic"].map((subjectType) => (
+									{mcqs.map((ele, i) => (
 										<AccordionItem
-											key={subjectType}
-											title={subjectType.charAt(0).toUpperCase() + subjectType.slice(1)}
+											key={ele._id || i}
+											title={
+												<div>
+													<span className="font-bold text-sm lg:text-base">Q:{i + 1}) </span>
+													<MathJax inline className="text-sm lg:text-base">
+														{ele.question}
+													</MathJax>
+												</div>
+											}
+											aria-label={`Question ${i + 1}`}
 											className="text-base lg:text-lg font-semibold"
 										>
-											<div className="space-y-4 lg:space-y-6">
-												{mcqs
-													.filter((ele) => ele.subject === subjectType)
-													.map((ele, i) => (
-														<Card key={i} className="shadow-md">
-															<CardBody className="space-y-3 lg:space-y-4">
+											<div className="space-y-3 lg:space-y-4">
+												{/* Question */}
+
+
+												{/* Options */}
+												<div className="space-y-2">
+													{ele.options.map((option, optionIndex) => (
+														<div
+															key={optionIndex}
+															className={`p-2 lg:p-3 rounded-lg border ${correctMcq.includes(ele._id) &&
+																optionIndex + 1 === ele.selected
+																? "bg-green-50 border-green-300"
+																: wrongMcq.includes(ele._id) &&
+																	optionIndex + 1 === ele.selected
+																	? "bg-red-50 border-red-300"
+																	: "bg-gray-50 border-gray-200"
+																}`}
+														>
+															<div className="flex items-center gap-3">
+																<Chip size="sm" variant="flat">
+																	{alphabets[optionIndex]}
+																</Chip>
+																<MathJax inline className="text-sm lg:text-base">
+																	{option}
+																</MathJax>
+															</div>
+														</div>
+													))}
+												</div>
+
+												{/* Answer Status */}
+												<div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-2">
+													<div>
+														{correctMcq.includes(ele._id) && (
+															<Chip color="success" size="sm">
+																Correct
+															</Chip>
+														)}
+														{wrongMcq.includes(ele._id) && (
+															<Chip color="danger" size="sm">
+																Wrong
+															</Chip>
+														)}
+														{!correctMcq.includes(ele._id) && !wrongMcq.includes(ele._id) && (
+															<Chip color="default" size="sm">
+																Not Attempted
+															</Chip>
+														)}
+													</div>
+													<div>
+														{!correctMcq.includes(ele._id) && (
+															<span className="text-xs lg:text-sm text-gray-600">
+																Correct option: {ele.correctOption}
+															</span>
+														)}
+													</div>
+												</div>
+
+												<Divider />
+
+												{/* Explanation */}
+												<div>
+													<p className="font-semibold text-gray-600 mb-2 text-sm lg:text-base">
+														Explanation:
+													</p>
+													<MathJax className="whitespace-pre-line !text-sm lg:text-base" inline>
+														{ele.explain || "Not available"}
+													</MathJax>
+												</div>
+											</div>
+										</AccordionItem>
+									))}
+								</Accordion>
+
+							) : (
+								<Accordion variant="splitted">
+									{["biology", "chemistry", "physics", "english", "logic"].map((subjectType) => {
+										const subjectMcqs = mcqs.filter((ele) => ele.subject === subjectType);
+										return (
+											<div key={subjectType} className="mb-6">
+												<h3 className="text-lg lg:text-xl font-semibold mb-3">
+													{subjectType.charAt(0).toUpperCase() + subjectType.slice(1)}
+												</h3>
+
+												<Accordion variant="splitted">
+													{subjectMcqs.map((ele, i) => (
+														<AccordionItem
+															key={ele._id || i}
+															title={
 																<div>
 																	<span className="font-bold text-sm lg:text-base">Q:{i + 1}) </span>
 																	<MathJax inline className="text-sm lg:text-base">
 																		{ele.question}
 																	</MathJax>
 																</div>
-																<div className="space-y-2">
-																	{ele.options.map((option, optionIndex) => (
-																		<div
-																			key={optionIndex}
-																			className={`p-2 lg:p-3 rounded-lg border ${correctMcq.includes(ele._id) && optionIndex + 1 === ele.selected
-																				? "bg-green-50 border-green-300"
-																				: wrongMcq.includes(ele._id) && optionIndex + 1 === ele.selected
-																					? "bg-red-50 border-red-300"
-																					: "bg-gray-50 border-gray-200"
-																				}`}
-																		>
-																			<div className="flex items-center gap-3">
-																				<Chip size="sm" variant="flat">
-																					{alphabets[optionIndex]}
-																				</Chip>
-																				<MathJax inline className="text-sm lg:text-base">
-																					{option}
-																				</MathJax>
+															}
+															aria-label={`Question ${i + 1}`}
+															className="text-base lg:text-lg font-semibold"
+														>
+															<Card className="shadow-md">
+																<CardBody className="space-y-3 lg:space-y-4">
+																	{/* Question */}
+																	<div>
+																		<span className="font-bold text-sm lg:text-base">Q:{i + 1}) </span>
+																		<MathJax inline className="text-sm lg:text-base">
+																			{ele.question}
+																		</MathJax>
+																	</div>
+
+																	{/* Options */}
+																	<div className="space-y-2">
+																		{ele.options.map((option, optionIndex) => (
+																			<div
+																				key={optionIndex}
+																				className={`p-2 lg:p-3 rounded-lg border ${correctMcq.includes(ele._id) && optionIndex + 1 === ele.selected
+																					? "bg-green-50 border-green-300"
+																					: wrongMcq.includes(ele._id) && optionIndex + 1 === ele.selected
+																						? "bg-red-50 border-red-300"
+																						: "bg-gray-50 border-gray-200"
+																					}`}
+																			>
+																				<div className="flex items-center gap-3">
+																					<Chip size="sm" variant="flat">
+																						{alphabets[optionIndex]}
+																					</Chip>
+																					<MathJax inline className="text-sm lg:text-base">
+																						{option}
+																					</MathJax>
+																				</div>
 																			</div>
+																		))}
+																	</div>
+
+																	{/* Answer Status */}
+																	<div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-2">
+																		<div>
+																			{correctMcq.includes(ele._id) && (
+																				<Chip color="success" size="sm">
+																					Correct
+																				</Chip>
+																			)}
+																			{wrongMcq.includes(ele._id) && (
+																				<Chip color="danger" size="sm">
+																					Wrong
+																				</Chip>
+																			)}
+																			{!correctMcq.includes(ele._id) && !wrongMcq.includes(ele._id) && (
+																				<Chip color="default" size="sm">
+																					Not Attempted
+																				</Chip>
+																			)}
 																		</div>
-																	))}
-																</div>
-																<div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-2">
-																	<div>
-																		{correctMcq.includes(ele._id) && (
-																			<Chip color="success" size="sm">
-																				Correct
-																			</Chip>
-																		)}
-																		{wrongMcq.includes(ele._id) && (
-																			<Chip color="danger" size="sm">
-																				Wrong
-																			</Chip>
-																		)}
-																		{!correctMcq.includes(ele._id) && !wrongMcq.includes(ele._id) && (
-																			<Chip color="default" size="sm">
-																				Not Attempted
-																			</Chip>
-																		)}
+																		<div>
+																			{!correctMcq.includes(ele._id) && (
+																				<span className="text-xs lg:text-sm text-gray-600">
+																					Correct option: {ele.correctOption}
+																				</span>
+																			)}
+																		</div>
 																	</div>
+
+																	<Divider />
+
+																	{/* Explanation */}
 																	<div>
-																		{!correctMcq.includes(ele._id) && (
-																			<span className="text-xs lg:text-sm text-gray-600">
-																				Correct option: {ele.correctOption}
-																			</span>
-																		)}
+																		<p className="font-semibold text-gray-600 mb-2 text-sm lg:text-base">Explanation:</p>
+																		<MathJax className="whitespace-pre-line !text-sm lg:text-base" inline>
+																			{ele.explain || "Not available"}
+																		</MathJax>
 																	</div>
-																</div>
-																<Divider />
-																<div>
-																	<p className="font-semibold text-gray-600 mb-2 text-sm lg:text-base">Explanation:</p>
-																	<MathJax className="whitespace-pre-line text-sm lg:text-base" inline>
-																		{ele.explain || "Not available"}
-																	</MathJax>
-																</div>
-															</CardBody>
-														</Card>
+																</CardBody>
+															</Card>
+														</AccordionItem>
 													))}
+												</Accordion>
 											</div>
-										</AccordionItem>
-									))}
+										);
+									})}
 								</Accordion>
 							)}
 						</ModalBody>

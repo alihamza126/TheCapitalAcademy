@@ -24,8 +24,8 @@ const Chapter = ({ course = null, subject, chapter, name, img, isLocked = false 
                 href={isLocked ? '#' : `/dashboard/${course}/${subject}/${name?.toLowerCase()}`}
                 className="no-underline"
             >
-                <Card className="rounded-2xl overflow-hidden shadow hover:shadow-lg relative">
-                    <div className="relative h-48 bg-gray-100">
+                <Card className="rounded-3xl overflow-hidden shadow  hover:shadow-lg relative">
+                    <div className="relative h-40 md:h-48 bg-gray-100">
                         <motion.div
                             initial={{ opacity: 0, scale: 1.05 }}
                             animate={{ opacity: 1, scale: 1.03 }}
@@ -37,7 +37,7 @@ const Chapter = ({ course = null, subject, chapter, name, img, isLocked = false 
                                 alt={name}
                                 fill
                                 loading='lazy'
-                                className={`object-cover transition-opacity duration-700 `}
+                                className={`object-fill scale-120 p-0 transition-opacity duration-700 `}
                             />
                         </motion.div>
 

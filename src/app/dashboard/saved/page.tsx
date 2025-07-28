@@ -6,12 +6,24 @@ import { IconButton, Typography } from '@mui/material'
 import { Close } from '@mui/icons-material'
 import { enqueueSnackbar, closeSnackbar } from 'notistack'
 import Axios from '@/lib/Axios'
-import { Button } from '@heroui/react'
+import { Accordion, AccordionItem, Button } from '@heroui/react'
 import { Bookmark } from 'lucide-react'
+import { FlaskConical, Atom, BookText, Brain, Languages } from "lucide-react";
 
 const CourseDetails = () => {
   const [mcqs, setMcqs] = useState([])
   const alphabets = ['A', 'B', 'C', 'D']
+  const [selectedSubject, setSelectedSubject] = useState(null)
+  const uniqueSubjects = [...new Set(mcqs.map((q) => q.subject))]
+
+
+  const subjectIcons = {
+    biology: <FlaskConical className="w-4 h-4" />,
+    chemistry: <Atom className="w-4 h-4" />,
+    physics: <Atom className="w-4 h-4" />,
+    english: <Languages className="w-4 h-4" />,
+    logic: <Brain className="w-4 h-4" />,
+  };
 
   const config = {
     loader: { load: ['[tex]/ams'] },
@@ -39,6 +51,7 @@ const CourseDetails = () => {
       try {
         const res = await Axios.get('/api/v1/mcq/bookmarks')
         if (res.data) setMcqs(res.data)
+        console.log(res.data)
       } catch (err) {
         console.error('Error fetching data:', err)
       }
@@ -58,54 +71,108 @@ const CourseDetails = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto py-8">
+    <div className="max-w-6xl mx-auto">
       <div className="sticky top-0 z-30 bg-white shadow rounded-xl px-6 py-4 mb-8">
         <Typography fontWeight="semibold" variant="h4" className="bg-gradient-to-r from-blue-600 via-purple  to-pink bg-clip-text text-transparent font-bold text-center">
           Bookmarked MCQs
         </Typography>
       </div>
+      {uniqueSubjects.length > 0 && (
+        <div className="mb-8 flex gap-3 md:px-4 ">
+          <h3 className="text-lg font-semibold text-gray-700">Filter by Subject</h3>
+          <div className="flex flex-wrap gap-3">
+            {uniqueSubjects.map((subj) => {
+              const isSelected = selectedSubject === subj;
+              return (
+                <Button
+                  key={subj}
+                  startContent={
+                    <span className="flex items-center gap-2 capitalize">
+                      {subjectIcons[subj]} {subj}
+                    </span>
+                  }
+                  size="sm"
+                  radius="lg"
+                  variant={isSelected ? "solid" : "faded"}
+                  color={isSelected ? "primary" : "default"}
+                  onPress={() =>
+                    setSelectedSubject((prev) => (prev === subj ? null : subj))
+                  }
+                  className={`transition-all duration-200 shadow-sm ${isSelected
+                    ? "font-semibold text-white"
+                    : "text-gray-800 hover:bg-gray-100"
+                    }`}
+                >
+                  {subj}
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+
+
 
       <MathJaxContext version={3} config={config}>
         <div className="space-y-6">
-          {mcqs.length > 0 ? (
-            mcqs.map((mcq, i) => (
-              <div key={mcq._id} className="bg-white rounded-xl shadow px-6 py-5">
-                <div className="flex justify-between items-start mb-3">
-                  <div className="text-gray-800 font-semibold">
+          {(selectedSubject ? mcqs.filter(mcq => mcq.subject === selectedSubject) : mcqs).length > 0 ? (
+            <Accordion variant="splitted">
+              {(selectedSubject ? mcqs.filter(mcq => mcq.subject === selectedSubject) : mcqs).map((mcq, i) => (
+                <AccordionItem
+                  key={mcq._id}
+                  title={<div className="text-gray-800 font-semibold">
                     Q{i + 1}) <MathJax inline>{mcq.question}</MathJax>
-                  </div>
-                  <Button size='sm' color="danger" variant="flat" isIconOnly onPress={() => handleUnbookmark(mcq._id)} title="Remove from bookmarks">
-                    <Bookmark className="fas fa-bookmark text-red text-xl"/>
-                  </Button>
-                </div>
+                  </div>}
+                  aria-label={`Question ${i + 1}`}
+                  className="bg-white rounded-xl shadow"
+                >
+                  <div className="px-4 py-2 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div></div>
+                      <Button
+                        size="sm"
+                        color="danger"
+                        variant="flat"
+                        isIconOnly
+                        onPress={() => handleUnbookmark(mcq._id)}
+                        title="Remove from bookmarks"
+                      >
+                        <Bookmark className="text-red text-xl" />
+                      </Button>
+                    </div>
 
-                <div className="space-y-2 pl-3">
-                  {mcq.options.map((opt, index) => {
-                    const isCorrect = mcq.correctOption === index + 1
-                    return (
-                      <div key={index} className="flex gap-2 items-start">
-                        <div
-                          className={`rounded-full px-2 py-1 text-xs font-bold ${isCorrect ? 'bg-lime-400 text-white' : 'bg-gray-200 text-gray-700'
-                            }`}
-                        >
-                          ({alphabets[index]})
-                        </div>
-                        <div className="text-gray-800">
-                          <MathJax inline>{opt}</MathJax>
-                        </div>
+                    <div className="space-y-2 pl-3">
+                      {mcq.options.map((opt, index) => {
+                        const isCorrect = mcq.correctOption === index + 1
+                        return (
+                          <div key={index} className="flex gap-2 items-start">
+                            <div
+                              className={`rounded-full px-2 py-1 text-xs font-bold ${isCorrect
+                                ? 'bg-lime-400 text-white'
+                                : 'bg-gray-200 text-gray-700'
+                                }`}
+                            >
+                              ({alphabets[index]})
+                            </div>
+                            <div className="text-gray-800">
+                              <MathJax inline>{opt}</MathJax>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-semibold text-secondary-600 mb-1">Explanation:</p>
+                      <div className="text-gray-700 whitespace-pre-wrap">
+                        <MathJax inline>{mcq.explain}</MathJax>
                       </div>
-                    )
-                  })}
-                </div>
-
-                <div className="mt-4">
-                  <p className="text-sm font-semibold text-indigo-600 mb-1">Explanation:</p>
-                  <div className="text-gray-700 whitespace-pre-wrap">
-                    <MathJax inline>{mcq.explain}</MathJax>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))
+                </AccordionItem>
+              ))}
+            </Accordion>
           ) : (
             <div className="flex flex-col items-center justify-center text-center py-10">
               <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 48 48">

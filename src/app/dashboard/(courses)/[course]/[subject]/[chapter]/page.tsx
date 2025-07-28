@@ -133,7 +133,7 @@ const Page = ({ params }: PageProps) => {
   ]
 
   return (
-    <div className="mx-auto py-8 md:max-w-4xl">
+    <div className="mx-auto py-8 md:max-w-5xl">
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-white bg-gradient-to-r from-blue-600 to-purple rounded-2xl py-4 px-6 shadow-lg">
@@ -142,7 +142,7 @@ const Page = ({ params }: PageProps) => {
       </div>
 
       {/* Main Content Card */}
-      <Card fullWidth className="w-full  shadow-none border-none">
+      <Card fullWidth className="w-full px-0  shadow-none border-none">
         <CardHeader className="flex justify-center pb-2">
           <Chip
             size="lg"
@@ -154,7 +154,7 @@ const Page = ({ params }: PageProps) => {
           </Chip>
         </CardHeader>
 
-        <CardBody className="gap-6">
+        <CardBody  className="gap-6 px-0">
           {/* Category Selection */}
           {chapterName !== "mock" && (
             <div className="space-y-4">
@@ -163,7 +163,7 @@ const Page = ({ params }: PageProps) => {
                 value={category}
                 onValueChange={setCategory}
                 orientation="horizontal"
-                className="flex flex-wrap justify-center gap-4"
+                className="flex flex-wrap justify-center gap-2 md:gap-4"
                 classNames={{
                   wrapper: "gap-4"
                 }}
@@ -198,13 +198,14 @@ const Page = ({ params }: PageProps) => {
             <Accordion
               variant="bordered"
               defaultExpandedKeys={["topics"]}
-              className="shadow-sm"
+              className="shadow-sm px-2 md:px-4"
+              fullWidth
             >
               <AccordionItem
                 key="topics"
                 aria-label="Topics"
                 title={
-                  <span className="font-bold text-lg text-foreground-700">
+                  <span className="font-bold text-lg text-center text-foreground-700">
                     Expand Topics ({topics.length} available)
                   </span>
                 }
@@ -221,6 +222,7 @@ const Page = ({ params }: PageProps) => {
                   classNames={{
                     wrapper: "gap-3"
                   }}
+                  
                 >
                   {topics.map((topic, index) => (
                     <Radio
@@ -233,7 +235,7 @@ const Page = ({ params }: PageProps) => {
                       }}
                     >
                       <div className="flex items-center gap-2 justify-between w-full">
-                        <span className="font-medium text-foreground">{topic}</span>
+                        <span className="font-medium text-sm md:text-medium text-foreground">{topic}</span>
                         {chapter !== "mock" && (
                           <Chip
                             size="sm"

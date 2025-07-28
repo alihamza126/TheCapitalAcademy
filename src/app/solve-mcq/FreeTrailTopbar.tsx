@@ -14,10 +14,10 @@ const FreeTrialTopBar = ({ isFreeTrial }: FreeTrialTopBarProps) => {
       initial={{ y: -24, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="w-full bg-gradient-to-r from-purple to-pink border-b border-white/10 text-white sticky top-0 z-50 shadow-sm"
+      className="w-full bg-gradient-to-r from-purple to-pink border-b border-white/10 text-white  absolute  top-0 z-50 shadow-sm"
     >
       <div className="hidden md:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14">
+        <div className="flex items-center justify-between h-8">
           {/* Left - Logo + Free Trial Tag */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
