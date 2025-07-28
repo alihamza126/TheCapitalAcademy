@@ -7,7 +7,6 @@ import commonRouter from './server/routes/common.js';
 import reviewRouter from './server/routes/review.js';
 import { errorHandler } from './server/middleware/error.middleware.js';
 import mongoose from 'mongoose';
-import cors from 'cors'
 import { initCronJobs } from './server/corn/index.js';
 
 import dotenv from "dotenv";
@@ -39,13 +38,13 @@ const connectMongoDB = async () => {
 };
 
 connectMongoDB();
-initCronJobs();
-expressApp.use(express.json());
-expressApp.use(cookieParser());
+// initCronJobs();
 
 
 app.prepare().then(() => {
-
+  expressApp.use(express.json());
+  expressApp.use(cookieParser());
+  
   //routes start from here
   expressApp.use("/api/v1/users", userRouter);
   expressApp.use("/api/v1/common", commonRouter);
