@@ -484,17 +484,43 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 
 				{/* Desktop Header - Fixed */}
 				<div className="hidden lg:block flex-shrink-0 p-6">
-					<Card className="shadow-lg">
+					<Card className={`shadow-lg bg-gradient-to-r ${subject === "mock" && "from-purple to-pink/80"} `}>
 						<CardBody>
 							<div className="flex justify-between items-center mb-4">
 								<Button
-									variant="light"
+									variant={subject === "mock" ? "flat" : "light"}
 									startContent={<ArrowLeft size={18} />}
 									onClick={() => router.back()}
 									className="text-blue-600 font-medium"
 								>
 									Back
 								</Button>
+
+								{subject === "mock" && (
+									<div className="flex items-center gap-4 ">
+										<div className="flex items-center gap-3">
+											<PhosphorTimer size={28} className="text-white" />
+											<h2 className="text-xl font-bold text-white">
+												Time Remaining
+											</h2>
+										</div>
+
+										<div className="text-xl font-extrabold text-gray-200 tracking-wide">
+											{loading ? (
+												<span className="text-base  font-medium text-gray-500">
+													Calculating time...
+												</span>
+											) : (
+												<Timer
+													initialTimeInMinutes={150}
+													handleSaveAndExit={handleSaveAndExit}
+												/>
+											)}
+										</div>
+									</div>
+								)}
+
+
 								<div className="flex items-center gap-3">
 									{/* Auto-save indicator for desktop */}
 									{subject !== "mock" && (
@@ -527,27 +553,6 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 					</Card>
 				</div>
 
-				{/* Timer - Fixed */}
-				{subject === "mock" && (
-					<div className="flex-shrink-0 px-4 lg:px-6 mb-4 lg:mb-6">
-						<Card className="bg-gradient-to-r from-purple-500 to-blue-600 text-white shadow-xl">
-							<CardBody className="text-center py-4 lg:py-6">
-								<div className="flex items-center justify-center gap-2 mb-2">
-									<PhosphorTimer size={24} />
-									<span className="text-lg font-semibold">Time Remaining</span>
-								</div>
-								<div className="text-2xl lg:text-3xl font-bold">
-									{loading ? (
-										"Calculating time..."
-									) : (
-										<Timer initialTimeInMinutes={150} handleSaveAndExit={handleSaveAndExit} />
-									)}
-								</div>
-							</CardBody>
-						</Card>
-					</div>
-				)}
-
 				{/* Main Content Area - Flexible */}
 				<div className="flex-1 px-2 md:px-4 lg:px-6 pb-6 overflow-hidden">
 					<div className="h-full grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -557,8 +562,8 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 								<CardHeader className="flex-shrink-0">
 									<h4 className="text-lg font-semibold">Questions Overview</h4>
 								</CardHeader>
-								<CardBody className="flex-1 overflow-hidden">
-									<ScrollShadow className="h-full">
+								<CardBody className="flex-1 overflow-hidden ps-1">
+									<ScrollShadow className="h-full max-h-[70vh]">
 										<div className="flex flex-wrap gap-2 pb-4">
 											{mcqs.map((mcq, i) => (
 												<Button
@@ -855,7 +860,7 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 							</Button>
 						</ModalHeader>
 						<ModalBody className="pb-6">
-							<div className="flex flex-wrap gap-2">
+							<div className="flex flex-wrap justify-center gap-2 overflow-y-auto max-h-[90vh]">
 								{mcqs.map((mcq, i) => (
 									<Button
 										key={i}
@@ -1069,9 +1074,12 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 										</div>
 										<Spacer y={4} />
 										<div className="flex flex-col lg:flex-row gap-3 lg:gap-4 justify-center">
-											<Button color="primary" onPress={onReviewOpen} className="w-full lg:w-auto">
-												Review Answers
-											</Button>
+											{
+												subject !== "mock" &&
+												<Button color="primary" onPress={onReviewOpen} className="w-full lg:w-auto">
+													Review Answers
+												</Button>
+											}
 											<Button variant="bordered" onClick={() => router.back()} className="w-full lg:w-auto">
 												Continue
 											</Button>

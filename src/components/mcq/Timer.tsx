@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useEffect, useState } from "react"
 
-interface TimerProps {
+type TimerProps = {
   initialTimeInMinutes: number
   handleSaveAndExit: () => void
 }
@@ -12,7 +12,7 @@ const Timer = ({ initialTimeInMinutes, handleSaveAndExit }: TimerProps) => {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeRemaining((prevTime) => prevTime - 1)
+      setTimeRemaining((prevTime) => Math.max(prevTime - 1, 0))
     }, 1000)
 
     return () => clearInterval(timer)
@@ -25,12 +25,23 @@ const Timer = ({ initialTimeInMinutes, handleSaveAndExit }: TimerProps) => {
   }, [timeRemaining, handleSaveAndExit])
 
   const formatTime = (timeInSeconds: number): string => {
-    const minutes = Math.floor(timeInSeconds / 60)
+    const hours = Math.floor(timeInSeconds / 3600)
+    const minutes = Math.floor((timeInSeconds % 3600) / 60)
     const seconds = timeInSeconds % 60
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
+
+    return [
+      hours.toString().padStart(2, "0"),
+      minutes.toString().padStart(2, "0"),
+      seconds.toString().padStart(2, "0")
+    ].join(":")
   }
 
-  return <div>{formatTime(timeRemaining)}</div>
+  return (
+    <div className="font-mono">
+      {formatTime(timeRemaining)}
+    </div>
+  )
 }
 
 export default Timer
+

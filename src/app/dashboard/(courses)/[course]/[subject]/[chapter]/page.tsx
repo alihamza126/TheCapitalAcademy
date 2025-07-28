@@ -98,7 +98,7 @@ const Page = ({ params }: PageProps) => {
   }, [selectedTopic, mcqCount])
 
   const handleNextClick = () => {
-    if (isMcqAvailable || chapterName === "mock") {
+    if (isMcqAvailable || subject === "mock") {
       const encodedParams = `/solve-mcq?course=${encodeURIComponent(course)}&subject=${encodeURIComponent(subject)}&chapter=${encodeURIComponent(chapterName)}&topic=${encodeURIComponent(selectedTopic)}&category=${encodeURIComponent(category)}`
       router.push(encodedParams);
     } else {
