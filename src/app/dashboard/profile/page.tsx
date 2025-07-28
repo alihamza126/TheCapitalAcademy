@@ -1,7 +1,6 @@
 "use client"
 
 import UserUpdateForm from "@/components/dashboard/user-update-form"
-import { useSession } from "next-auth/react"
 
 interface PageProps {
   params: {

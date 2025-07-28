@@ -197,7 +197,7 @@ mcqRouter.post('/count', authUser, asyncWrapper(async (req, res) => {
         const chapter = req.body.chapter?.trim();
         const category = req.body.category?.trim();
         const topics = req.body?.topic; // array of topics
-        const userId = req.user.userId;
+        const userId = req.user.id;
 
         let matchCriteria = { course, subject, chapter };
 
@@ -274,7 +274,7 @@ mcqRouter.post('/count', authUser, asyncWrapper(async (req, res) => {
 
 // ===============================stats====================
 mcqRouter.get('/stats', authUser, asyncWrapper(async (req, res) => {
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     const progress = await UserProgress.findOne({ userId });
     if (!progress) {
@@ -329,7 +329,7 @@ mcqRouter.get('/stats', authUser, asyncWrapper(async (req, res) => {
 mcqRouter.put('/bookmark', authUser, asyncWrapper(async (req, res) => {
     try {
         const { mcqId } = req.body;
-        const userId = req.user.userId;
+        const userId = req.user.id;
         const user = await UserModel.updateOne(
             { _id: userId },
             {
@@ -345,7 +345,7 @@ mcqRouter.put('/bookmark', authUser, asyncWrapper(async (req, res) => {
 mcqRouter.put('/unbookmark', authUser, asyncWrapper(async (req, res) => {
     try {
         const { mcqId } = req.body;
-        const userId = req.user.userId;
+        const userId = req.user.id;
         const user = await UserModel.updateOne(
             { _id: userId },
             {
@@ -361,7 +361,7 @@ mcqRouter.put('/unbookmark', authUser, asyncWrapper(async (req, res) => {
 
 mcqRouter.get('/bookmarks', authUser, asyncWrapper(async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.user.id;
         const user = await UserModel.findById(userId).select('bookmarked_mcqs');
         const mcqs = await McqModel.find({ _id: { $in: user.bookmarked_mcqs } });
         res.json(mcqs);

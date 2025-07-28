@@ -24,7 +24,7 @@ reportRouter.get('/', asyncWrapper(async (req, res) => {
 
 //add new Report
 reportRouter.post('/', authUser, asyncWrapper(async (req, res) => {
-    const user = await UserModel.findById(req.user.userId);
+    const user = await UserModel.findById(req.user.id);
 
     const report = new ReportModel({
         postedBy: user._id,

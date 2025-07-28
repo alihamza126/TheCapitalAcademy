@@ -1,54 +1,56 @@
-import axios from 'axios'
-import { getServerSession } from 'next-auth'
-import { getSession } from 'next-auth/react'
-import authOptions from './auth'
+import axios from "axios";
+import { getServerSession } from "next-auth/next";
+import { getSession, signOut } from "next-auth/react";
+import authOptions from "./auth";
+import { redirect } from "next/navigation";
 
 // Create a custom Axios instance
 const Axios = axios.create({
-	baseURL: process.env.NEXT_PUBLIC_API_URL,
-	headers: {
-		'Content-Type': 'application/json',
-	},
-})
+   baseURL: process.env.NEXT_PUBLIC_API_URL,
+   headers: {
+      "Content-Type": "application/json",
+   },
+   withCredentials: true,
+});
 
-// Add a request interceptor to include the token in all requests
+// Add a request interceptor to include the token
 Axios.interceptors.request.use(
-	async (config) => {
-		// Get the session (and token) from NextAuth
-		const isServer = typeof window === 'undefined'
+   async (config) => {
+      let session;
+      const isServer = typeof window === "undefined";
 
-		const session = isServer ? await getServerSession(authOptions) : await getSession()
+      session = session = isServer
+         ? await getServerSession(authOptions)
+         : await getSession();
 
-		// If there's a token in the session, add it to the request headers
-		if (session?.accessToken) {
-			config.headers.Authorization = `Bearer ${session.accessToken}`
-		}
+      console.log("Session:", session); // Debugging
 
-		return config
-	},
-	(error) => {
-		return Promise.reject(error)
-	},
-)
+      if (session?.accessToken) {
+         config.headers.Authorization = `Bearer ${session.accessToken}`;
+      } else {
+         console.warn("No access token found in session");
+      }
 
-// Add a response interceptor to handle token expiration
-// Axios.interceptors.response.use(
-// 	(response) => response,
-// 	async (error) => {
-// 		const originalRequest = error.config
+      return config;
+   },
+   (error) => {
+      return Promise.reject(error);
+   }
+);
 
-// 		// If the error is 401 (Unauthorized) and we haven't already tried to refresh
-// 		if (error.response?.status === 401 && !originalRequest._retry) {
-// 			originalRequest._retry = true
+Axios.interceptors.response.use(
+   (response) => response,
+   (error) => {
+      if (error.response?.status === 401 || error.response?.status === 403) {
+         // Option 1: If you're using NextAuth
+         signOut();
 
-// 			// Here you could implement token refresh logic if needed
-// 			// For now, we'll just redirect to login
-// 			// window.location.href = '/login'
-// 			return Promise.reject(error)
-// 		}
+         // Option 2: If you're managing manually (clear localStorage, redirect)
+         localStorage.removeItem("token");
+         redirect("/signin");
+      }
+      return Promise.reject(error);
+   }
+);
 
-// 		return Promise.reject(error)
-// 	},
-// )
-
-export default Axios
+export default Axios;

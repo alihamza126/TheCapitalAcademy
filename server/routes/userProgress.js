@@ -15,7 +15,7 @@ progressRouter.post('/get', authUser, checkTrialStatus, asyncWrapper(async (req,
     const chapter = req.body.chapter?.trim();
     const topic = req.body.topic?.trim();
     const category = req.body.catagory?.trim(); // past, normal, solved, unsolved, wrong, all
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     const isTrialActive = req.user?.isTrialActive || false;
     console.log("req user", req.user)
@@ -91,7 +91,7 @@ progressRouter.post('/get', authUser, checkTrialStatus, asyncWrapper(async (req,
 
 progressRouter.put('/save', authUser, asyncWrapper(async (req, res) => {
     const { correctMcq = [], wrongMcq = [], finalSave = false } = req.body;
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     // Step 1: Pull conflicting entries to keep arrays clean
     const pulls = {};

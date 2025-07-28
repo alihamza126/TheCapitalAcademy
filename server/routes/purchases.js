@@ -12,7 +12,7 @@ const PurchaseRouter = express.Router();
 
 PurchaseRouter.post('/course', authUser, asyncWrapper(async (req, res) => {
     let { finalPrice, course, refCode, fileURL } = req.body;
-    const userId = req.user.userId;
+    const userId = req.user.id;
     const user = await UserModel.findById(userId);
     if (user) {
         finalPrice = parseInt(finalPrice);
@@ -34,7 +34,7 @@ PurchaseRouter.post('/course', authUser, asyncWrapper(async (req, res) => {
 // get purchase for user dashbaord
 PurchaseRouter.get('/dashboard', authUser, asyncWrapper(async (req, res) => {
     try {
-        const documents = await PurchaseModel.find({ user: req.user.userId });
+        const documents = await PurchaseModel.find({ user: req.user.id });
         const extractedData = documents.map(doc => {
             const { course, status, price, purchaseDate, expiryDate } = doc;
             return {
@@ -52,7 +52,7 @@ PurchaseRouter.get('/dashboard', authUser, asyncWrapper(async (req, res) => {
 }));
 
 PurchaseRouter.post('/trial', authUser, asyncWrapper(async (req, res) => {
-    const userId = req.user.userId;
+    const userId = req.user.id;
     const user = await UserModel.findById(userId);
     if (user) {
         // Check if the user already has a trial purchase

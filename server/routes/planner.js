@@ -41,7 +41,7 @@ const divideTopicsIntoWeeks = (topics, weeks) => {
 // Load user's study plan
 plannerRouter.get("/load", authUser, asyncWrapper(async (req, res) => {
   try {
-    const userId  = req.user.userId;
+    const userId  = req.user.id;
 
     // Find active study plan
     const studyPlan = await StudyPlan.findOne({
@@ -82,7 +82,7 @@ plannerRouter.post("/save", authUser, asyncWrapper(async (req, res) => {
     const { studyPlanId, courseType, totalWeeks, completedWeeks, weekIndex, completedAt, startDate } = req.body
 
     let studyPlan;
-    const userId = req.user.userId;
+    const userId = req.user.id;
 
     if (studyPlanId) {
       // Update existing study plan

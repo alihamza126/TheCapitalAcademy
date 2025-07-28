@@ -7,6 +7,7 @@ import commonRouter from './server/routes/common.js';
 import reviewRouter from './server/routes/review.js';
 import { errorHandler } from './server/middleware/error.middleware.js';
 import mongoose from 'mongoose';
+import cors from 'cors'
 import { initCronJobs } from './server/corn/index.js';
 
 import dotenv from "dotenv";
@@ -42,6 +43,7 @@ connectMongoDB();
 
 
 app.prepare().then(() => {
+  expressApp.use(cors());
   expressApp.use(express.json());
   expressApp.use(cookieParser());
   

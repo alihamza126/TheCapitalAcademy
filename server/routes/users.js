@@ -5,13 +5,13 @@ import bcrypt from "bcryptjs";
 import { registerSchema } from '../validators/users.validation.js';
 import { sendEmail } from '../helpers/mailer.js';
 import { authUser } from '../middleware/auth.middleware.js';
-
+import jwt from 'jsonwebtoken';
 const userRouter = express.Router();
 
 
 
 
-userRouter.post("/register", asyncWrapper(async (req, res) => {
+userRouter.post("/signup", asyncWrapper(async (req, res) => {
     const { username, email, password } = req.body;
     console.log(req.body);
     const parseResult = registerSchema.safeParse(req.body);
@@ -24,14 +24,6 @@ userRouter.post("/register", asyncWrapper(async (req, res) => {
     const user = await UserModel.findOne({ email })
     if (user) {
         return res.status(409).json({ error: "User already exists", success: false });
-    }
-
-    const userByUsername = await UserModel.findOne({
-        username: { $regex: `^${username}$`, $options: 'i' }, // email case-insensitive
-    });
-
-    if (userByUsername) {
-        return res.status(400).json({ error: "Username already exists", success: false });
     }
 
 
@@ -58,6 +50,83 @@ userRouter.post("/register", asyncWrapper(async (req, res) => {
         savedUser
     })
 }));
+
+userRouter.post("/login", asyncWrapper(async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        console.log(req.body)
+
+        const user = await UserModel.findOne({ email });
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+        const isValid = await bcrypt.compare(password, user.password);
+        if (!isValid) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        // Generate Access Token (Short Expiry)
+        const accessToken = jwt.sign({ id: user._id }, process.env.NEXTAUTH_SECRET, { expiresIn: '15m' });
+
+        // Generate Refresh Token (Long Expiry)
+        const refreshToken = jwt.sign({ id: user._id }, process.env.NEXTAUTH_SECRET, { expiresIn: '7d' });
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
+
+        return res.json({ accessToken, user: { id: user._id, name: user.name, email: user.email, role: user.role } }); ƒ
+    } catch (error) {
+        console.log(error)
+    }
+}));
+
+userRouter.post('/google-login', asyncWrapper(async (req, res) => {
+    const { username, email, image, role, provider } = req.body;
+    let user = await UserModel.findOne({ email });
+    let accessToken;
+    if (!user) {
+        user = await UserModel.create({
+            email,
+            username,
+            image,
+            provider,
+            password: 'google-auth', // Placeholder password
+        });
+    }
+
+    accessToken = jwt.sign({ id: user._id }, process.env.NEXTAUTH_SECRET, { expiresIn: '15m' });
+    const refreshToken = jwt.sign({ id: user._id }, process.env.NEXTAUTH_SECRET, { expiresIn: '7d' });
+
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+    return res.json({ accessToken, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+}));
+
+userRouter.post('/refresh-token', (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(403).json({ message: 'Invalid refresh token' });
+        }
+
+        const newAccessToken = jwt.sign({ id: decoded.id }, process.env.JWT_SECRET, { expiresIn: '15m' });
+
+        res.json({ accessToken: newAccessToken });
+    });
+});
 
 userRouter.post("/verifyemail", asyncWrapper(async (req, res) => {
     const { token } = req.body;
@@ -174,7 +243,7 @@ userRouter.get('/me/:id', asyncWrapper(async (req, res) => {
 
 userRouter.get("/me", authUser, asyncWrapper(async (req, res) => {
     try {
-        const id = req.user.userId;
+        const id = req.user.id;
 
         if (!id) {
             return res.status(400).json({ error: "Invalid user ID" })
@@ -193,9 +262,9 @@ userRouter.get("/me", authUser, asyncWrapper(async (req, res) => {
     }
 }));
 
-userRouter.put("/me",authUser, async (req, res) => {
+userRouter.put("/me", authUser, async (req, res) => {
     try {
-        const id = req.user.userId;
+        const id = req.user.id;
         const { image, firstName, lastName, phone, gender, dob, city, aggPercentage, username } = req.body
 
         // Validate ObjectId
