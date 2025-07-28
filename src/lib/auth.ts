@@ -51,7 +51,7 @@ const authOptions: NextAuthOptions = {
 						role: user.role,
 					},
 					process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET!,
-					{ expiresIn: '1h' }, // Short expiration for access token
+					{ expiresIn: '30d' }, // Short expiration for access token
 				)
 
 				return {
