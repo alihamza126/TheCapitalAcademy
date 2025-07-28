@@ -15,7 +15,7 @@ interface SubjectProps {
 
 const Subject = memo<SubjectProps>(({ name, img, link, isLocked = false }) => {
   const cardVariants = {
-    initial: { opacity: 0, y: 20 },
+    initial: { opacity: 0, y: 20},
     animate: { opacity: 1, y: 0 },
     hover: {
       scale: 1.01,
@@ -24,13 +24,13 @@ const Subject = memo<SubjectProps>(({ name, img, link, isLocked = false }) => {
   }
 
   const imageVariants = {
-    initial: { opacity: 0 },
+    initial: { opacity: 0, scale: 1.1 },
     animate: { opacity: 1 },
-    hover: { scale: 1.071 },
+    hover: { scale: 1.021 },
   }
 
   return (
-    <div className="w-full max-w-sm">
+    <div className="max-w-sm w-[47%] md:w-1/3  rounded-3xl">
       <motion.div variants={cardVariants} initial="initial" animate="animate" whileHover="hover" className="h-full">
         <Link
           href={isLocked ? "#" : link}
@@ -38,17 +38,17 @@ const Subject = memo<SubjectProps>(({ name, img, link, isLocked = false }) => {
           aria-label={isLocked ? `${name} - Locked` : `Go to ${name}`}
         >
           <Card
-            className={`h-full transition-all duration-300 ${
+            className={`h-full transition-all rounded-3xl  duration-300 ${
               isLocked ? "opacity-60 cursor-not-allowed" : "hover:shadow-xl cursor-pointer"
             }`}
           >
             <CardBody className="p-0">
-              <div className="relative aspect-video overflow-hidden">
+              <div className="relative aspect-video overflow-hidden p-0">
                 <motion.img
                   src={img}
                   alt={name}
                   variants={imageVariants}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-fill scale-120 p-0"
                   loading="lazy"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement

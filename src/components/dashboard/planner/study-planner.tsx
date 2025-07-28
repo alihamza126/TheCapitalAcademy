@@ -187,7 +187,7 @@ export default function StudyPlanner() {
 
   return (
     <div className="min-h-screen">
-      <div className="mx-auto px-4 py-8 max-w-7xl">
+      <div className="mx-auto py-8 max-w-7xl">
         {/* Header */}
         <PlannerHeader
           courseType={courseType}

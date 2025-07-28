@@ -655,13 +655,13 @@ const Navbar = () => {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.4, duration: 0.3 }}
-                        className="pt-4 border-t border-gray-200 mt-4 space-y-3"
+                        className="pt-4 border-t gap-1 flex flex-col border-gray-200 mt-4 space-y-2"
                       >
                         <Link href={'/signin'}>
                           <button className="block w-full text-center px-4 py-2.5 rounded-lg text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors duration-200 border border-gray-300">
                             Sign In
                           </button>
-                        </Link>
+                        </Link> 
                         <Link href={'/signup'}>
                           <button className="block w-full text-center px-4 py-2.5 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary-700 transition-colors duration-200 shadow-sm">
                             Sign Up

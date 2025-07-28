@@ -34,11 +34,11 @@ export default function PlannerHeader({
     <div className="mb-8">
       {/* Title */}
       <div className="text-center mb-8">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full">
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
+          <div className="p-3 bg-gradient-to-r from-purple to-pink rounded-full">
             <GraduationCap className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <h1 className="text-xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple  to-pink bg-clip-text text-transparent">
             Capital Academy Study Planner
           </h1>
         </div>

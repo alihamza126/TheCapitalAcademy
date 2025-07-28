@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -20,11 +20,12 @@ export default function LoginPage() {
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl") || "/";
   const { data: session, status } = useSession();
-  if(status === 'loading') return <Loader2 className="animate-spin h-6 w-6" />
 
-  if (session) {
-    router.push(callbackUrl);
-  }
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.push(callbackUrl);
+    }
+  }, [status])
 
   const {
     register,
@@ -98,7 +99,7 @@ export default function LoginPage() {
 
     try {
       // Simulate Google OAuth
-      await signIn("google",{callbackUrl:callbackUrl})
+      await signIn("google", { callbackUrl: callbackUrl })
       toast.dismiss(loadingToastId)
       setTimeout(() => {
         router.push(callbackUrl)

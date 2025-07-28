@@ -18,9 +18,10 @@ import {
   Bell,
 } from "lucide-react"
 import { easeInOut } from "framer-motion";
-import { Avatar } from "@heroui/react"
+import { Avatar, Button } from "@heroui/react"
 import { signOut, useSession } from "next-auth/react"
 import { Logo } from "@/components/common/navbar/Navbar"
+import ButtonCircle from "@/shared/Button/ButtonCircle"
 
 const menuItems = [
   // {
@@ -295,11 +296,14 @@ export default function DashboardLayout({
             >
               {/* Mobile Menu Header */}
               <div className="p-6 border-b border-white/30">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 justify-between">
                   <div className="w-10 h-10  flex items-center justify-center shadow-sm">
                     <Logo />
                   </div>
-                  <div>
+                  <div >
+                    <Button onPress={() => setIsMenuOpen(false)} size="sm" isIconOnly>
+                      <X />
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -347,7 +351,7 @@ export default function DashboardLayout({
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={()=>signOut()}
+                  onClick={() => signOut()}
                   className="w-full flex items-center gap-3 bg-rose-400 text-white px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 backdrop-blur-sm transition-all duration-200 touch-manipulation"
                 >
                   <LogOut className="w-5 h-5" />
@@ -466,7 +470,7 @@ export default function DashboardLayout({
 
         {/* Main Content */}
         <div
-          className={`flex-1 transition-all duration-400 ${sidebarCollapsed ? "lg:ml-18" : "lg:ml-70"} min-h-screen`}
+          className={`flex-1 w-full overflow-hidden transition-all duration-400 ${sidebarCollapsed ? "lg:ml-18" : "lg:ml-70"} min-h-screen`}
           style={{
             marginLeft: isMobile ? 0 : sidebarCollapsed ? "72px" : "280px",
           }}

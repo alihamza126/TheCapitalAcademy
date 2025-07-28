@@ -132,7 +132,7 @@ const Page = async ({ params }) => {
                     data.length == 0 &&
                     <p> not subject are here</p>
                 }
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap gap-x-3 gap-y-4 md:gap-4  justify-center">
                     {data.map((ele, index) => (
                         <Subject key={index} name={ele.name} img={ele.img} isLocked={(false) ? ele.name == 'MOCK TESTS' : false} link={(false) ? ele.name == 'MOCK TESTS' ? '#' : ele.link : ele.link} />
                     ))}

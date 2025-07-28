@@ -39,7 +39,7 @@ const connectMongoDB = async () => {
 };
 
 connectMongoDB();
-// initCronJobs();
+initCronJobs();
 
 
 app.prepare().then(() => {

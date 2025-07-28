@@ -58,9 +58,9 @@ const CourseDetails = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto py-8">
       <div className="sticky top-0 z-30 bg-white shadow rounded-xl px-6 py-4 mb-8">
-        <Typography variant="h4" className="text-indigo-600 font-bold text-center">
+        <Typography fontWeight="semibold" variant="h4" className="bg-gradient-to-r from-blue-600 via-purple  to-pink bg-clip-text text-transparent font-bold text-center">
           Bookmarked MCQs
         </Typography>
       </div>

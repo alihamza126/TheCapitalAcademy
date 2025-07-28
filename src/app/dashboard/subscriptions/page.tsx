@@ -66,17 +66,17 @@ const CourseDetails = () => {
   }, [])
 
   return (
-    <div className="max-w-full mx-auto px-4 py-10 space-y-6">
+    <div className="max-w-full mx-auto py-10 space-y-6">
       <Card className="shadow-sm border bg-white">
         <CardContent className="py-6 text-center">
-          <Typography variant="h4" className="text-primary font-bold">
+          <Typography variant="h4" className="bg-gradient-to-r from-blue-600 via-purple  to-pink bg-clip-text text-transparent font-bold">
             Course Details
           </Typography>
         </CardContent>
       </Card>
-      <Card className="shadow-sm border bg-white">
-        <CardContent className="overflow-x-auto p-0">
-          <Table>
+      <Card className="shadow-sm border bg-white overflow-auto ">
+        <CardContent className="overflow-x-scroll p-0">
+          <Table className=' overflow-x-auto'>
             <TableHeader>
               <TableRow className="bg-gray-100">
                 <TableHead className="text-sm font-semibold text-gray-700">Course</TableHead>

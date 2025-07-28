@@ -211,12 +211,12 @@ export default function ProfilePage() {
                 <BreadcrumbItem>Dashboard</BreadcrumbItem>
                 <BreadcrumbItem>Profile</BreadcrumbItem>
               </Breadcrumbs>
-              <h1 className="text-2xl font-bold text-default-700 mt-2">Profile Settings</h1>
+              <h1 className="text-2xl font-bold mt-2 bg-gradient-to-r from-blue-600 via-purple  to-pink bg-clip-text text-transparent">Profile Settings</h1>
             </div>
             <Chip
               color={profileCompletion === 100 ? "success" : profileCompletion > 50 ? "warning" : "danger"}
               variant="flat"
-              size="lg"
+              size="md"
             >
               {profileCompletion}% Complete
             </Chip>
