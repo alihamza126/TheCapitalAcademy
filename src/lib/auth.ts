@@ -1,180 +1,186 @@
-"ts-nocheck";
-import type { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
-import UserModel from "../../server/models/User.js";
-import bcrypt from "bcryptjs";
-import connectDB from "./connectDB";
-import jwt from "jsonwebtoken";
+import type { NextAuthOptions } from "next-auth"
+import CredentialsProvider from "next-auth/providers/credentials"
+import GoogleProvider from "next-auth/providers/google"
+import UserModel from "../../server/models/User.js"
+import bcrypt from "bcryptjs"
+import connectDB from "./connectDB"
+import jwt from "jsonwebtoken"
 
 const authOptions: NextAuthOptions = {
-   providers: [
-      GoogleProvider({
-         clientId: process.env.GOOGLE_CLIENT_ID!,
-         clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-         authorization: {
-            params: {
-               prompt: "consent",
-               access_type: "offline",
-               response_type: "code",
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
+    }),
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        try {
+          await connectDB()
+
+          if (!credentials?.email || !credentials?.password) {
+            throw new Error("Email and password are required")
+          }
+
+          const user = await UserModel.findOne({ email: credentials.email })
+
+          if (!user) {
+            throw new Error("No user found with this email")
+          }
+
+          const isValid = await bcrypt.compare(credentials.password, user.password)
+
+          if (!isValid) {
+            throw new Error("Invalid password")
+          }
+
+          // Generate a custom access token
+          const accessToken = jwt.sign(
+            {
+              userId: user._id.toString(),
+              email: user.email,
+              role: user.role,
             },
-         },
-      }),
-      CredentialsProvider({
-         name: "Credentials",
-         credentials: {
-            email: { label: "Email", type: "email" },
-            password: { label: "Password", type: "password" },
-         },
-         async authorize(credentials) {
-            await connectDB();
+            process.env.NEXTAUTH_SECRET!,
+            { expiresIn: "7d" }, // Consider shorter expiration for security
+          )
 
-            const user = await UserModel.findOne({ email: credentials?.email });
+          return {
+            id: user._id.toString(),
+            name: user.username,
+            role: user.role,
+            email: user.email,
+            image: user.image,
+            accessToken,
+          }
+        } catch (error) {
+          console.error("Authorization error:", error)
+          throw error
+        }
+      },
+    }),
+  ],
+  callbacks: {
+    async jwt({ token, user, account }) {
+      try {
+        await connectDB()
 
-            if (!user) {
-               throw new Error("No user found with this email");
-            }
+        // Google OAuth login
+        if (user && account?.provider === "google") {
+          const existingUser = await UserModel.findOne({ email: user.email })
 
-            const isValid = await bcrypt.compare(
-               credentials?.password || "",
-               user.password
-            );
-            if (!isValid) {
-               throw new Error("Invalid password");
-            }
+          if (!existingUser) {
+            const newUser = await UserModel.create({
+              username: user.name,
+              email: user.email,
+              image: user.image,
+              role: "user",
+              provider: "google",
+            })
 
-            // Generate a custom access token for your separate backend
+            token.id = newUser._id.toString()
+            token.role = newUser.role
+
             const accessToken = jwt.sign(
-               {
-                  userId: user._id.toString(),
-                  email: user.email,
-                  role: user.role,
-               },
-               process.env.NEXTAUTH_SECRET!,
-               { expiresIn: "365d" } // Short expiration for access token
-            );
+              {
+                userId: newUser._id.toString(),
+                email: newUser.email,
+                role: newUser.role,
+              },
+              process.env.NEXTAUTH_SECRET!,
+              { expiresIn: "7d" },
+            )
 
-            return {
-               id: user._id.toString(),
-               name: user.username,
-               role: user.role,
-               email: user.email,
-               image: user.image,
-               accessToken, // Include the access token in the user object
-            };
-         },
-      }),
-   ],
+            token.accessToken = accessToken
+          } else {
+            token.id = existingUser._id.toString()
+            token.role = existingUser.role
 
-   callbacks: {
-      async jwt({ token, user, account }) {
-         await connectDB();
+            const accessToken = jwt.sign(
+              {
+                userId: existingUser._id.toString(),
+                email: existingUser.email,
+                role: existingUser.role,
+              },
+              process.env.NEXTAUTH_SECRET!,
+              { expiresIn: "7d" },
+            )
 
-         // If this is the first login, user will be defined
-         if (user && account?.provider === "google") {
-            // Check if user exists in DB
-            token.accessToken = user.accessToken;
-            const existingUser = await UserModel.findOne({ email: user.email });
+            token.accessToken = accessToken
+          }
 
-            if (!existingUser) {
-               const newUser = await UserModel.create({
-                  username: user.name,
-                  email: user.email,
-                  image: user.image,
-                  role: "user", // or any default role
-                  provider: "google",
-               });
+          token.name = user.name
+          token.email = user.email
+          token.image = user.image
+          token.provider = "google"
+        }
 
-               token.id = newUser._id.toString();
-               token.role = newUser.role;
-               const accessToken = jwt.sign(
-                  {
-                     userId: newUser._id.toString(),
-                     email: newUser.email,
-                     role: newUser.role,
-                  },
+        // Credentials login
+        if (user && account?.provider === "credentials") {
+          token.id = user.id
+          token.name = user.name
+          token.email = user.email
+          token.image = user.image
+          token.role = user.role
+          token.accessToken = user.accessToken
+          token.provider = "credentials"
+        }
 
-                  process.env.NEXTAUTH_SECRET!,
-                  { expiresIn: "365d" } // Short expiration for access token
-               );
-               token.accessToken = accessToken;
-            } else {
-               token.id = existingUser._id.toString();
-               token.role = existingUser.role;
-               const accessToken = jwt.sign(
-                  {
-                     userId: existingUser._id.toString(),
-                     email: existingUser.email,
-                     role: existingUser.role,
-                  },
+        return token
+      } catch (error) {
+        console.error("JWT callback error:", error)
+        return token
+      }
+    },
 
-                  process.env.NEXTAUTH_SECRET!,
-                  { expiresIn: "365d" } // Short expiration for access token
-               );
-               token.accessToken = accessToken;
-            }
+    async session({ session, token }) {
+      session.accessToken = token.accessToken as string
 
-            token.name = user.name;
-            token.email = user.email;
-            token.image = user.image;
-            token.provider = "google";
-         }
+      if (session.user) {
+        session.user.id = token.id as string
+        session.user.email = token.email as string
+        session.user.name = token.name as string
+        session.user.image = token.image as string
+        session.user.role = token.role as string
+        session.user.provider = token.provider as string
+      }
 
-         // Credentials login
-         if (user && account?.provider === "credentials") {
-            token.id = user.id;
-            token.name = user.name;
-            token.email = user.email;
-            token.image = user.image;
-            token.role = user.role;
-            token.accessToken = user.accessToken;
-            token.provider = "credentials";
-         }
-
-         return token;
+      return session
+    },
+  },
+  pages: {
+    signIn: "/signin",
+    error: "/error",
+    newUser: "/signup",
+  },
+  session: {
+    strategy: "jwt",
+    maxAge: 7 * 24 * 60 * 60, // 7 days - consider matching token expiration
+  },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
       },
+    },
+  },
+  secret: process.env.NEXTAUTH_SECRET!,
+  debug: process.env.NODE_ENV === "development",
+}
 
-      async session({ session, token }) {
-         session.accessToken = token.accessToken;
-
-         if (session.user) {
-            session.user.id = token.id;
-            session.user.email = token.email;
-            session.user.name = token.name;
-            session.user.image = token.image;
-            session.user.role = token.role;
-            session.user.provider = token.provider;
-         }
-
-         return session;
-      },
-   },
-
-   pages: {
-      signIn: "/signin",
-      error: "/error",
-      newUser: "/signup",
-   },
-
-   session: {
-      strategy: "jwt",
-      maxAge: 30 * 24 * 60 * 60, // 30 days for the session
-   },
-   cookies: {
-      sessionToken: {
-         name: `next-auth.session-token`,
-         options: {
-            httpOnly: true,
-            sameSite: "lax",
-            path: "/",
-            secure: process.env.NODE_ENV === "production",
-         },
-      },
-   },
-
-   secret: process.env.NEXTAUTH_SECRET!,
-   // debug: process.env.NODE_ENV === "development",
-   debug: true,
-};
-
-export default authOptions;
+export default authOptions

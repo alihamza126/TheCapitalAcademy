@@ -1,35 +1,36 @@
-import axios from 'axios'
-import { getServerSession } from 'next-auth'
-import { getSession } from 'next-auth/react'
-import authOptions from './auth'
+import axios from "axios";
+// import { getServerSession } from "next-auth";
+import { getSession } from "next-auth/react";
+// import authOptions from "./auth";
 
 // Create a custom Axios instance
 const Axios = axios.create({
-	baseURL: process.env.NEXT_PUBLIC_API_URL,
-	headers: {
-		'Content-Type': 'application/json',
-	},
-})
+   baseURL: process.env.NEXT_PUBLIC_API_URL,
+   headers: {
+      "Content-Type": "application/json",
+   },
+});
 
 // Add a request interceptor to include the token in all requests
 Axios.interceptors.request.use(
-	async (config) => {
-		// Get the session (and token) from NextAuth
-		const isServer = typeof window === 'undefined'
+   async (config) => {
+      // Get the session (and token) from NextAuth
+      const isServer = typeof window === "undefined";
 
-		const session = isServer ? await getServerSession(authOptions) : await getSession()
+      // const session = isServer ? await getServerSession(authOptions) : await getSession()
+      const session = await getSession();
 
-		// If there's a token in the session, add it to the request headers
-		if (session?.accessToken) {
-			config.headers.Authorization = `Bearer ${session.accessToken}`
-		}
+      // If there's a token in the session, add it to the request headers
+      if (session?.accessToken) {
+         config.headers.Authorization = `Bearer ${session.accessToken}`;
+      }
 
-		return config
-	},
-	(error) => {
-		return Promise.reject(error)
-	},
-)
+      return config;
+   },
+   (error) => {
+      return Promise.reject(error);
+   }
+);
 
 // Add a response interceptor to handle token expiration
 // Axios.interceptors.response.use(
@@ -51,4 +52,4 @@ Axios.interceptors.request.use(
 // 	},
 // )
 
-export default Axios
+export default Axios;

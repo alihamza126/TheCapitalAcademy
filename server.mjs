@@ -39,11 +39,10 @@ const connectMongoDB = async () => {
 };
 
 connectMongoDB();
-expressApp.use(cors({ origin: process.env.NEXT_PUBLIC_API_URL, credentials: true }))
+initCronJobs();
 expressApp.use(express.json());
 expressApp.use(cookieParser());
 
-initCronJobs();
 
 app.prepare().then(() => {
 

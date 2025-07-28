@@ -13,5 +13,6 @@ export const publicPages = [
 	'/pages/about',
 	'/checkout',
 	'/calculator',
-	'/privacy-policy'
+	'/privacy-policy',
+	"/api/auth", // NextAuth API routes
 ]
