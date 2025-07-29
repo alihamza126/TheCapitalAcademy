@@ -1,7 +1,11 @@
 import nodemailer from 'nodemailer'
 import bcryptjs from 'bcryptjs'
 import UserModel from '../models/User.js'
-import { generateEmailHTML } from './mail.template.js'
+import { generateEmailHTML } from './mail.template.js';
+import dotenv from "dotenv";
+dotenv.config({
+	path: "./.env.local",
+}); // 👈
 
 export const sendEmail = async ({ email, emailType, userId, username }) => {
 	try {
@@ -21,17 +25,34 @@ export const sendEmail = async ({ email, emailType, userId, username }) => {
 		}
 
 		// Looking to send emails in production? Check out our Email API/SMTP product!
-		var transport = nodemailer.createTransport({
-			host: "sandbox.smtp.mailtrap.io",
-			port: 2525,
+		// var transport = nodemailer.createTransport({
+		// 	host: process.env.SMTP_HOST || 'smtp.mailtrap.io',
+		// 	port: process.env.SMTP_PORT || 587,
+		// 	auth: {
+		// 		user: process.env.SMTP_USER || "c8d2a5aabb9f20",
+		// 		pass: process.env.SMTP_PASS || "a2f6b5e6c7d1e2",
+		// 	}
+		// });
+		// const transport = nodemailer.createTransport({
+		// 	service: "Zoho",
+		// 	host: 'smtp.zoho.com',
+		// 	port: 465,
+		// 	auth: {
+		// 		user: 'support@zohoaccounts.com', // Your email address
+		// 		pass: 'MbnRRYYgQbwU' // Your email password
+		// 	}
+		// });
+		const transport = nodemailer.createTransport({
+			service: 'gmail',
 			auth: {
-				user: "a4a4af3e0cbd7f",
-				pass: "c8d2a5aabb9f20"
+				user: 'thecapitalacademy.online@gmail.com', // Your email address
+				pass: 'wnzc ewdg nqtr byhj' // Your email password
 			}
 		});
 
+
 		const mailOptions = {
-			from: 'alihamzageo75@mailtrap.com',
+			from: "thecapitalacademy.online@gmail.com",
 			to: email,
 			subject:
 				emailType === 'VERIFY' ? 'Verify your email'

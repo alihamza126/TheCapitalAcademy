@@ -42,8 +42,11 @@ Axios.interceptors.response.use(
    (response) => response,
    (error) => {
       if (typeof window !== "undefined") {
-         console.log("signout");
-         window.location.href = "/signout";
+         if (error.response?.status === 401) {
+            console.warn("Unauthorized access - redirecting to signout");
+            console.log("signout");
+            window.location.href = "/signout";
+         }
       }
       return Promise.reject(error);
    }

@@ -34,26 +34,25 @@ export default function PreMedSignup() {
   const [showPw, setShowPw] = useState(false)
   const [showPw2, setShowPw2] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  
+
   const [formData, setFormData] = useState<FormData>({
     fullName: '',
     email: '',
     password: '',
     confirmPassword: ''
   })
-  
+
   const [errors, setErrors] = useState<FormErrors>({})
   const [touched, setTouched] = useState<Record<string, boolean>>({})
 
   const baseInput = 'w-full px-4 py-3 pr-12 rounded-md border transition'
-  
+
   const getInputClasses = (fieldName: keyof FormData) => {
     const hasError = errors[fieldName] && touched[fieldName]
-    return `${baseInput} ${
-      hasError 
-        ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-200 focus:border-red-400' 
+    return `${baseInput} ${hasError
+        ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-200 focus:border-red-400'
         : 'border-gray-300 bg-white focus:ring-2 focus:ring-brand/60 focus:border-brand/60'
-    }`
+      }`
   }
 
   /* --------------------------- validation functions -------------------------- */
@@ -63,26 +62,28 @@ export default function PreMedSignup() {
         if (!value.trim()) return 'Full name is required'
         if (value.trim().length < 2) return 'Full name must be at least 2 characters'
         return undefined
-        
+
       case 'email':
         if (!value.trim()) return 'Email is required'
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(value)) return 'Please enter a valid email address'
         return undefined
-        
+
       case 'password':
         if (!value) return 'Password is required'
         if (value.length < 8) return 'Password must be at least 8 characters'
         if (!/(?=.*[a-z])/.test(value)) return 'Password must contain at least one lowercase letter'
         if (!/(?=.*[A-Z])/.test(value)) return 'Password must contain at least one uppercase letter'
         if (!/(?=.*\d)/.test(value)) return 'Password must contain at least one number'
+        if (!/(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(value)) return 'Password must contain at least one special character'
         return undefined
-        
+
+
       case 'confirmPassword':
         if (!value) return 'Please confirm your password'
         if (value !== formData.password) return 'Passwords do not match'
         return undefined
-        
+
       default:
         return undefined
     }
@@ -90,7 +91,7 @@ export default function PreMedSignup() {
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
-    
+
     Object.keys(formData).forEach((key) => {
       const fieldName = key as keyof FormData
       const error = validateField(fieldName, formData[fieldName])
@@ -98,7 +99,7 @@ export default function PreMedSignup() {
         newErrors[fieldName] = error
       }
     })
-    
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -106,7 +107,7 @@ export default function PreMedSignup() {
   /* --------------------------- event handlers -------------------------- */
   const handleInputChange = (name: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [name]: value }))
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: undefined }))
@@ -121,14 +122,14 @@ export default function PreMedSignup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     // Mark all fields as touched
     const allTouched = Object.keys(formData).reduce((acc, key) => {
       acc[key] = true
       return acc
     }, {} as Record<string, boolean>)
     setTouched(allTouched)
-    
+
     if (!validateForm()) {
       toast.error('Please fix the errors before submitting')
       return
@@ -145,7 +146,7 @@ export default function PreMedSignup() {
       })
 
       toast.success('Account created successfully!')
-      
+
       // Reset form
       setFormData({
         fullName: '',
@@ -154,13 +155,13 @@ export default function PreMedSignup() {
         confirmPassword: ''
       })
       setTouched({})
-      
+
       // You might want to redirect here
       // router.push('/dashboard') or similar
-      
+
     } catch (error: any) {
       console.error('Registration error:', error)
-      
+
       if (error.response?.data?.message) {
         setErrors({ general: error.response.data.message })
         toast.error(error.response.data.message)
@@ -179,7 +180,7 @@ export default function PreMedSignup() {
   }
 
   const handleGoogleSignup = () => {
-    signIn('google',{callbackUrl:"/"})
+    signIn('google', { callbackUrl: "/" })
   }
 
   /* --------------------------- component markup -------------------------- */
@@ -271,9 +272,9 @@ export default function PreMedSignup() {
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="fullName">Full name</Label>
-                    <Input 
-                      id="fullName" 
-                      placeholder="Alex Karev" 
+                    <Input
+                      id="fullName"
+                      placeholder="Alex Karev"
                       className={getInputClasses('fullName')}
                       value={formData.fullName}
                       onChange={(e) => handleInputChange('fullName', e.target.value)}
@@ -286,10 +287,10 @@ export default function PreMedSignup() {
                   </div>
                   <div>
                     <Label htmlFor="email">Email</Label>
-                    <Input 
-                      id="email" 
-                      type="email" 
-                      placeholder="you@example.com" 
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="you@example.com"
                       className={getInputClasses('email')}
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
