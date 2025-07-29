@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 export default function SignOutPage() {
   useEffect(() => {
     toast.loading("Signing you out Signin again ...", { duration: 5000 });
-    signOut({ callbackUrl: "/singout" }); // redirect after signout
+    signOut({ callbackUrl: "/signout" }); // redirect after signout
   }, []);
 
   return (

@@ -7,8 +7,8 @@ const siteMetadata = {
     language: 'en-us',
     theme: 'system', // system, dark or light
     siteUrl: 'https://thecapitalacademy.online', // your website URL
-    siteLogo: '/public/logo.png',
-    socialBanner: '/public/social-banner.png', // add social banner in the public folder
+    siteLogo: '/logo.png',
+    socialBanner: '/social-banner.png', // add social banner in the public folder
     email: 'thecapitalacademy.online@gmail.com', 
     facebook: 'https://www.facebook.com/profile.php?id=61552018766463&mibextid=ZbWKwL',
     instagram: 'https://www.instagram.com/thecapitalacademy.online?igsh=MWF6eGgzcnZyYTNjNw%3D%3D',
