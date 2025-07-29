@@ -88,13 +88,13 @@ export const generateEmailHTML = ({ type, token, domain, username = 'User', cour
     <body>
       <div class="email-container">
         <div class="email-header">
-          <h1>Accountdeal.com</h1>
+          <h1>The Capital Academy</h1>
         </div>
         <div class="email-body">
           ${bodyContent}
         </div>
         <div class="email-footer">
-          &copy; ${new Date().getFullYear()} accountdeal. All rights reserved.
+          &copy; ${new Date().getFullYear()} TheCapitalAcademy. All rights reserved.
         </div>
       </div>
     </body>
