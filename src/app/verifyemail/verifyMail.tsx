@@ -79,10 +79,10 @@ export default function VerifyEmailPage() {
                             Your email has been verified!
                         </p>
                         <Link
-                            href="/login"
+                            href="/signin"
                             className="mt-4 inline-block text-blue-600 dark:text-blue-400 font-medium underline"
                         >
-                            Go to Login
+                            Go to Signin
                         </Link>
                     </motion.div>
                 )}

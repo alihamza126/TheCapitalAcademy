@@ -138,9 +138,9 @@ const authOptions: NextAuthOptions = {
    },
 
    pages: {
-      signIn: "/login",
+      signIn: "/signin",
       error: "/error",
-      newUser: "/register",
+      newUser: "/signup", // Redirect here if new user
    },
 
    session: {

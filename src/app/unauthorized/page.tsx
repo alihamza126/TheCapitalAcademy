@@ -17,8 +17,8 @@ export default function UnauthorizedPage() {
         <Link href="/" className="px-4 py-2 bg-secondary2 text-white hover:bg-gray-300 rounded-md transition-colors">
           Return Home
         </Link>
-        <Link href="/login" className="px-4 py-2 bg-purple text-white hover:bg-blue-600 rounded-md transition-colors">
-          Login as Admin
+        <Link href="/signin" className="px-4 py-2 bg-purple text-white hover:bg-blue-600 rounded-md transition-colors">
+          Signin
         </Link>
       </div>
     </div>
