@@ -25,9 +25,23 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      router.push(callbackUrl);
+      try {
+        const url = new URL(callbackUrl, window.location.origin)
+        const isSameOrigin = url.origin === window.location.origin
+
+        if (!callbackUrl || !isSameOrigin) {
+          router.push('/') // fallback route (e.g., homepage)
+        } else {
+          router.push(callbackUrl)
+        }
+      } catch (err) {
+        // Invalid URL format or runtime error
+        console.error('Broken callbackUrl:', err)
+        router.push('/')
+      }
     }
-  }, [status])
+  }, [status, callbackUrl, router])
+
 
   const {
     register,
