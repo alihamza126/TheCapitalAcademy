@@ -252,7 +252,7 @@ userRouter.get("/me", authUser, asyncWrapper(async (req, res) => {
         const user = await UserModel.findById(id).select("-password -forgotPasswordToken -verifyToken")
 
         if (!user) {
-            return res.status(404).json({ error: "User not found" })
+            return res.status(401).json({ error: "User not found" })
         }
 
         res.json({ user })
@@ -320,7 +320,7 @@ userRouter.put("/me", authUser, async (req, res) => {
         })
 
         if (!updatedUser) {
-            return res.status(404).json({ error: "User not found" })
+            return res.status(401).json({ error: "User not found" })
         }
 
         res.json({

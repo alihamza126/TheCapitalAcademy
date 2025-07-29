@@ -3,6 +3,11 @@ import Axios from '@/lib/Axios';
 import React from 'react'
 
 
+export const metadata = {
+  title: "My Courses",
+  description: `View and manage your enrolled courses.`,
+};
+
 
 const page = async () => {
   let activeCourses = [];

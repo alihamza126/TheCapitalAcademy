@@ -14,8 +14,9 @@ progressRouter.post('/get', authUser, checkTrialStatus, asyncWrapper(async (req,
     const subject = req.body.subject?.trim();
     const chapter = req.body.chapter?.trim();
     const topic = req.body.topic?.trim();
-    let category = req.body.catagory?.trim(); // past, normal, solved, unsolved, wrong, all
+    let category = req.body.category?.trim(); // past, normal, solved, unsolved, wrong, all
     const userId = req.user.id;
+    console.log("category", category)
 
     const isTrialActive = req.user?.isTrialActive || false;
     console.log("req user", req.user)
@@ -97,10 +98,15 @@ progressRouter.post('/get', authUser, checkTrialStatus, asyncWrapper(async (req,
 }));
 
 progressRouter.put('/save', authUser, asyncWrapper(async (req, res) => {
-    const { correctMcq = [], wrongMcq = [], finalSave = false } = req.body;
+    const {
+        correctMcq = [],  // MCQs answered correctly
+        wrongMcq = [],    // MCQs answered incorrectly
+        finalSave = false // Whether this is the last save attempt for the session
+    } = req.body;
+
     const userId = req.user.id;
 
-    // Step 1: Pull conflicting entries to keep arrays clean
+    // Step 1: Remove conflicting entries to avoid duplication
     const pulls = {};
     if (correctMcq.length > 0) pulls['wrong'] = { $in: correctMcq };
     if (wrongMcq.length > 0) pulls['solved'] = { $in: wrongMcq };
@@ -112,8 +118,8 @@ progressRouter.put('/save', authUser, asyncWrapper(async (req, res) => {
         );
     }
 
-    // Step 2: Add correct/wrong mcqs
-    if (correctMcq.length || wrongMcq.length) {
+    // Step 2: Add new progress data (both solved and wrong)
+    if (correctMcq.length > 0 || wrongMcq.length > 0) {
         await UserProgress.updateOne(
             { userId },
             {
@@ -127,7 +133,7 @@ progressRouter.put('/save', authUser, asyncWrapper(async (req, res) => {
         );
     }
 
-    // Step 3: Track total save count
+    // Step 3: Increment total save count only if it's the final save
     if (finalSave) {
         await UserProgress.updateOne(
             { userId },
@@ -136,8 +142,9 @@ progressRouter.put('/save', authUser, asyncWrapper(async (req, res) => {
         );
     }
 
-    res.status(200).json({ message: 'Progress saved' });
+    return res.status(200).json({ message: 'Progress saved successfully' });
 }));
+
 
 
 

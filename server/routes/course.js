@@ -13,7 +13,7 @@ const courseRouter = express.Router();
 courseRouter.get('/active-courses', authUser, async (req, res) => {
     try {
         const user = await UserModel.findById(req.user.id)
-        if (!user) return res.status(404).json({ error: 'User not found' })
+        if (!user) return res.status(401).json({ error: 'User not found' })
 
         const activeCourses = []
 

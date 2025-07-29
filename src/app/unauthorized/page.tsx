@@ -1,5 +1,11 @@
 import Link from "next/link"
 
+
+export const metadata = {
+  title: "Unauthorized Access",
+  description: `You do not have permission to access this page. This area is restricted to administrators only.`,
+};
+
 export default function UnauthorizedPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] px-4">

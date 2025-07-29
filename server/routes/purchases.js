@@ -27,7 +27,7 @@ PurchaseRouter.post('/course', authUser, asyncWrapper(async (req, res) => {
         await newPurchase.save();
         return res.json({ message: "File uploaded", fileURL });
     } else {
-        res.status(400).json({ error: "User not found." });
+        res.status(401).json({ error: "User not found." });
     }
 }));
 
@@ -75,7 +75,7 @@ PurchaseRouter.post('/trial', authUser, asyncWrapper(async (req, res) => {
         await user.save();
         return res.json({ message: "trail activated successfully" });
     } else {
-        res.status(400).json({ error: "User not found." });
+        res.status(401).json({ error: "User not found." });
     }
 }));
 

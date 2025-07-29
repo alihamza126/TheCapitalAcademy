@@ -138,6 +138,7 @@ const menuItemVariants = {
   },
 }
 
+
 export default function DashboardLayout({
   children,
 }: {

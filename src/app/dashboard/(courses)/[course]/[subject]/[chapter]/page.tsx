@@ -42,6 +42,7 @@ interface PageProps {
   }
 }
 
+
 const Page = ({ params }: PageProps) => {
   const { course, subject, chapter } = params
   const router = useRouter()

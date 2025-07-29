@@ -4,6 +4,12 @@ import { notFound } from "next/navigation";
 
 
 
+export const metadata = {
+    title: "Chapters",
+    description: `View and manage your enrolled courses.`,
+  };
+
+
 const Page = async ({ params }) => {
     const { course, subject } = await params;
     console.log(course, subject);

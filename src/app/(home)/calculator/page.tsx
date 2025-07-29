@@ -14,6 +14,7 @@ import {
   Paper,
 } from "@mui/material";
 
+
 const Calculator = () => {
   const [result, setResult] = useState(null);
   const [data, setData] = useState({

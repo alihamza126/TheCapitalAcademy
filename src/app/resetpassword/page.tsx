@@ -9,6 +9,7 @@ import toast from 'react-hot-toast'
 import { Eye, EyeOff } from 'lucide-react'
 import { Button } from '@heroui/button'
 
+
 export default function ResetPasswordPage() {
     const router = useRouter()
     const [token, setToken] = useState<string>('')

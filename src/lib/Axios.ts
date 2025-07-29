@@ -41,13 +41,9 @@ Axios.interceptors.request.use(
 Axios.interceptors.response.use(
    (response) => response,
    (error) => {
-      if (error.response?.status === 401 || error.response?.status === 403) {
-         // Option 1: If you're using NextAuth
-         signOut();
-
-         // Option 2: If you're managing manually (clear localStorage, redirect)
-         localStorage.removeItem("token");
-         redirect("/signin");
+      if (typeof window !== "undefined") {
+         console.log("signout");
+         window.location.href = "/signout";
       }
       return Promise.reject(error);
    }

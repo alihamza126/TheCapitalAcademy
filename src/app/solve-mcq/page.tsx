@@ -3,6 +3,13 @@ import Axios from '@/lib/Axios';
 import React from 'react'
 import FreeTrialTopBar from './FreeTrailTopbar';
 
+
+export const metadata = {
+    title: "MCQs - Solve MCQs",
+    description: `Solve MCQs for various subjects and chapters. Track your progress and improve your skills with our comprehensive MCQ platform.`,
+    keywords: "MCQs, solve MCQs, practice MCQs, online MCQs, MCQ platform, educational MCQs, subject MCQs, chapter MCQs, progress tracking",
+};
+
 const page = async ({ searchParams }) => {
     let data = [];
     const {

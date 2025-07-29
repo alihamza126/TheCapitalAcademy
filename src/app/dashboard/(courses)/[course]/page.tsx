@@ -3,7 +3,12 @@
 import { redirect } from 'next/navigation'
 import Subject from '@/components/dashboard/Subject';
 import Axios from '@/lib/Axios';
-import { Empty } from '@phosphor-icons/react/dist/ssr';
+
+
+export const metadata = {
+    title: "Select Subject",
+    description: `Select a subject to start your preparation for the course.`,
+  };
 
 
 const Page = async ({ params }) => {
