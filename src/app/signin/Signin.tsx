@@ -84,17 +84,28 @@ export default function LoginPage() {
         redirect: false, // Prevent automatic redirection
         callbackUrl: callbackUrl,
       }).then((res) => {
-        if (res?.error) {
-          return toast.error(res.error);
+        if (!res?.ok) {
+          console.log();
+          return toast.error("Invalid email or password", {
+            icon: "❌",
+            duration: 4000,
+            style: {
+              borderRadius: "10px",
+              background: "#EF4444",
+              color: "#fff",
+            },
+          });
         }
         if (res?.ok) {
           router.push(callbackUrl);
         }
       }).catch((err) => {
         toast.error(err);
+        console.log(err)
       })
 
     } catch (error) {
+      console.error("Login failed:", error);
       // already handled in toast
     } finally {
       toast.dismiss('login');

@@ -6,7 +6,6 @@ import { motion } from 'framer-motion'
 import { Eye, EyeOff, HelpCircle, ArrowRight, Loader2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import axios from 'axios'
 import toast from 'react-hot-toast'
 import { Button } from '@heroui/button'
 import Axios from '@/lib/Axios'
@@ -74,8 +73,8 @@ export default function PreMedSignup() {
         if (value.length < 8) return 'Password must be at least 8 characters'
         if (!/(?=.*[a-z])/.test(value)) return 'Password must contain at least one lowercase letter'
         if (!/(?=.*[A-Z])/.test(value)) return 'Password must contain at least one uppercase letter'
-        if (!/(?=.*\d)/.test(value)) return 'Password must contain at least one number'
-        if (!/(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(value)) return 'Password must contain at least one special character'
+        // if (!/(?=.*\d)/.test(value)) return 'Password must contain at least one number'
+        // if (!/(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(value)) return 'Password must contain at least one special character'
         return undefined
 
 
@@ -185,7 +184,7 @@ export default function PreMedSignup() {
 
   /* --------------------------- component markup -------------------------- */
   return (
-    <div className="relative isolate min-h-screen bg-gradient-to-br from-fuchsia-50 via-pink-50 to-rose-100">
+    <div className="px-0 relative overflow-hidden isolate min-h-screen bg-gradient-to-br from-fuchsia-50 via-pink-50 to-rose-100">
       {/* decorative "bubbles" */}
       <motion.div
         initial={{ opacity: 0, scale: 0.7 }}
@@ -201,7 +200,7 @@ export default function PreMedSignup() {
       />
 
       {/* main grid */}
-      <div className="mx-auto grid max-w-7xl min-h-screen grid-cols-1 lg:grid-cols-2">
+      <div className="mx-auto px- grid max-w-7xl min-h-screen grid-cols-1 lg:grid-cols-2">
         {/* ------------- LEFT HERO ------------- */}
         <div className="relative hidden overflow-hidden lg:block">
           {/* background illustration */}
@@ -226,7 +225,7 @@ export default function PreMedSignup() {
           </motion.svg>
 
           {/* tagline */}
-          <div className="relative z-10 flex h-full flex-col items-center justify-center px-16 text-white">
+          <div className="relative z-10 flex h-full flex-col items-center justify-center md:px-16 text-white">
             <motion.h1
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
@@ -248,7 +247,7 @@ export default function PreMedSignup() {
         </div>
 
         {/* ------------- RIGHT FORM ------------- */}
-        <div className="flex items-center justify-center px-6 py-16 md:px-2">
+        <div className="flex items-center justify-center px-0 py-16 md:px-2">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -310,7 +309,7 @@ export default function PreMedSignup() {
                     <Input
                       id="password"
                       type={showPw ? 'text' : 'password'}
-                      placeholder="••••••••"
+                      placeholder="Example@123"
                       className={getInputClasses('password')}
                       value={formData.password}
                       onChange={(e) => handleInputChange('password', e.target.value)}
@@ -335,7 +334,7 @@ export default function PreMedSignup() {
                     <Input
                       id="confirmPassword"
                       type={showPw2 ? 'text' : 'password'}
-                      placeholder="••••••••"
+                      placeholder="Example@123"
                       className={getInputClasses('confirmPassword')}
                       value={formData.confirmPassword}
                       onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
@@ -419,15 +418,6 @@ export default function PreMedSignup() {
           </motion.div>
         </div>
       </div>
-
-      {/* help floating action button */}
-      <Button
-        size="icon"
-        className="fixed bottom-6 right-6 z-20 rounded-full bg-brand p-3 text-white shadow-lg hover:bg-brand-dark"
-      >
-        <HelpCircle size={20} />
-        <span className="sr-only">Need help?</span>
-      </Button>
     </div>
   )
 }

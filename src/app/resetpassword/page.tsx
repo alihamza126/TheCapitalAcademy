@@ -134,10 +134,10 @@ export default function ResetPasswordPage() {
                     validate: {
                       hasUpperCase: (v) =>
                         /[A-Z]/.test(v) || 'Must contain an uppercase letter',
-                      hasNumber: (v) =>
-                        /[0-9]/.test(v) || 'Must contain a number',
-                      hasSpecialChar: (v) =>
-                        /[^A-Za-z0-9]/.test(v) || 'Must contain a special character'
+                      // hasNumber: (v) =>
+                      //   /[0-9]/.test(v) || 'Must contain a number',
+                      // hasSpecialChar: (v) =>
+                      //   /[^A-Za-z0-9]/.test(v) || 'Must contain a special character'
                     }
                   })}
                 />
@@ -168,7 +168,7 @@ export default function ResetPasswordPage() {
                   id="confirmPassword"
                   type={showConfirm ? 'text' : 'password'}
                   disabled={isSubmitting}
-                  className="w-full pr-10"
+                  className="w-full pr-10 border-b-2 border-gray-300"
                   icon={showConfirm ? <EyeOff /> : <Eye />}
                   onIconClick={() => setShowConfirm(!showConfirm)}
                   iconPosition="end"
