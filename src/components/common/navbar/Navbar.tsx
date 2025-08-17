@@ -11,7 +11,7 @@ import Image from "next/image"
 import logo from "/public/logo.png"
 import { ChevronDown } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Avatar, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, NavbarContent, user } from "@heroui/react"
+import { Avatar, Badge, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, NavbarContent, user } from "@heroui/react"
 import { signOut, useSession } from "next-auth/react"
 import { Books } from "@phosphor-icons/react/dist/ssr"
 import { Book, ChartDonutIcon, UserCircleGearIcon } from "@phosphor-icons/react"
@@ -230,6 +230,15 @@ const Navbar = () => {
             >
               MDCAT MCQs
             </button>
+
+            <Badge color="warning" size="sm" content="New" showOutline={false} shape="circle" className=" text-white" >
+              <Link
+                href="/series"
+                className="text-gray-700 hover:text-[#1757ab] px-3 py-1.5 rounded-md transition-colors duration-200"
+              >
+                Test Series
+              </Link>
+            </Badge>
 
             {/* Courses Dropdown */}
             <div className="relative dropdown-container">
@@ -522,6 +531,23 @@ const Navbar = () => {
                   MDCAT MCQs
                 </motion.button>
 
+                <Badge color="warning" size="sm" content="New" showOutline={false} shape="circle" className=" text-white" >
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.25, duration: 0.3 }}
+                  >
+                    <NavLink
+                      href={'/series'}
+                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors duration-200"
+                      activeClassName="text-primary  bg-priamry-50"
+                      onClick={toggleMobileMenu}
+                    >
+                      Test Series
+                    </NavLink>
+                  </motion.div>
+                </Badge>
+
                 {/* Mobile Courses Dropdown */}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
@@ -661,7 +687,7 @@ const Navbar = () => {
                           <button className="block w-full text-center px-4 py-2.5 rounded-lg text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors duration-200 border border-gray-300">
                             Sign In
                           </button>
-                        </Link> 
+                        </Link>
                         <Link href={'/signup'}>
                           <button className="block w-full text-center px-4 py-2.5 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary-700 transition-colors duration-200 shadow-sm">
                             Sign Up
