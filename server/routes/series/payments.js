@@ -1,8 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const wrapAsync = require('../../utils/wrapAsync');
-const Payment = require('../../models/series/orders');
-const Series = require('../../models/series/series');
+import { asyncWrapper as wrapAsync } from '../../helpers/asyncWrapper.js';
+import Payment from '../../models/series/orders.js';
+import Series from '../../models/series/series.js';
+import { authUser } from '../../middleware/auth.middleware.js';
 
 // Get all payments
 router.get('/all', wrapAsync(async (req, res) => {
@@ -15,6 +16,46 @@ router.get('/all', wrapAsync(async (req, res) => {
         res.status(500).json({ error: "Failed to fetch payments" });
     }
 }));
+
+
+router.post('/purchase-series', authUser, wrapAsync(async (req, res) => {
+    const { id: userId, email } = req.user;
+    try {
+        const {
+            seriesId,
+            providerRef,
+            couponCode = '',
+            discountApplied = 0,
+            provider = 'manual',
+        } = req.body;
+
+        // Verify series exists
+        const series = await Series.findById(seriesId);
+        if (!series) {
+            return res.status(404).json({ error: "Series not found" });
+        }
+
+        const payment = new Payment({
+            userId,
+            seriesId,
+            amount: series.price,
+            couponCode,
+            discountApplied: discountApplied || 0,
+            provider: provider || 'manual',
+            providerRef
+        });
+
+        await payment.save();
+        res.status(201).json({ message: "Payment created successfully", payment });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to create payment" });
+    }
+}));
+
+
+
+
+// =============for admin side ===============
 
 // Get payments for a specific series
 router.get('/series/:seriesId', wrapAsync(async (req, res) => {
@@ -90,9 +131,9 @@ router.patch('/:id/status', wrapAsync(async (req, res) => {
             return res.status(404).json({ error: "Payment not found" });
         }
 
-        res.status(200).json({ 
-            message: `Payment status updated to ${status}`, 
-            payment 
+        res.status(200).json({
+            message: `Payment status updated to ${status}`,
+            payment
         });
     } catch (error) {
         res.status(500).json({ error: "Failed to update payment status" });
@@ -207,4 +248,4 @@ router.get('/stats/revenue-by-series', wrapAsync(async (req, res) => {
     }
 }));
 
-module.exports = router;
+export default router;

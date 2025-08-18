@@ -1,95 +1,70 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { withAuth } from 'next-auth/middleware';
-import authOptions from './lib/auth';
-import { publicPages } from './utils/publicpath';
+{/* Series Detail Modal */}
+      <Modal isOpen={isOpen} onClose={onClose} size="3xl" scrollBehavior="inside">
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                <h3 className="font-bold font-playfair">{selectedSeries?.title}</h3>
+                <p className="text-sm text-muted-foreground">{selectedSeries?.description}</p>
+              </ModalHeader>
+              <ModalBody>
+                {selectedSeries && (
+                  <div className="space-y-6">
+                    {/* Progress Overview */}
+                    <Card>
+                      <CardBody className="p-4">
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="font-semibold">Overall Progress</span>
+                          <span className="text-lg font-bold font-playfair">{selectedSeries.progress}%</span>
+                        </div>
+                        <Progress value={selectedSeries.progress} color="primary" className="mb-2" />
+                        <p className="text-sm text-muted-foreground">
+                          {selectedSeries.completedTests} of {selectedSeries.totalTests} tests completed
+                        </p>
+                      </CardBody>
+                    </Card>
 
-// Middleware for next-auth with custom logic
-const authMiddleware = withAuth(
-  (req) => {
-    const token = req.nextauth?.token;
-    const url = req.nextUrl;
-    const pathname = url?.pathname;
+                    {/* Available Today */}
+                    {selectedSeries.tests.availableToday.length > 0 && (
+                      <div>
+                        <h4 className="font-bold font-playfair mb-3 flex items-center gap-2">
+                          <AlertCircle className="w-5 h-5 text-success" />
+                          Available Today
+                        </h4>
+                        {selectedSeries.tests.availableToday.map((test) => renderTestCard(test))}
+                      </div>
+                    )}
 
-    // Ensure pathname is defined
-    if (!pathname) {
-      console.error('Pathname is undefined', { url: req.url });
-      return NextResponse.redirect(new URL('/error', req.url));
-    }
+                    {/* Upcoming Tests */}
+                    {selectedSeries.tests.upcoming.length > 0 && (
+                      <div>
+                        <h4 className="font-bold font-playfair mb-3 flex items-center gap-2">
+                          <Clock className="w-5 h-5 text-warning" />
+                          Upcoming Tests
+                        </h4>
+                        {selectedSeries.tests.upcoming.map((test) => renderTestCard(test, false))}
+                      </div>
+                    )}
 
-    // Role-based route protection for admin routes
-    if (pathname.includes('/admin') && token?.user?.role !== 'admin') {
-      return NextResponse.redirect(new URL('/unauthorized', req.url));
-    }
-
-    return NextResponse.next();
-  },
-  {
-    jwt: { decode: authOptions.jwt?.decode },
-    callbacks: {
-      authorized: ({ token, req }) => {
-        const { pathname } = req.nextUrl;
-
-        // Ensure pathname is defined
-        if (!pathname) {
-          console.error('Pathname is undefined in authorized callback', { url: req.url });
-          return false;
-        }
-
-        // Allow public pages without authentication
-        if (
-          publicPages.some(
-            (path) =>
-              path && (path === pathname || pathname.startsWith(path + '/')),
-          )
-        ) {
-          return true;
-        }
-
-        // Require authentication for all other routes
-        return !!token;
-      },
-    },
-    pages: {
-      signIn: '/signin',
-      error: '/error',
-      newUser: '/signup',
-    },
-  }
-);
-
-export default function middleware(req: NextRequest) {
-  const pathname = req.nextUrl.pathname;
-
-  if (!pathname) {
-    console.error('Pathname is undefined in middleware', { url: req.url });
-    return NextResponse.redirect(new URL('/error', req.url));
-  }
-
-  // const publicPathnameRegex = RegExp(
-  //   `^(${publicPages
-  //     .filter((p) => p) // Remove undefined/null paths
-  //     .flatMap((p) => {
-  //       if (p === '/') return ['', '/'];
-  //       if (p.includes(':path*')) {
-  //         const base = p.replace(':path*', '');
-  //         return [`${base}.*`, `${base}[^/]+.*`];
-  //       }
-  //       return p;
-  //     })
-  //     .join('|')})/?$`,
-  //   'i'
-  // );
-
-  // const isPublicPage = publicPathnameRegex.test(pathname);
-
-  return NextResponse.next();
-  // if (isPublicPage) {
-  // } else {
-  //   return (authMiddleware as any)(req);
-  // }
-}
-
-export const config = {
-  matcher: ['/((?!api|trpc|_next|_vercel|.*\\..*).*)'],
-  unstable_allowDynamic: ['**/node_modules/mongoose/dist/browser.umd.js'],
-};
+                    {/* Completed Tests */}
+                    {selectedSeries.tests.completed.length > 0 && (
+                      <div>
+                        <h4 className="font-bold font-playfair mb-3 flex items-center gap-2">
+                          <CheckCircle className="w-5 h-5 text-success" />
+                          Completed Tests
+                        </h4>
+                        {selectedSeries.tests.completed.map((test) => renderTestCard(test))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>

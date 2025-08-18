@@ -37,7 +37,7 @@ const Timer = ({ initialTimeInMinutes, handleSaveAndExit }: TimerProps) => {
   }
 
   return (
-    <div className="font-mono">
+    <div className="font-mono text-primary">
       {formatTime(timeRemaining)}
     </div>
   )

@@ -18,6 +18,9 @@ const page = async ({ searchParams }) => {
         chapter = '',
         topic = '',
         category = '',
+
+        type = null,
+        testId = null
     } = searchParams || {};
 
     const apiParams = {
@@ -30,9 +33,17 @@ const page = async ({ searchParams }) => {
 
 
     try {
-        const response = await Axios.post('/api/v1/progress/get', apiParams);
-        if (response.status == 200) {
-            data = response.data;
+        if (type == "series") {
+            const response = await Axios.get(`/api/v1/test/student/${testId}`);
+            if (response.data.success) {
+                data = response.data.test
+            }
+            // console.log(response.data);
+        } else {
+            const response = await Axios.post('/api/v1/progress/get', apiParams);
+            if (response.status == 200) {
+                data = response.data;
+            }
         }
     } catch (error) {
         console.log(error);
@@ -43,7 +54,7 @@ const page = async ({ searchParams }) => {
     return (
         <div>
             {course === "trial" && <FreeTrialTopBar isFreeTrial={course === "trial"} />}
-            <Mcqs subject={subject} chapter={chapter} mcqData={data} />
+            <Mcqs isSeries={type == "series"} subject={subject} chapter={chapter} mcqData={data} />
         </div>
     )
 }

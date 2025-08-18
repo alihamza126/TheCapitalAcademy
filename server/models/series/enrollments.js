@@ -1,11 +1,11 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 
 
 
 const enrollmentSchema = new Schema(
   {
-    userId: { type: Schema.Types.ObjectId, ref: "user", required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     seriesId: { type: Schema.Types.ObjectId, ref: "Series", required: true },
 
     activatedAt: { type: Date, required: true },
@@ -29,6 +29,6 @@ enrollmentSchema.index({ userId: 1, seriesId: 1 }, { unique: true });
 enrollmentSchema.index({ "progress.lastAttemptAt": -1 });
 
 const Enrollment= model("Enrollment", enrollmentSchema);
-module.exports=Enrollment;
+export default Enrollment;
 
 

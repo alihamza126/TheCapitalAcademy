@@ -55,21 +55,27 @@ const menuItems = [
   {
     text: "Test Series",
     icon: Users,
-    path: "/dashboard/student",
+    path: "/dashboard/series",
     description: "Student management",
     hasSubmenu: true,
     submenu: [
       {
-        text: "Solve Tests",
+        text: "My Series",
         icon: FileText,
-        path: "/dashboard/student/tests",
+        path: "/dashboard/series",
         description: "Student assessments",
       },
       {
         text: "View Stats",
         icon: TrendingUp,
-        path: "/dashboard/student/stats",
+        path: "/dashboard/series/stats",
         description: "Student performance",
+      },
+      {
+        text: "View Schedule",
+        icon: Calendar,
+        path: "/dashboard/series/schedule",
+        description: "Schedule",
       },
     ],
   },

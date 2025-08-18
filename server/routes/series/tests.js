@@ -1,11 +1,30 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const wrapAsync = require('../../utils/wrapAsync');
-const Test = require('../../models/series/test');
-const Series = require('../../models/series/series');
-const SeriesMCQ = require('../../models/series/seriesMcq');
+import Test from '../../models/series/test.js';
+import Series from '../../models/series/series.js';
+import SeriesMCQ from '../../models/series/seriesMcq.js';
+import { asyncWrapper as wrapAsync } from '../../helpers/asyncWrapper.js';
+import { getTestDetails, submitTestAttempt, getTestResults } from '../../controllers/series/test.controller.js';
+import { authUser } from '../../middleware/auth.middleware.js';
 
-// Get all tests for a series
+
+
+// const submitTestValidation = [
+//     req.body("answers").isArray({ min: 1 }).withMessage("Answers must be a non-empty array"),
+//     req.body("answers.*.questionId").isMongoId().withMessage("Each answer must have a valid question ID"),
+//     req.body("answers.*.selectedOption").isInt({ min: 0 }).withMessage("Selected option must be a valid number"),
+//     req.body("duration").optional().isInt({ min: 0 }).withMessage("Duration must be a positive number"),
+// ]
+
+// Test Routes
+router.get("/student/:testId", authUser, getTestDetails)
+router.post("/student/:testId/submit",  authUser, submitTestAttempt)
+router.get("/student/:testId/results", authUser, getTestResults)
+
+
+
+
+// ==================== Get all tests for a series
 router.get('/series/:seriesId', wrapAsync(async (req, res) => {
     try {
         const tests = await Test.find({ seriesId: req.params.seriesId })
@@ -24,7 +43,7 @@ router.get('/:id', wrapAsync(async (req, res) => {
         const test = await Test.findById(req.params.id)
             .populate('questions.questionId', 'question options correctOption subject chapter topic difficulty category course info explain imageUrl')
             .populate('createdBy', 'username email');
-        
+
         if (!test) {
             return res.status(404).json({ error: "Test not found" });
         }
@@ -59,29 +78,29 @@ router.post('/', wrapAsync(async (req, res) => {
 
         // Process questions - create MCQs first, then link them
         const processedQuestions = [];
-        
+
         if (questions && questions.length > 0) {
             for (const mcqData of questions) {
                 // Validate MCQ data
                 if (!mcqData.question || !mcqData.options || !Array.isArray(mcqData.options) || mcqData.options.length !== 4) {
                     throw new Error('Invalid MCQ data: question and 4 options are required');
                 }
-                
+
                 if (mcqData.correctOption < 0 || mcqData.correctOption > 3) {
                     throw new Error('Invalid correct option: must be between 0 and 3');
                 }
-                
+
                 if (!mcqData.subject || !mcqData.chapter || !mcqData.topic) {
                     throw new Error('Invalid MCQ data: subject, chapter, and topic are required');
                 }
-                
+
                 // Normalize subject to lowercase
                 const normalizedSubject = mcqData.subject.toLowerCase();
                 const validSubjects = ['physics', 'chemistry', 'biology', 'english', 'mathematics', 'logic', 'others'];
                 if (!validSubjects.includes(normalizedSubject)) {
                     throw new Error(`Invalid subject: ${mcqData.subject}. Valid subjects are: ${validSubjects.join(', ')}`);
                 }
-                
+
                 // Create new Series MCQ
                 const mcq = new SeriesMCQ({
                     question: mcqData.question,
@@ -99,9 +118,9 @@ router.post('/', wrapAsync(async (req, res) => {
                     seriesId: seriesId,
                     createdBy: req.user?._id
                 });
-                
+
                 await mcq.save();
-                
+
                 // Add to processed questions
                 processedQuestions.push({
                     questionId: mcq._id,
@@ -125,7 +144,7 @@ router.post('/', wrapAsync(async (req, res) => {
         });
 
         await test.save();
-        
+
         // Update MCQs with testId
         if (processedQuestions.length > 0) {
             await SeriesMCQ.updateMany(
@@ -133,11 +152,11 @@ router.post('/', wrapAsync(async (req, res) => {
                 { testId: test._id }
             );
         }
-        
+
         const populatedTest = await Test.findById(test._id)
             .populate('questions.questionId', 'question options correctOption subject chapter topic difficulty category course info explain imageUrl')
             .populate('createdBy', 'username email');
-            
+
         res.status(201).json({ message: "Test created successfully", test: populatedTest });
     } catch (error) {
         console.log('Error creating test:', error);
@@ -170,40 +189,40 @@ router.put('/:id', wrapAsync(async (req, res) => {
 
         // Process questions - update existing MCQs or create new ones
         const processedQuestions = [];
-        
+
         if (questions && questions.length > 0) {
             console.log('Processing questions:', questions.length);
-            
+
             for (const mcqData of questions) {
-                console.log('Processing MCQ:', { 
-                    hasId: !!mcqData._id, 
+                console.log('Processing MCQ:', {
+                    hasId: !!mcqData._id,
                     idLength: mcqData._id?.toString().length,
                     isTemp: mcqData._id?.toString().startsWith('temp'),
                     question: mcqData.question?.substring(0, 50) + '...'
                 });
-                
+
                 // Validate MCQ data
                 if (!mcqData.question || !mcqData.options || !Array.isArray(mcqData.options) || mcqData.options.length !== 4) {
                     throw new Error('Invalid MCQ data: question and 4 options are required');
                 }
-                
+
                 if (mcqData.correctOption < 0 || mcqData.correctOption > 3) {
                     throw new Error('Invalid correct option: must be between 0 and 3');
                 }
-                
+
                 if (!mcqData.subject || !mcqData.chapter || !mcqData.topic) {
                     throw new Error('Invalid MCQ data: subject, chapter, and topic are required');
                 }
-                
+
                 // Normalize subject to lowercase
                 const normalizedSubject = mcqData.subject.toLowerCase();
                 const validSubjects = ['physics', 'chemistry', 'biology', 'english', 'mathematics', 'logic', 'others'];
                 if (!validSubjects.includes(normalizedSubject)) {
                     throw new Error(`Invalid subject: ${mcqData.subject}. Valid subjects are: ${validSubjects.join(', ')}`);
                 }
-                
+
                 let mcq;
-                
+
                 if (mcqData._id && mcqData._id.toString().length === 24 && !mcqData._id.toString().startsWith('temp')) {
                     // Update existing MCQ
                     console.log('Updating existing MCQ:', mcqData._id);
@@ -221,7 +240,7 @@ router.put('/:id', wrapAsync(async (req, res) => {
                         explain: mcqData.explain || '',
                         imageUrl: mcqData.imageUrl || ''
                     }, { new: true });
-                    
+
                     if (!mcq) {
                         console.log('MCQ not found for update:', mcqData._id);
                         throw new Error(`MCQ with ID ${mcqData._id} not found`);
@@ -249,7 +268,7 @@ router.put('/:id', wrapAsync(async (req, res) => {
                     await mcq.save();
                     console.log('New MCQ created:', mcq._id);
                 }
-                
+
                 // Add to processed questions
                 processedQuestions.push({
                     questionId: mcq._id,
@@ -262,7 +281,7 @@ router.put('/:id', wrapAsync(async (req, res) => {
         const existingQuestionIds = existingTest.questions.map(q => q.questionId.toString());
         const newQuestionIds = processedQuestions.map(q => q.questionId.toString());
         const mcqsToDelete = existingQuestionIds.filter(id => !newQuestionIds.includes(id));
-        
+
         if (mcqsToDelete.length > 0) {
             console.log('Deleting MCQs:', mcqsToDelete);
             await SeriesMCQ.deleteMany({ _id: { $in: mcqsToDelete } });
@@ -285,7 +304,7 @@ router.put('/:id', wrapAsync(async (req, res) => {
             },
             { new: true }
         ).populate('questions.questionId', 'question options correctOption subject chapter topic difficulty category course info explain imageUrl')
-         .populate('createdBy', 'username email');
+            .populate('createdBy', 'username email');
 
         console.log('Test updated successfully');
         res.status(200).json({ message: "Test updated successfully", test });
@@ -419,15 +438,15 @@ router.patch('/:id/publish', wrapAsync(async (req, res) => {
             { isPublished },
             { new: true }
         ).populate('questions.questionId', 'question options correctOption subject chapter topic difficulty category course info explain imageUrl')
-         .populate('createdBy', 'username email');
+            .populate('createdBy', 'username email');
 
         if (!test) {
             return res.status(404).json({ error: "Test not found" });
         }
 
-        res.status(200).json({ 
-            message: `Test ${isPublished ? 'published' : 'unpublished'} successfully`, 
-            test 
+        res.status(200).json({
+            message: `Test ${isPublished ? 'published' : 'unpublished'} successfully`,
+            test
         });
     } catch (error) {
         console.log('Error publishing test:', error);
@@ -460,4 +479,4 @@ router.get('/:id/stats', wrapAsync(async (req, res) => {
     }
 }));
 
-module.exports = router;
+export default router;

@@ -15,9 +15,9 @@ export const authUser = async (req, res, next) => {
 
         // Attach the decoded token (ser data) to the request
         req.user = {
-            id:decoded.userId,
-            role:decoded.role,
-            email:decoded.email
+            id: decoded.userId,
+            role: decoded.role,
+            email: decoded.email
         };
         next();
     } catch (error) {
@@ -32,4 +32,35 @@ export const isAdmin = async (req, res, next) => {
     }
 
     next();
+};
+
+export const optionalAuth = async (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+
+        if (authHeader) {
+            const token = authHeader.split(" ")[1];
+            if (token) {
+                try {
+                    const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET);
+                    req.user = {
+                        id: decoded.userId,
+                        role: decoded.role,
+                        email: decoded.email,
+                    };
+                } catch (err) {
+                    console.warn("Invalid token, continuing as guest");
+                    req.user = null;
+                }
+            }
+        } else {
+            req.user = null; // guest
+        }
+
+        next();
+    } catch (error) {
+        console.error("Optional auth error:", error);
+        req.user = null;
+        next();
+    }
 };

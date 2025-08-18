@@ -1,10 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const wrapAsync = require('../../utils/wrapAsync');
-const Enrollment = require('../../models/series/enrollments');
-const Series = require('../../models/series/series');
-const Payment = require('../../models/series/orders');
-const User = require('../../models/user');
+import wrapAsync from '../../utils/wrapAsync.js';
+import Enrollment from '../../models/series/enrollments.js';
+import Series from '../../models/series/series.js';
+import Payment from '../../models/series/orders.js';
+import User from '../../models/User.js';
 
 // Get all enrollments
 router.get('/all', wrapAsync(async (req, res) => {
@@ -19,6 +19,18 @@ router.get('/all', wrapAsync(async (req, res) => {
         res.status(500).json({ error: "Failed to fetch enrollments" });
     }
 }));
+
+
+
+
+
+
+
+
+
+
+
+// =============for admin side ===============
 
 // Get enrollments for a specific series
 router.get('/series/:seriesId', wrapAsync(async (req, res) => {
@@ -151,4 +163,4 @@ router.get('/stats/overview', wrapAsync(async (req, res) => {
     }
 }));
 
-module.exports = router;
+export default router;

@@ -1,9 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const wrapAsync = require('../../utils/wrapAsync');
-const SeriesMCQ = require('../../models/series/seriesMcq');
-const Test = require('../../models/series/test');
-const Series = require('../../models/series/series');
+import mongoose from 'mongoose';
+import wrapAsync from '../../utils/wrapAsync.js';
+import SeriesMCQ from '../../models/series/seriesMcq.js';
+import Test from '../../models/series/test.js';
+import Series from '../../models/series/series.js';
 
 // Get all MCQs for a series
 router.get('/series/:seriesId', wrapAsync(async (req, res) => {
@@ -40,6 +41,16 @@ router.get('/series/:seriesId', wrapAsync(async (req, res) => {
         res.status(500).json({ error: "Failed to fetch MCQs" });
     }
 }));
+
+
+
+
+
+
+
+
+
+// =============for admin side ===============
 
 // Get all MCQs for a specific test
 router.get('/test/:testId', wrapAsync(async (req, res) => {
@@ -252,4 +263,4 @@ router.get('/series/:seriesId/stats', wrapAsync(async (req, res) => {
     }
 }));
 
-module.exports = router;
+export default router;

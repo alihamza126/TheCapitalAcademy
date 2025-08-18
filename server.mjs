@@ -19,6 +19,11 @@ import progressRouter from './server/routes/userProgress.js';
 import mcqRouter from './server/routes/mcq.js';
 import plannerRouter from './server/routes/planner.js';
 import reportRouter from './server/routes/report.js';
+
+import seriesRouter from './server/routes/series/series.js';
+import paymentRouter from './server/routes/series/payments.js';
+import testRouter from './server/routes/series/tests.js';
+
 dotenv.config({
   path: "./.env.local",
 }); // 👈 
@@ -46,7 +51,7 @@ app.prepare().then(() => {
   expressApp.use(cors());
   expressApp.use(express.json());
   expressApp.use(cookieParser());
-  
+
   //routes start from here
   expressApp.use("/api/v1/users", userRouter);
   expressApp.use("/api/v1/common", commonRouter);
@@ -58,6 +63,12 @@ app.prepare().then(() => {
   expressApp.use("/api/v1/mcq", mcqRouter);
   expressApp.use("/api/v1/planner", plannerRouter);
   expressApp.use("/api/v1/report", reportRouter);
+
+  // series routes
+
+  expressApp.use("/api/v1/series", seriesRouter);
+  expressApp.use("/api/v1/payment", paymentRouter);
+  expressApp.use("/api/v1/test", testRouter);
 
 
   // for next front-end requests

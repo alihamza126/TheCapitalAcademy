@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 
 const seriesSchema = new Schema(
@@ -26,4 +26,4 @@ const seriesSchema = new Schema(
 );
 
 const Series= model("Series", seriesSchema);
-module.exports=Series;
+export default Series;

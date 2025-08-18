@@ -72,10 +72,10 @@ interface CourseData {
 
 
 
-export default function Checkout() {
+export default function Checkout({ isSeries, seriesData = {} }) {
 	const [activeTab, setActiveTab] = useState(0)
 	const [payMethod, setPayMethod] = useState("jazzcash")
-	const [imageUrl, setImageUrl] = useState("/placeholder.svg?height=400&width=300")
+	const [imageUrl, setImageUrl] = useState(null)
 	const [showAlert, setShowAlert] = useState(false)
 	const [loading, setLoading] = useState(false)
 	const [snackbar, setSnackbar] = useState({
@@ -97,6 +97,7 @@ export default function Checkout() {
 	const searchParams = useSearchParams()
 	const course = searchParams.get("course") || "mdcat"
 	const ref = useRef<HTMLInputElement>(null)
+
 
 	const showSnackbar = (message: string, severity: "success" | "error" | "warning" | "info") => {
 		setSnackbar({ open: true, message, severity })
@@ -141,6 +142,17 @@ export default function Checkout() {
 	useEffect(() => {
 		const fetch = async () => {
 			let res;
+			if (isSeries) {
+				setCData({
+					cprice: seriesData.price || 0,
+					cdesc: seriesData.description || "",
+					features: [],
+				})
+				return;
+			}
+
+			isSeries = false; // Ensure isSeries is false for course checkout
+
 			if (course == 'mdcat') {
 				res = await Axios.get('/api/v1/course/mdcat');
 			}
@@ -156,7 +168,7 @@ export default function Checkout() {
 		fetch();
 	}, [promoPrice, course]);
 
-	const Features = ["40K+ MCQs", "Detailed Explanations", "Practice Tests", "Progress Tracking", "Mobile Access"]
+	const Features = ["Expert-curated question bank", "Regular updates and new content", "Mobile-friendly platform", "Progress Tracking", "24/7 customer support"]
 
 	const handleImageChange = (url) => {
 		if (url) {
@@ -174,6 +186,24 @@ export default function Checkout() {
 		if (!imageUrl) {
 			showSnackbar("Please upload payment screenshot to proceed", "warning")
 			setLoading(false)
+			return
+		}
+
+		if (isSeries) {
+			try {
+				const res = await Axios.post('/api/v1/payment/purchase-series', {
+					seriesId: seriesData._id,
+					providerRef: imageUrl,
+					couponCode: promoCode,
+					discountApplied: promoPrice
+				})
+				if (res)
+					showSnackbar("Order placed successfully! We'll verify your payment shortly.", "success")
+				setShowAlert(true)
+				setLoading(false)
+			} catch (error) {
+				console.log(error)
+			}
 			return
 		}
 
@@ -210,7 +240,7 @@ export default function Checkout() {
 					<div className="flex items-center justify-between">
 						<div>
 							<h1 className="text-3xl font-bold  bg-gradient-to-r from-primary  to-purple text-transparent bg-clip-text">
-								{course.toUpperCase()} MCQ Bank
+								{isSeries ? seriesData.title : course.toUpperCase()} MCQ Bank
 							</h1>
 							<p className="text-secondary-700 mt-1">Secure Checkout Process</p>
 						</div>
@@ -270,7 +300,7 @@ export default function Checkout() {
 											<div>
 												<div className="bg-gradient-to-br from-surface to-green/20 rounded-xl  mb-6">
 													<Image
-														src={courseImages[course as keyof typeof courseImages] || courseImages.mdcat}
+														src={isSeries ? seriesData.coverImageUrl : courseImages[course as keyof typeof courseImages] || courseImages.mdcat}
 														alt={course}
 														width={500}
 														height={300}
@@ -293,17 +323,8 @@ export default function Checkout() {
 
 											<div>
 												<h3 className="text-lg font-semibold text-black mb-4">Course Description</h3>
-												<p className="text-secondary leading-relaxed mb-6">{cData.cdesc}</p>
-
 												<div className="bg-surface rounded-xl p-6">
-													<h4 className="font-semibold text-black mb-3">Key Benefits</h4>
-													<ul className="space-y-2 text-sm text-secondary">
-														<li>• Expert-curated question bank</li>
-														<li>• Detailed explanations for every question</li>
-														<li>• Regular updates and new content</li>
-														<li>• Mobile-friendly platform</li>
-														<li>• 24/7 customer support</li>
-													</ul>
+													<p className="text-secondary leading-relaxed mb-6">{cData.cdesc}</p>
 												</div>
 											</div>
 										</div>
@@ -459,7 +480,7 @@ export default function Checkout() {
 								<div className="space-y-4 mb-6">
 									<div className="flex justify-between items-start">
 										<div>
-											<p className="font-semibold text-black">{course.toUpperCase()} MCQ Bank</p>
+											<p className="font-semibold text-black">{isSeries ? seriesData.title : course.toUpperCase()} MCQ Bank</p>
 											<p className="text-sm text-secondary">Digital Course Access</p>
 										</div>
 										<span className="font-bold text-black">PKR {cData?.cprice?.toLocaleString()}</span>

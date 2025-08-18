@@ -46,7 +46,7 @@ import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { toast } from "react-hot-toast"
 
-const Mcqs = ({ subject, chapter, mcqData }) => {
+const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
   const router = useRouter()
   const [correctMcq, setCorrectMcq] = useState([])
   const [wrongMcq, setWrongMcq] = useState([])
@@ -75,7 +75,7 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
     })
   }
 
-  const [data, setData] = useState(mcqData || [])
+  const [data, setData] = useState(isSeries ? mcqData.questions : mcqData || [])
   const [mcqs, setMcqs] = useState([])
   const [sideBarOpen, setSidebarOpen] = useState(false)
   const [bioCorrectCout, setBioCorrectCount] = useState(0)
@@ -135,6 +135,7 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 
   // Auto-save function
   const autoSaveProgress = async () => {
+    if (isSeries) return
     const hasNewCorrect =
       correctMcq.length !== lastSavedCorrect.length || !correctMcq.every((id) => lastSavedCorrect.includes(id))
     const hasNewWrong =
@@ -165,7 +166,7 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
 
   // Set up auto-save interval
   useEffect(() => {
-    if (!testStart && subject !== "mock") {
+    if (!testStart && subject !== "mock" && !isSeries) {
       autoSaveIntervalRef.current = setInterval(() => {
         autoSaveProgress()
       }, 60000)
@@ -197,11 +198,31 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
   }, [testStart, onTestStartOpen])
 
   const saveMcqData = async () => {
+    if (isSeries) {
+      // console.log(mcqs)
+      try {
+        const res = await Axios.post(`/api/v1/test/student/${mcqData?._id}/submit`, {
+          answers: mcqs,
+          duration: mcqData?.durationMin,
+        });
+        // console.log(res)
+        if (res.data) {
+          // console.log("response", res)
+          showNotification("Check Stats In Dashboard", "success")
+        }
+      } catch (error) {
+        console.log(error);
+        return;
+      }
+      return
+    }
     if (autoSaveIntervalRef.current) {
       clearInterval(autoSaveIntervalRef.current)
     }
     if (correctMcq.length > 0 || wrongMcq.length > 0) {
       try {
+
+
         if (subject === "mock") {
           return router.back()
         }
@@ -213,7 +234,7 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
         if (response.data.acknowledged) {
           showNotification("Check Stats In Dashboard", "success")
         }
-      } catch (error) {}
+      } catch (error) { }
     } else {
       showNotification("Solved MCQ's Saved")
     }
@@ -460,23 +481,23 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
                 >
                   Back
                 </Button>
-                {subject === "mock" && (
+                {(subject === "mock" || isSeries) && (
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-3">
                       <PhosphorTimer size={28} className="text-white" />
-                      <h2 className="text-xl font-bold text-white">Time Remaining</h2>
+                      <h2 className="text-xl font-bold text-primary">Time Remaining</h2>
                     </div>
                     <div className="text-xl font-extrabold text-gray-200 tracking-wide">
                       {loading ? (
                         <span className="text-base font-medium text-gray-500">Calculating time...</span>
                       ) : (
-                        <Timer initialTimeInMinutes={150} handleSaveAndExit={handleSaveAndExit} />
+                        <Timer initialTimeInMinutes={mcqData?.durationMin || 150} handleSaveAndExit={handleSaveAndExit} />
                       )}
                     </div>
                   </div>
                 )}
                 <div className="flex items-center gap-3">
-                  {subject !== "mock" && (
+                  {(subject !== "mock" && !isSeries) && (
                     <Chip size="sm" color="success" variant="flat" className="text-xs">
                       {isSaving ? (
                         <div className="flex items-center gap-1">
@@ -569,8 +590,8 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
                           mcqs[index]?.difficulty === "easy"
                             ? "success"
                             : mcqs[index]?.difficulty === "medium"
-                            ? "warning"
-                            : "danger"
+                              ? "warning"
+                              : "danger"
                         }
                         variant="flat"
                         className="capitalize"
@@ -601,8 +622,8 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
                             mcqs[index]?.difficulty === "easy"
                               ? "success"
                               : mcqs[index]?.difficulty === "medium"
-                              ? "warning"
-                              : "danger"
+                                ? "warning"
+                                : "danger"
                           }
                           variant="flat"
                           size="sm"
@@ -668,17 +689,16 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
                                       key={optionIndex}
                                       ref={refArray[optionIndex]}
                                       onClick={(e) => checkAns(e, optionIndex + 1)}
-                                      className={`mcq-option p-3 lg:p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 hover:border-blue-400 hover:shadow-md active:scale-[0.98] ${
-                                        mcqs[index].lock
-                                          ? isSelected
-                                            ? isCorrect
-                                              ? "correct"
-                                              : "wrong"
-                                            : isCorrectOption
+                                      className={`mcq-option p-3 lg:p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 hover:border-blue-400 hover:shadow-md active:scale-[0.98] ${mcqs[index].lock
+                                        ? isSelected
+                                          ? isCorrect
+                                            ? "correct"
+                                            : "wrong"
+                                          : isCorrectOption
                                             ? "correct"
                                             : "border-gray-200"
-                                          : "border-gray-200"
-                                      }`}
+                                        : "border-gray-200"
+                                        }`}
                                     >
                                       <div className="flex items-center gap-3">
                                         <Chip
@@ -725,7 +745,7 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
                                       dynamic={true}
                                       className="text-sm lg:text-base leading-relaxed whitespace-pre-line"
                                     >
-                                      {mcqs[index]?.explain || "Explanation not available yet"} Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quis dolorem sequi ut laudantium repellendus, assumenda hic quas consequuntur omnis unde deserunt vero laboriosam incidunt ipsum nisi aspernatur voluptatem, id in labore. Iusto ab consequatur exercitationem inventore qui neque dignissimos, dolorem consequuntur nihil quae repellat adipisci assumenda fugiat quisquam consectetur ut nam nemo, perspiciatis corrupti sed! Culpa, ullam hic modi labore veritatis ex illo, temporibus nesciunt quia repellendus doloremque molestias ratione? Error quis illo temporibus impedit nemo nesciunt ullam cumque asperiores quas, doloremque odit voluptates est consequuntur nobis dignissimos, rerum eaque incidunt, sapiente tempore ex iusto? Id blanditiis aliquam illum qui nesciunt voluptatum consectetur, quibusdam expedita natus quis magnam laboriosam ab excepturi sint inventore? Modi, dolore vero saepe dolorem at autem similique quam voluptates enim. Fugiat cumque ad magni soluta quo cupiditate, explicabo adipisci laborum quia nam sed a facilis mollitia rerum harum autem voluptatem, reiciendis maiores architecto eligendi? Illo sunt dignissimos laboriosam, accusamus deserunt fugiat tenetur quas! Sunt corrupti quos officia minima optio suscipit, quisquam nulla laborum quia, aliquam neque tenetur itaque, iure vitae laudantium quae earum. Sed, temporibus enim culpa modi cupiditate, eaque quibusdam in nostrum nihil placeat aliquam nulla odio error ab excepturi harum. Assumenda laudantium tenetur nemo nihil. Nihil iusto autem adipisci sunt ratione beatae, quidem tempora, laborum nisi sit vero, libero sed quos eaque illo nemo est eveniet dicta. Sit laudantium magnam, alias delectus cumque accusantium iure modi? Et esse rem blanditiis, ipsam recusandae vitae labore architecto doloremque commodi dicta alias officia vel eum molestias illum velit. Provident, repellendus dolorum perferendis quae illo vel facere. Totam necessitatibus numquam non. Molestias minima cumque commodi consequatur nostrum aspernatur dolores. Dicta assumenda vel reiciendis harum atque enim molestiae voluptatum consectetur quod aspernatur qui natus, ex delectus ab, facilis quae perspiciatis temporibus velit saepe sequi doloribus quaerat nam. Culpa nam nobis iusto reprehenderit, a ullam provident fuga quasi eaque debitis omnis assumenda perspiciatis fugit pariatur sunt voluptatem impedit excepturi in. Ad corrupti doloribus pariatur consequuntur nobis qui dolores consectetur id, enim aut voluptas rem in nihil facere laudantium impedit inventore ducimus ratione cupiditate omnis voluptatibus eveniet ex architecto quas. Omnis quasi doloribus veniam, quis quisquam eos aliquam ratione dolorem recusandae tempore minima aperiam maiores reiciendis quaerat beatae illum odit rem quidem iure necessitatibus autem expedita rerum. Laboriosam modi perferendis animi quam! Cumque consequuntur vel inventore magni et nobis laborum nisi quam dolorum ut soluta amet, repudiandae suscipit dolore asperiores optio blanditiis minus? Praesentium molestias placeat, eius vitae modi deserunt fugit delectus, cumque asperiores impedit sint nisi corrupti voluptatum quas et porro? Voluptate voluptas corporis voluptatem iure. Amet, optio quam? Necessitatibus, earum eum. Magnam, dignissimos harum atque molestias veniam eaque similique quis quas adipisci incidunt iure aperiam eum sequi asperiores vel qui eos placeat dolorem! Cumque reiciendis quidem quae. Consequuntur similique debitis officiis hic amet nemo quia odio, deleniti libero corrupti, nostrum id nam dolor, alias labore. Distinctio molestias numquam, debitis vero, ab quasi reiciendis quis temporibus repellat alias aspernatur sed. Totam in suscipit aut veritatis culpa pariatur possimus, distinctio consectetur nisi vel corporis impedit nihil minima vero libero, recusandae quam laboriosam quod ipsum. Rerum, veritatis libero. Dicta ab officia cupiditate obcaecati, sequi dolores, quas, veniam beatae facere quia tempore illo qui cumque asperiores culpa quidem corrupti nemo id harum doloribus. Impedit maxime laudantium fugit odit, est dolor. Nobis sint nesciunt perferendis natus repellendus est consequatur?
+                                      {mcqs[index]?.explain || "Explanation not available yet"}
                                     </MathJax>
                                   </CardBody>
                                 </Card>
@@ -981,26 +1001,26 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
                           ? mockPercentageCount < 100
                             ? "Needs Improvement"
                             : mockPercentageCount < 150
-                            ? "Satisfactory"
-                            : "Excellent"
+                              ? "Satisfactory"
+                              : "Excellent"
                           : correctMcq.length < mcqs.length / 2
-                          ? "Needs Improvement"
-                          : correctMcq.length < mcqs.length / 1.33
-                          ? "Satisfactory"
-                          : "Excellent"}
+                            ? "Needs Improvement"
+                            : correctMcq.length < mcqs.length / 1.33
+                              ? "Satisfactory"
+                              : "Excellent"}
                       </h4>
                       <p className="text-xs lg:text-sm opacity-90 leading-relaxed px-2">
                         {subject === "mock"
                           ? mockPercentageCount < 100
                             ? "Consider utilizing tutoring resources and dedicating more time to study and practice."
                             : mockPercentageCount < 150
-                            ? "Your performance is satisfactory, but there is potential for improvement."
-                            : "You have demonstrated an excellent understanding of the material."
+                              ? "Your performance is satisfactory, but there is potential for improvement."
+                              : "You have demonstrated an excellent understanding of the material."
                           : correctMcq.length < mcqs.length / 2
-                          ? "Consider utilizing tutoring resources and dedicating more time to study and practice."
-                          : correctMcq.length < mcqs.length / 1.33
-                          ? "Your performance is satisfactory, but there is potential for improvement."
-                          : "You have demonstrated an excellent understanding of the material."}
+                            ? "Consider utilizing tutoring resources and dedicating more time to study and practice."
+                            : correctMcq.length < mcqs.length / 1.33
+                              ? "Your performance is satisfactory, but there is potential for improvement."
+                              : "You have demonstrated an excellent understanding of the material."}
                       </p>
                     </div>
                   </CardBody>
@@ -1104,13 +1124,12 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
                           {ele.options.map((option, optionIndex) => (
                             <div
                               key={optionIndex}
-                              className={`p-2 lg:p-3 rounded-lg border ${
-                                correctMcq.includes(ele._id) && optionIndex + 1 === ele.selected
-                                  ? "bg-green-50 border-green-300"
-                                  : wrongMcq.includes(ele._id) && optionIndex + 1 === ele.selected
+                              className={`p-2 lg:p-3 rounded-lg border ${correctMcq.includes(ele._id) && optionIndex + 1 === ele.selected
+                                ? "bg-green-50 border-green-300"
+                                : wrongMcq.includes(ele._id) && optionIndex + 1 === ele.selected
                                   ? "bg-red-50 border-red-300"
                                   : "bg-gray-50 border-gray-200"
-                              }`}
+                                }`}
                             >
                               <div className="flex items-center gap-3">
                                 <Chip size="sm" variant="flat">
@@ -1196,13 +1215,12 @@ const Mcqs = ({ subject, chapter, mcqData }) => {
                                     {ele.options.map((option, optionIndex) => (
                                       <div
                                         key={optionIndex}
-                                        className={`p-2 lg:p-3 rounded-lg border ${
-                                          correctMcq.includes(ele._id) && optionIndex + 1 === ele.selected
-                                            ? "bg-green-50 border-green-300"
-                                            : wrongMcq.includes(ele._id) && optionIndex + 1 === ele.selected
+                                        className={`p-2 lg:p-3 rounded-lg border ${correctMcq.includes(ele._id) && optionIndex + 1 === ele.selected
+                                          ? "bg-green-50 border-green-300"
+                                          : wrongMcq.includes(ele._id) && optionIndex + 1 === ele.selected
                                             ? "bg-red-50 border-red-300"
                                             : "bg-gray-50 border-gray-200"
-                                        }`}
+                                          }`}
                                       >
                                         <div className="flex items-center gap-3">
                                           <Chip size="sm" variant="flat">

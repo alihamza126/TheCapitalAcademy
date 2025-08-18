@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Card, Row, Col, Button, Tag, Progress, Input, Select, Modal, message } from "antd"
+import { Card, Row, Col, Tag, Input, Select, Modal, message } from "antd"
 import { motion } from "framer-motion"
 import {
   BookOutlined,
@@ -13,75 +13,12 @@ import {
   CheckCircleOutlined,
   StarOutlined,
 } from "@ant-design/icons"
+import Button from "@/shared/Button/Button"
+import { redirect, useRouter } from "next/navigation"
 
 const { Search } = Input
 
-const testSeriesData = [
-  {
-    id: "1",
-    title: "MDCAT Complete Preparation 2024",
-    description: "Comprehensive test series covering all MDCAT subjects with detailed explanations",
-    subjects: ["Physics", "Chemistry", "Biology", "English"],
-    totalTests: 15,
-    completedTests: 8,
-    enrolledStudents: 234,
-    price: 2500,
-    originalPrice: 3500,
-    difficulty: "Mixed",
-    duration: "6 months",
-    isEnrolled: true,
-    rating: 4.8,
-    imageUrl: "https://www.modernenglishteacher.com/media/26176/rsz_testing_2.jpg",
-  },
-  {
-    id: "2",
-    title: "NUMS Physics Mastery",
-    description: "Advanced physics preparation for NUMS entrance with problem-solving techniques",
-    subjects: ["Physics"],
-    totalTests: 8,
-    completedTests: 0,
-    enrolledStudents: 89,
-    price: 1500,
-    originalPrice: 2000,
-    difficulty: "Hard",
-    duration: "4 months",
-    isEnrolled: false,
-    rating: 4.6,
-    imageUrl: "https://www.modernenglishteacher.com/media/26176/rsz_testing_2.jpg",
-  },
-  {
-    id: "3",
-    title: "Chemistry Quick Revision",
-    description: "Last-minute chemistry preparation with high-yield topics and practice tests",
-    subjects: ["Chemistry"],
-    totalTests: 5,
-    completedTests: 5,
-    enrolledStudents: 156,
-    price: 800,
-    originalPrice: 1200,
-    difficulty: "Medium",
-    duration: "2 months",
-    isEnrolled: true,
-    rating: 4.4,
-    imageUrl: "https://www.modernenglishteacher.com/media/26176/rsz_testing_2.jpg",
-  },
-  {
-    id: "4",
-    title: "Biology Comprehensive Course",
-    description: "Complete biology coverage from basics to advanced topics for medical entrance",
-    subjects: ["Biology"],
-    totalTests: 12,
-    completedTests: 0,
-    enrolledStudents: 198,
-    price: 2000,
-    originalPrice: 2800,
-    difficulty: "Mixed",
-    duration: "5 months",
-    isEnrolled: false,
-    rating: 4.7,
-    imageUrl: "https://www.modernenglishteacher.com/media/26176/rsz_testing_2.jpg",
-  },
-]
+
 
 const subjectColors = {
   Physics: "blue",
@@ -97,11 +34,15 @@ const difficultyColors = {
   Mixed: "blue",
 }
 
-export default function TestSeriesPage() {
+export default function TestSeriesPage({ data }) {
   const [searchText, setSearchText] = useState("")
   const [selectedFilter, setSelectedFilter] = useState("all")
   const [enrollModalVisible, setEnrollModalVisible] = useState(false)
   const [selectedSeries, setSelectedSeries] = useState<any>(null)
+  const [loading, setLoading] = useState(false);
+  const router=useRouter()
+
+
 
   const handleEnroll = (series: any) => {
     setSelectedSeries(series)
@@ -109,19 +50,22 @@ export default function TestSeriesPage() {
   }
 
   const confirmEnrollment = () => {
-    message.success(`Successfully enrolled in ${selectedSeries?.title}!`)
-    setEnrollModalVisible(false)
+    console.log("selected", selectedSeries)
+    message.success(`Redriecting to checkout !`)
+    setLoading(true)
+    return router.push(`/checkout?type=series&id=${selectedSeries._id}&price=${selectedSeries.price}`)
+    // setEnrollModalVisible(false)
     setSelectedSeries(null)
   }
 
-  const filteredSeries = testSeriesData.filter((series) => {
+  const filteredSeries = data.filter((series) => {
     const matchesSearch =
       series.title.toLowerCase().includes(searchText.toLowerCase()) ||
       series.description.toLowerCase().includes(searchText.toLowerCase())
     const matchesFilter =
       selectedFilter === "all" ||
-      (selectedFilter === "enrolled" && series.isEnrolled) ||
-      (selectedFilter === "available" && !series.isEnrolled)
+      (selectedFilter === "enrolled" && series.enrolled) ||
+      (selectedFilter === "available" && !series.enrolled)
 
     return matchesSearch && matchesFilter
   })
@@ -133,7 +77,7 @@ export default function TestSeriesPage() {
       transition={{ duration: 0.5 }}
       className="space-y-6"
     >
-     
+
 
       {/* Filters */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
@@ -172,15 +116,15 @@ export default function TestSeriesPage() {
                 whileHover={{ y: -4 }}
               >
                 <Card
-                  className="shadow-lg border-0 h-full overflow-hidden"
+                  className="shadow-lg border-0 rounded-xl h-full overflow-hidden"
                   cover={
                     <div className="relative">
                       <img
                         alt={series.title}
-                        src={series.imageUrl || "/placeholder.svg"}
-                        className="h-48 w-full object-cover"
+                        src={series.coverImageUrl || "/placeholder.svg"}
+                        className="h-56 w-full object-fit"
                       />
-                      {series.isEnrolled && (
+                      {series.enrolled && (
                         <div className="absolute top-4 right-4">
                           <Tag color="green" icon={<CheckCircleOutlined />}>
                             Enrolled
@@ -198,16 +142,8 @@ export default function TestSeriesPage() {
                   <div className="space-y-4">
                     {/* Title and Rating */}
                     <div>
-                      <h3 className="text-lg font-bold text-slate-800 mb-1">{series.title}</h3>
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="flex items-center gap-1">
-                          <StarOutlined className="text-yellow-500" />
-                          <span className="font-medium">{series.rating}</span>
-                        </div>
-                        {/* <span className="text-slate-400">•</span> */}
-                        {/* <span className="text-sm text-slate-600">by {series.instructor}</span> */}
-                      </div>
-                      <p className="text-slate-600 text-sm">{series.description}</p>
+                      <h3 className="text-lg font-bold text-primary-400 capitalize mb-1">{series.title}</h3>
+                      <p className="text-slate-600 text-sm line-clamp-2 min-h-10">{series.description}</p>
                     </div>
 
                     {/* Subjects */}
@@ -219,22 +155,7 @@ export default function TestSeriesPage() {
                       ))}
                     </div>
 
-                    {/* Progress (if enrolled)
-                    {series.isEnrolled && (
-                      <div>
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-sm text-slate-600">Progress</span>
-                          <span className="text-sm font-medium text-blue-600">
-                            {series.completedTests}/{series.totalTests} tests
-                          </span>
-                        </div>
-                        <Progress
-                          percent={Math.round((series.completedTests / series.totalTests) * 100)}
-                          strokeColor="#3b82f6"
-                          showInfo={false}
-                        />
-                      </div>
-                    )} */}
+
 
                     {/* Stats */}
                     <div className="flex items-center justify-between text-sm text-slate-600">
@@ -243,12 +164,8 @@ export default function TestSeriesPage() {
                         <span>{series.totalTests} Tests</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <UserOutlined />
-                        <span>{series.enrolledStudents} Students</span>
-                      </div>
-                      <div className="flex items-center gap-1">
                         <ClockCircleOutlined />
-                        <span>{series.duration}</span>
+                        <span>{series.totalDurationMin} Mintues</span>
                       </div>
                     </div>
 
@@ -256,25 +173,25 @@ export default function TestSeriesPage() {
                     <div className="flex items-center justify-between pt-4 border-t border-slate-200">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-2xl font-bold text-green-600">Pkr {series.price}</span>
+                          <span className="text-2xl font-bold text-primary">Pkr {series.price}</span>
                           <span className="text-sm text-slate-400 line-through">Pkr {series.originalPrice}</span>
                         </div>
                         <div className="text-xs text-green-600">Save Pkr {series.originalPrice - series.price}</div>
                       </div>
 
-                      {series.isEnrolled ? (
+                      {series.enrolled ? (
                         <Button
-                          type="primary"
+
                           icon={<PlayCircleOutlined />}
-                          className="bg-gradient-to-r from-green-500 to-blue-600 border-none"
+                          className="bg-gradient-to-r from-secondary-400  text-white to-teal-500 border-none"
                         >
                           Continue
                         </Button>
                       ) : (
                         <Button
-                          type="primary"
+
                           onClick={() => handleEnroll(series)}
-                          className="bg-gradient-to-r from-blue-500 to-indigo-600 border-none"
+                          className="bg-gradient-to-r from-primary-400 to-pink border-none text-white"
                         >
                           Enroll Now
                         </Button>
@@ -296,6 +213,7 @@ export default function TestSeriesPage() {
         onCancel={() => setEnrollModalVisible(false)}
         okText="Enroll Now"
         cancelText="Cancel"
+        loading={loading}
         className="enrollment-modal"
       >
         {selectedSeries && (
@@ -322,7 +240,6 @@ export default function TestSeriesPage() {
 
             <div className="text-sm text-slate-600">
               <p>• Access to {selectedSeries.totalTests} comprehensive tests</p>
-              <p>• Detailed explanations and solutions</p>
               <p>• Performance analytics and progress tracking</p>
               <p>• {selectedSeries.duration} of access</p>
             </div>

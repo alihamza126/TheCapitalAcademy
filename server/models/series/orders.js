@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 
 const paymentSchema = new Schema(
     {
-        userId: { type: Schema.Types.ObjectId, ref: "user", required: true },
+        userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
         seriesId: { type: Schema.Types.ObjectId, ref: "Series", required: true },
 
         currency: { type: String, enum: ["PKR"], default: "PKR" },
@@ -37,4 +37,4 @@ const paymentSchema = new Schema(
 );
 
 const Payment= model("Payment", paymentSchema);
-module.exports=Payment;
+export default Payment;

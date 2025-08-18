@@ -43,7 +43,7 @@ const purchaseSchema = new Schema({
         type: Date,
         default: function () {
             const currentDate = new Date();
-            currentDate.setDate(currentDate.getDate() + 90);
+            currentDate.setDate(currentDate.getDate() + 3);
             return currentDate;
         }
     }
@@ -55,7 +55,7 @@ purchaseSchema.pre('save', function (next) {
     if (this.isModified('status')) {
         if (this.status === 'rejected') {
             this.expiryDate = new Date(); // Set expiryDate to the current date
-        } else if (this.status === 'approved') {
+        } else if (this.status === 'approved' && this.course !== "trial") {
             const expiryMonths = 3; // Number of months the course remains valid after approval
             const currentDate = new Date();
             currentDate.setMonth(currentDate.getMonth() + expiryMonths);

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 
 const seriesMcqSchema = new Schema(
@@ -39,4 +39,4 @@ const seriesMcqSchema = new Schema(
 );
 
 const SeriesMCQ = model("SeriesMCQ", seriesMcqSchema);
-module.exports = SeriesMCQ;
+export default SeriesMCQ;
