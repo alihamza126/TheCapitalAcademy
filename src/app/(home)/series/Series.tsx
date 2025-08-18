@@ -226,15 +226,15 @@ export default function TestSeriesPage({ data }) {
             <div className="bg-slate-50 p-4 rounded-lg">
               <div className="flex justify-between items-center mb-2">
                 <span>Course Price:</span>
-                <span className="line-through text-slate-400">₹{selectedSeries.originalPrice}</span>
+                <span className="line-through text-slate-400">Pkr{selectedSeries.originalPrice}</span>
               </div>
               <div className="flex justify-between items-center mb-2">
                 <span>Discount:</span>
-                <span className="text-green-600">-₹{selectedSeries.originalPrice - selectedSeries.price}</span>
+                <span className="text-green-600">-Pkr{selectedSeries.originalPrice - selectedSeries.price}</span>
               </div>
               <div className="flex justify-between items-center font-bold text-lg border-t pt-2">
                 <span>Total Amount:</span>
-                <span className="text-green-600">₹{selectedSeries.price}</span>
+                <span className="text-green-600">Pkr{selectedSeries.price}</span>
               </div>
             </div>
 

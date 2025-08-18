@@ -13,6 +13,7 @@ export const publicPages = [
    "/pages/about",
    "/checkout",
    "/calculator",
+   '/series',
    "/privacy-policy",
    "/api/auth", // NextAuth API routes
 ].filter((p) => p);
