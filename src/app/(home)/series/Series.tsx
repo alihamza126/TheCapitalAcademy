@@ -15,6 +15,7 @@ import {
 } from "@ant-design/icons"
 import Button from "@/shared/Button/Button"
 import { redirect, useRouter } from "next/navigation"
+import Link from "next/link"
 
 const { Search } = Input
 
@@ -40,7 +41,7 @@ export default function TestSeriesPage({ data }) {
   const [enrollModalVisible, setEnrollModalVisible] = useState(false)
   const [selectedSeries, setSelectedSeries] = useState<any>(null)
   const [loading, setLoading] = useState(false);
-  const router=useRouter()
+  const router = useRouter()
 
 
 
@@ -180,72 +181,72 @@ export default function TestSeriesPage({ data }) {
                       </div>
 
                       {series.enrolled ? (
-                        <Button
-
-                          icon={<PlayCircleOutlined />}
-                          className="bg-gradient-to-r from-secondary-400  text-white to-teal-500 border-none"
-                        >
-                          Continue
+                        <Link href={'/dashboard/series'}>
+                          <Button
+                          className="bg-gradient-to-r flex items-center  from-secondary-400  text-white to-teal-500 border-none"
+                          >
+                          Continue <PlayCircleOutlined />
                         </Button>
-                      ) : (
-                        <Button
+                        </Link>
+                    ) : (
+                    <Button
 
-                          onClick={() => handleEnroll(series)}
-                          className="bg-gradient-to-r from-primary-400 to-pink border-none text-white"
-                        >
-                          Enroll Now
-                        </Button>
+                      onClick={() => handleEnroll(series)}
+                      className="bg-gradient-to-r from-primary-400 to-pink border-none text-white"
+                    >
+                      Enroll Now
+                    </Button>
                       )}
-                    </div>
                   </div>
-                </Card>
-              </motion.div>
+                </div>
+              </Card>
+            </motion.div>
             </Col>
           ))}
-        </Row>
-      </motion.div>
-
-      {/* Enrollment Modal */}
-      <Modal
-        title="Confirm Enrollment"
-        open={enrollModalVisible}
-        onOk={confirmEnrollment}
-        onCancel={() => setEnrollModalVisible(false)}
-        okText="Enroll Now"
-        cancelText="Cancel"
-        loading={loading}
-        className="enrollment-modal"
-      >
-        {selectedSeries && (
-          <div className="space-y-4">
-            <div>
-              <h4 className="font-semibold text-slate-800">{selectedSeries.title}</h4>
-              <p className="text-slate-600 text-sm">{selectedSeries.description}</p>
-            </div>
-
-            <div className="bg-slate-50 p-4 rounded-lg">
-              <div className="flex justify-between items-center mb-2">
-                <span>Course Price:</span>
-                <span className="line-through text-slate-400">Pkr{selectedSeries.originalPrice}</span>
-              </div>
-              <div className="flex justify-between items-center mb-2">
-                <span>Discount:</span>
-                <span className="text-green-600">-Pkr{selectedSeries.originalPrice - selectedSeries.price}</span>
-              </div>
-              <div className="flex justify-between items-center font-bold text-lg border-t pt-2">
-                <span>Total Amount:</span>
-                <span className="text-green-600">Pkr{selectedSeries.price}</span>
-              </div>
-            </div>
-
-            <div className="text-sm text-slate-600">
-              <p>• Access to {selectedSeries.totalTests} comprehensive tests</p>
-              <p>• Performance analytics and progress tracking</p>
-              <p>• {selectedSeries.duration} of access</p>
-            </div>
-          </div>
-        )}
-      </Modal>
+      </Row>
     </motion.div>
+
+      {/* Enrollment Modal */ }
+  <Modal
+    title="Confirm Enrollment"
+    open={enrollModalVisible}
+    onOk={confirmEnrollment}
+    onCancel={() => setEnrollModalVisible(false)}
+    okText="Enroll Now"
+    cancelText="Cancel"
+    loading={loading}
+    className="enrollment-modal"
+  >
+    {selectedSeries && (
+      <div className="space-y-4">
+        <div>
+          <h4 className="font-semibold text-slate-800">{selectedSeries.title}</h4>
+          <p className="text-slate-600 text-sm">{selectedSeries.description}</p>
+        </div>
+
+        <div className="bg-slate-50 p-4 rounded-lg">
+          <div className="flex justify-between items-center mb-2">
+            <span>Course Price:</span>
+            <span className="line-through text-slate-400">Pkr{selectedSeries.originalPrice}</span>
+          </div>
+          <div className="flex justify-between items-center mb-2">
+            <span>Discount:</span>
+            <span className="text-green-600">-Pkr{selectedSeries.originalPrice - selectedSeries.price}</span>
+          </div>
+          <div className="flex justify-between items-center font-bold text-lg border-t pt-2">
+            <span>Total Amount:</span>
+            <span className="text-green-600">Pkr{selectedSeries.price}</span>
+          </div>
+        </div>
+
+        <div className="text-sm text-slate-600">
+          <p>• Access to {selectedSeries.totalTests} comprehensive tests</p>
+          <p>• Performance analytics and progress tracking</p>
+          <p>• {selectedSeries.duration} of access</p>
+        </div>
+      </div>
+    )}
+  </Modal>
+    </motion.div >
   )
 }
