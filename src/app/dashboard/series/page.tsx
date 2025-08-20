@@ -15,6 +15,7 @@ import {
 import { motion } from "framer-motion"
 import Axios from "@/lib/Axios"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 
 
@@ -22,6 +23,7 @@ export default function StudentDashboard() {
   const [enrolledSeries, setEnrolledSeries] = useState([])
   const [stats, setStats] = useState({})
   const [loading, setLoading] = useState(true)
+  const router = useRouter();
 
   // Mock data - replace with API calls
   useEffect(() => {
@@ -30,6 +32,10 @@ export default function StudentDashboard() {
       setEnrolledSeries(res.data.data.enrolledSeries);
       setStats(res.data.data.stats);
       setLoading(false);
+
+      if (res.data.data.enrolledSeries.length === 0) {
+        router.push('/series');
+      }
     };
     fetchSeries();
   }, []);
@@ -122,7 +128,7 @@ export default function StudentDashboard() {
             return (
               <Link href={`/dashboard/series/${s._id}`}>
                 <motion.div key={item.enrollmentId} whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-                  <Card  fullWidth className="cursor-pointer pointer-events-none hover:shadow-lg transition-shadow" isPressable>
+                  <Card fullWidth className="cursor-pointer pointer-events-none hover:shadow-lg transition-shadow" isPressable>
                     <CardBody className="p-0">
                       <div className="relative">
                         <img

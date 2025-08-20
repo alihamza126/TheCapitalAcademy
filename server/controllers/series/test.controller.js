@@ -137,6 +137,7 @@ const getTestDetails = async (req, res) => {
                 subject: q.questionId.subject,
                 difficulty: q.questionId.difficulty,
                 imageUrl: q.questionId.imageUrl,
+                questionImg: q.questionId.questionImg,
                 explain: q.questionId.explain,
                 info: q.questionId.info,
                 marks: q.marks,

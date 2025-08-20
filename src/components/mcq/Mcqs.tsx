@@ -58,7 +58,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
 
 
   const { data: session } = useSession()
-  const userId = session?.user?.id
+  const userId = (session?.user as any)?.id
 
   // Auto-save related state
   const [lastSavedCorrect, setLastSavedCorrect] = useState([])
@@ -71,10 +71,10 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
     sourceIndex: 0,
   })
 
-  const toggleLightbox = () => {
+  const toggleLightbox = (imageUrl, sourceIndex = 0) => {
     setLightboxController({
-      ...lightboxController,
       toggler: !lightboxController.toggler,
+      sourceIndex: sourceIndex,
     })
   }
 
@@ -669,6 +669,19 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                             </MathJax>
                           </CardBody>
                         </Card>
+                        {/* Question Image */}
+                        {mcqs[index]?.questionImg && (
+                          <div className="mt-4">
+                            <div className="relative">
+                              <img
+                                src={mcqs[index]?.questionImg}
+                                alt="Question"
+                                className="max-h-20  object-contain cursor-pointer rounded-lg"
+                                onClick={() => toggleLightbox(mcqs[index]?.questionImg, 0)}
+                              />
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {loading ? (
@@ -749,12 +762,14 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                                     Reference Image
                                   </h5>
                                   {mcqs[index]?.imageUrl && (
-                                    <img
-                                      src={mcqs[index]?.imageUrl || "/placeholder.svg"}
-                                      alt="Reference"
-                                      className="w-full max-h-32 lg:max-h-48 object-contain cursor-pointer rounded-lg border border-gray-200"
-                                      onClick={toggleLightbox}
-                                    />
+                                    <div className="relative">
+                                      <img
+                                        src={mcqs[index]?.imageUrl || "/placeholder.svg"}
+                                        alt="Reference"
+                                        className=" max-h-20 lg:max-h-20 object-contain cursor-pointer rounded-lg"
+                                        onClick={() => toggleLightbox(mcqs[index]?.imageUrl, mcqs[index]?.questionImg ? 1 : 0)}
+                                      />
+                                    </div>
                                   )}
                                 </div>
                               }
@@ -895,7 +910,15 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
         </Modal>
 
         {/* Lightbox */}
-        <FsLightbox toggler={lightboxController.toggler} sources={[mcqs[index]?.imageUrl]} zoomIncrement={0.1} />
+        <FsLightbox 
+          toggler={lightboxController.toggler} 
+          sources={[
+            mcqs[index]?.questionImg,
+            mcqs[index]?.imageUrl
+          ].filter(Boolean)} 
+          sourceIndex={lightboxController.sourceIndex}
+          zoomIncrement={0.1} 
+        />
 
         {/* Report Modal */}
         <Modal isOpen={isReportOpen} onClose={onReportClose} size="2xl">
