@@ -284,8 +284,13 @@ const SeriesDetail = () => {
                         <div className="flex flex-col md:flex-row gap-6 items-start">
                             <div className="flex-1">
                                 <p className="text-gray-600 mb-4">
-                                    Enrolled on {formatDate(data.enrollment.activatedAt)} • Expires on{" "}
-                                    {formatDate(data.enrollment.expiresAt)}
+                                    Enrolled on {formatDate(data.enrollment.activatedAt)}
+                                    {
+                                        data.enrollment.expiresAt &&
+                                        <>
+                                            • Expires on{" "}{formatDate(data.enrollment.expiresAt)}
+                                        </>
+                                    }
                                 </p>
 
                                 <div className="mb-4">

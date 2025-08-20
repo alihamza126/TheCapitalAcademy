@@ -176,7 +176,7 @@ export default function StudentDashboard() {
 
                           <div className="flex justify-between text-sm text-muted-foreground">
                             <span>{item.isExpired ? "Expired" : "Active"}</span>
-                            <span>Expires: {new Date(item.expiresAt).toLocaleDateString()}</span>
+                            {item.expiresAt && <span>Expires: {new Date(item.expiresAt).toLocaleDateString()}</span>}
                           </div>
                         </div>
                       </div>

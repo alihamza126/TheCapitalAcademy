@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import {
   Card,
   CardBody,
@@ -293,15 +293,15 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
   const refArray = [ref1, ref2, ref3, ref4]
 
   // Removed problematic useEffect
-  // useEffect(() => {
-  //   if (mcqs[index]?.selected != null) {
-  //     if (mcqs[index].correctOption === mcqs[index].selected) {
-  //       refArray[mcqs[index].selected - 1].current.classList.add("correct")
-  //     } else {
-  //       refArray[mcqs[index].selected - 1].current.classList.add("wrong")
-  //     }
-  //   }
-  // }, [mcqs, index])
+  useCallback(() => {
+    if (mcqs[index]?.selected != null) {
+      if (mcqs[index].correctOption === mcqs[index].selected) {
+        refArray[mcqs[index].selected - 1].current.classList.add("correct")
+      } else {
+        refArray[mcqs[index].selected - 1].current.classList.add("wrong")
+      }
+    }
+  }, [mcqs, index])
 
   const checkAns = (e, ans) => {
     if (mcqs[index].lock === false) {
@@ -910,14 +910,14 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
         </Modal>
 
         {/* Lightbox */}
-        <FsLightbox 
-          toggler={lightboxController.toggler} 
+        <FsLightbox
+          toggler={lightboxController.toggler}
           sources={[
             mcqs[index]?.questionImg,
             mcqs[index]?.imageUrl
-          ].filter(Boolean)} 
+          ].filter(Boolean)}
           sourceIndex={lightboxController.sourceIndex}
-          zoomIncrement={0.1} 
+          zoomIncrement={0.1}
         />
 
         {/* Report Modal */}
@@ -1194,7 +1194,9 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                           <div>
                             {!correctMcq.includes(ele._id) && (
                               <span className="text-xs lg:text-sm text-gray-600">
-                                Correct option: {ele.correctOption}
+                                <Chip color="success" className=" text-white">
+                                  Correct option: {ele.correctOption}
+                                </Chip>
                               </span>
                             )}
                           </div>

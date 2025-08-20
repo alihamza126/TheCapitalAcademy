@@ -183,7 +183,7 @@ export default function TestSeriesPage({ data }) {
                       {series.enrolled ? (
                         <Link href={'/dashboard/series'}>
                           <Button
-                          className="bg-gradient-to-r flex items-center  from-secondary-400  text-white to-teal-500 border-none"
+                          className="bg-gradient-to-r gap-2 flex items-center  from-secondary-400  text-white to-teal-500 border-none"
                           >
                           Continue <PlayCircleOutlined />
                         </Button>
