@@ -110,7 +110,7 @@ const TestResultModal = ({ isOpen, onClose, resultData }: TestResultModalProps) 
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size="5xl"
+      size="full"
       scrollBehavior="inside"
       classNames={{
         base: "max-h-[90vh]",
@@ -154,21 +154,21 @@ const TestResultModal = ({ isOpen, onClose, resultData }: TestResultModalProps) 
 
                     <div className="text-center">
                       <div className="flex items-center justify-center mb-2">
-                        <div className="p-3 bg-green-100 rounded-full">
-                          <CheckCircle className="w-8 h-8 text-green-600" />
+                        <div className="p-3 bg-green/40 rounded-full">
+                          <CheckCircle className="w-8 h-8   text-lime-500" />
                         </div>
                       </div>
-                      <h3 className="text-3xl font-bold text-green-600">{results.correctAnswers}</h3>
+                      <h3 className="text-3xl font-bold text-lime-500">{results.correctAnswers}</h3>
                       <p className="text-sm text-gray-600">Correct</p>
                     </div>
 
                     <div className="text-center">
                       <div className="flex items-center justify-center mb-2">
-                        <div className="p-3 bg-red-100 rounded-full">
-                          <XCircle className="w-8 h-8 text-red-600" />
+                        <div className="p-3 bg-red/30 rounded-full">
+                          <XCircle className="w-8 h-8 text-red/70" />
                         </div>
                       </div>
-                      <h3 className="text-3xl font-bold text-red-600">{results.incorrectAnswers}</h3>
+                      <h3 className="text-3xl font-bold text-red/90">{results.incorrectAnswers}</h3>
                       <p className="text-sm text-gray-600">Incorrect</p>
                     </div>
 

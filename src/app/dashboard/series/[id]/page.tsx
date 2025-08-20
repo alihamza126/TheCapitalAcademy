@@ -12,6 +12,7 @@ import {
     Tabs,
     Tab,
     Skeleton,
+    Tooltip,
 } from "@heroui/react"
 import { motion } from "framer-motion"
 import { Clock, BookOpen, Target, Calendar, Trophy, Lock, CheckCircle, AlertCircle, Play } from "lucide-react"
@@ -75,6 +76,7 @@ const SeriesDetail = () => {
             try {
                 setLoading(true)
                 const response = await Axios.get(`/api/v1/series/${id}/tests`)
+                console.log(response)
                 setData(response.data.data)
             } catch (err: any) {
                 setError(err.message || "Failed to load series details")
@@ -197,7 +199,7 @@ const SeriesDetail = () => {
                         </div>
                     </div>
 
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-col md:flex-row justify-start md:justify-between items-start gap-2 md:items-center">
                         <div className="text-sm text-gray-500">
                             Available: {formatDate(test.availability.startAt)} - {formatDate(test.availability.endAt)}
                         </div>
@@ -215,10 +217,18 @@ const SeriesDetail = () => {
                             </Popconfirm>
                         }
                         {test.status === "completed" && test.attempt && (
-                            <Button onPress={() => handleResult(test._id)} color="success" variant="bordered" size="sm">
-                                View Results
-                            </Button>
+                            <div className="flex gap-2">
+                                <Tooltip content="You can retake this test only once">
+                                    <Button isDisabled={test.attempt.isReattempt} onPress={() => handleSolve(test._id)} color="primary" variant='solid' size="sm">
+                                        {test.attempt.isReattempt ? "Re-Attempted" : "Re-Attempt"}
+                                    </Button>
+                                </Tooltip>
+                                <Button onPress={() => handleResult(test._id)} color="success" variant="bordered" size="sm">
+                                    View Results
+                                </Button>
+                            </div>
                         )}
+
                     </div>
                 </CardBody>
             </Card>
@@ -349,7 +359,7 @@ const SeriesDetail = () => {
                     <CardHeader className="py-4 px-5">
                         <h2 className="text-xl font-semibold">Tests Overview</h2>
                     </CardHeader>
-                    <CardBody>
+                    <CardBody className="px-0">
                         <Tabs aria-label="Test categories" color="primary" variant="underlined">
                             <Tab
                                 key="available"

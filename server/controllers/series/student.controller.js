@@ -111,7 +111,7 @@ const getSeriesTests = async (req, res) => {
     const attempts = await Attempt.find({
       studentId: studentId,
       testId: { $in: testIds },
-    }).select("testId score attemptedAt attemptNumber")
+    }).select("testId score attemptedAt attemptNumber isReattempt")
 
     // Create attempts map for quick lookup
     const attemptsMap = {}

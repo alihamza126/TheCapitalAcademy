@@ -47,13 +47,15 @@ import { useSession } from "next-auth/react"
 import { toast } from "react-hot-toast"
 
 const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
+  console.log(mcqData)
   const router = useRouter()
   const [correctMcq, setCorrectMcq] = useState([])
   const [wrongMcq, setWrongMcq] = useState([])
   const [attempted, setAttempted] = useState([])
   const [showMockModel, setShowMockModel] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
+  const [isSaving, setIsSaving] = useState(false);
+
 
   const { data: session } = useSession()
   const userId = session?.user?.id
@@ -62,6 +64,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
   const [lastSavedCorrect, setLastSavedCorrect] = useState([])
   const [lastSavedWrong, setLastSavedWrong] = useState([])
   const autoSaveIntervalRef = useRef(null)
+  const testStartAt = new Date()
 
   const [lightboxController, setLightboxController] = useState({
     toggler: false,
@@ -199,11 +202,14 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
 
   const saveMcqData = async () => {
     if (isSeries) {
-      // console.log(mcqs)
+      const testSubmit = new Date()
+      const diffMs = testSubmit - testStartAt
+      const durationMin = Math.floor(diffMs / 1000 / 60)
+
       try {
         const res = await Axios.post(`/api/v1/test/student/${mcqData?._id}/submit`, {
           answers: mcqs,
-          duration: mcqData?.durationMin,
+          duration: durationMin,
         });
         // console.log(res)
         if (res.data) {
@@ -391,11 +397,12 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
   }
 
   const config = {
-    loader: { load: ["[tex]/ams"] },
+    loader: { load: ["input/tex", "output/chtml", "[tex]/ams"] },
     tex: {
+      packages: { "[+]": ["ams"] },
       inlineMath: [
         ["$", "$"],
-        ["$$", "$$"],
+        ["\\(", "\\)"],
       ],
       displayMath: [
         ["$$", "$$"],
@@ -428,7 +435,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
   }
 
   return (
-    <MathJaxContext version={3} config={config}>
+    <MathJaxContext config={config}>
       <div className="h-screen  overscroll-auto flex flex-col bg-gradient-to-br from-slate-50 to-blue-50">
         {/* Mobile Header - Fixed */}
         <div className="flex-shrink-0 sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200 lg:hidden">
@@ -657,7 +664,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                         </div>
                         <Card className="bg-slate-50 border-l-4 border-l-blue-500">
                           <CardBody className="py-3 lg:py-4">
-                            <MathJax dynamic={true} className="text-sm lg:text-lg leading-relaxed">
+                            <MathJax inline className="text-sm lg:text-lg leading-relaxed">
                               {mcqs[index]?.question}
                             </MathJax>
                           </CardBody>
@@ -709,7 +716,6 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                                           {alphabets[optionIndex]}
                                         </Chip>
                                         <MathJax
-                                          dynamic={true}
                                           className="pointer-events-none select-none text-sm lg:text-base flex-1"
                                         >
                                           {option}
@@ -736,32 +742,34 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                             </div>
                           ) : (
                             // Explanation - Scrollable
-                            <div className="grid max-h-[40vh] grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
-                              <div className="lg:col-span-2">
+                            <div className="grid max-h-[40vh] gap-4 lg:gap-6">
+                              {mcqs[index]?.imageUrl &&
+                                <div>
+                                  <h5 className="text-base lg:text-lg font-semibold text-blue-600 mb-4">
+                                    Reference Image
+                                  </h5>
+                                  {mcqs[index]?.imageUrl && (
+                                    <img
+                                      src={mcqs[index]?.imageUrl || "/placeholder.svg"}
+                                      alt="Reference"
+                                      className="w-full max-h-32 lg:max-h-48 object-contain cursor-pointer rounded-lg border border-gray-200"
+                                      onClick={toggleLightbox}
+                                    />
+                                  )}
+                                </div>
+                              }
+                              <div className="w-full">
                                 <h5 className="text-base lg:text-lg font-semibold text-blue-600 mb-4">Explanation</h5>
                                 <Card className="bg-green-50 border-l-4 border-l-green-500">
                                   <CardBody className="py-3 lg:py-4">
                                     <MathJax
-                                      dynamic={true}
+                                      inline
                                       className="text-sm lg:text-base leading-relaxed whitespace-pre-line"
                                     >
                                       {mcqs[index]?.explain || "Explanation not available yet"}
                                     </MathJax>
                                   </CardBody>
                                 </Card>
-                              </div>
-                              <div>
-                                <h5 className="text-base lg:text-lg font-semibold text-blue-600 mb-4">
-                                  Reference Image
-                                </h5>
-                                {mcqs[index]?.imageUrl && (
-                                  <img
-                                    src={mcqs[index]?.imageUrl || "/placeholder.svg"}
-                                    alt="Reference"
-                                    className="w-full max-h-32 lg:max-h-48 object-contain cursor-pointer rounded-lg border border-gray-200"
-                                    onClick={toggleLightbox}
-                                  />
-                                )}
                               </div>
                             </div>
                           )}
@@ -1117,7 +1125,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                         </div>
                       }
                       aria-label={`Question ${i + 1}`}
-                      className="text-base lg:text-lg font-semibold"
+                      className="text-base lg:text-lg"
                     >
                       <div className="space-y-3 lg:space-y-4">
                         <div className="space-y-2">

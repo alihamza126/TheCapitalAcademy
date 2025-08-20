@@ -5,9 +5,11 @@ import Axios from '@/lib/Axios';
 const page = async () => {
   let data = [];
   const res = await Axios.get('/api/v1/series');
-  console.log("series data is here",res.data)
+  console.log("series data is here", res.data)
   if (res.data) {
     data = res.data.data
+  } else {
+    data = []
   }
 
 

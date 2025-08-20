@@ -51,7 +51,8 @@ const mcqSchema = new mongoose.Schema({
         type: String,
         default: "Explanation Not provided"
     },
-    imageUrl: String,
+    imageUrl: { type: String, default: null },
+    questionImg: { type: String, default: null },
 });
 
 // question difficulty subject chapter category topic course

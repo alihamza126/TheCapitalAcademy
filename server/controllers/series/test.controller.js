@@ -20,8 +20,9 @@ const getTestDetails = async (req, res) => {
             })
             .populate({
                 path: "questions.questionId",
-                select: "question options correctOption subject difficulty imageUrl",
+                select: "question options correctOption subject difficulty imageUrl questionImg explain info",
             })
+
 
         if (!test) {
             return res.status(404).json({
@@ -136,6 +137,8 @@ const getTestDetails = async (req, res) => {
                 subject: q.questionId.subject,
                 difficulty: q.questionId.difficulty,
                 imageUrl: q.questionId.imageUrl,
+                explain: q.questionId.explain,
+                info: q.questionId.info,
                 marks: q.marks,
             })),
         }
