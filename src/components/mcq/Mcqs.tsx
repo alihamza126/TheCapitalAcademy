@@ -1148,7 +1148,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                         </div>
                       }
                       aria-label={`Question ${i + 1}`}
-                      className="text-base lg:text-lg"
+                      className="text-base lg:text-lg mcq-option"
                     >
                       <div className="space-y-3 lg:space-y-4">
                         <div className="space-y-2">
@@ -1156,10 +1156,12 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                             <div
                               key={optionIndex}
                               className={`p-2 lg:p-3 rounded-lg border ${correctMcq.includes(ele._id) && optionIndex + 1 === ele.selected
-                                ? "bg-green-50 border-green-300"
+                                ? "correct"
                                 : wrongMcq.includes(ele._id) && optionIndex + 1 === ele.selected
-                                  ? "bg-red-50 border-red-300"
-                                  : "bg-gray-50 border-gray-200"
+                                  ? "wrong"
+                                  : wrongMcq.includes(ele._id) && optionIndex + 1 === ele.correctOption
+                                    ? "correct"
+                                    : "bg-gray-50 border-gray-200"
                                 }`}
                             >
                               <div className="flex items-center gap-3">
@@ -1177,12 +1179,12 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                           <div>
                             {correctMcq.includes(ele._id) && (
                               <Chip color="success" size="sm">
-                                Correct
+                                Attempt Correct
                               </Chip>
                             )}
                             {wrongMcq.includes(ele._id) && (
                               <Chip color="danger" size="sm">
-                                Wrong
+                                Attempt Wrong
                               </Chip>
                             )}
                             {!correctMcq.includes(ele._id) && !wrongMcq.includes(ele._id) && (
@@ -1203,7 +1205,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                         </div>
                         <Divider />
                         <div>
-                          <p className="font-semibold text-gray-600 mb-2 text-sm lg:text-base">Explanation:</p>
+                          <p className="text-gray-600 mb-2 text-sm lg:text-base">Explanation:</p>
                           <MathJax className="whitespace-pre-line !text-sm lg:text-base" inline>
                             {ele.explain || "Not available"}
                           </MathJax>
@@ -1244,15 +1246,17 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                                       {ele.question}
                                     </MathJax>
                                   </div>
-                                  <div className="space-y-2">
+                                  <div className="space-y-2 mcq-option">
                                     {ele.options.map((option, optionIndex) => (
                                       <div
                                         key={optionIndex}
                                         className={`p-2 lg:p-3 rounded-lg border ${correctMcq.includes(ele._id) && optionIndex + 1 === ele.selected
-                                          ? "bg-green-50 border-green-300"
+                                          ? "correct"
                                           : wrongMcq.includes(ele._id) && optionIndex + 1 === ele.selected
-                                            ? "bg-red-50 border-red-300"
-                                            : "bg-gray-50 border-gray-200"
+                                            ? "wrong"
+                                            : wrongMcq.includes(ele._id) && optionIndex + 1 === ele.correctOption
+                                              ? "correct"
+                                              : "bg-gray-50 border-gray-200"
                                           }`}
                                       >
                                         <div className="flex items-center gap-3">
@@ -1270,12 +1274,12 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                                     <div>
                                       {correctMcq.includes(ele._id) && (
                                         <Chip color="success" size="sm">
-                                          Correct
+                                           Attempt right
                                         </Chip>
                                       )}
                                       {wrongMcq.includes(ele._id) && (
                                         <Chip color="danger" size="sm">
-                                          Wrong
+                                          Attempt Wrong
                                         </Chip>
                                       )}
                                       {!correctMcq.includes(ele._id) && !wrongMcq.includes(ele._id) && (
@@ -1284,17 +1288,17 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                                         </Chip>
                                       )}
                                     </div>
-                                    <div>
+                                    {/* <div>
                                       {!correctMcq.includes(ele._id) && (
                                         <span className="text-xs lg:text-sm text-gray-600">
                                           Correct option: {ele.correctOption}
                                         </span>
                                       )}
-                                    </div>
+                                    </div> */}
                                   </div>
                                   <Divider />
                                   <div>
-                                    <p className="font-semibold text-gray-600 mb-2 text-sm lg:text-base">Explanation:</p>
+                                    <p className="text-gray-600 mb-2 text-sm lg:text-base"> Explanation:</p>
                                     <MathJax className="whitespace-pre-line !text-sm lg:text-base" inline>
                                       {ele.explain || "Not available"}
                                     </MathJax>
@@ -1331,6 +1335,14 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
           .mcq-option:active {
             transform: scale(0.98);
           }
+        }
+          .correct {
+          background: #f0fdf4 !important;
+          border-color: #22c55e !important;
+        }
+          .wrong {
+          background: #fef2f2 !important;
+          border-color: #ef4444 !important;
         }
       `}</style>
     </MathJaxContext>
