@@ -435,7 +435,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
   }
 
   return (
-    <MathJaxContext config={config}>
+    <MathJaxContext version={3} config={config}>
       <div className="h-screen  overscroll-auto flex flex-col bg-gradient-to-br from-slate-50 to-blue-50">
         {/* Mobile Header - Fixed */}
         <div className="flex-shrink-0 sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200 lg:hidden">
@@ -664,7 +664,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                         </div>
                         <Card className="bg-slate-50 border-l-4 border-l-blue-500">
                           <CardBody className="py-3 lg:py-4">
-                            <MathJax inline className="text-sm lg:text-lg leading-relaxed">
+                            <MathJax dynamic inline className="text-sm lg:text-lg">
                               {mcqs[index]?.question}
                             </MathJax>
                           </CardBody>
@@ -728,7 +728,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                                         >
                                           {alphabets[optionIndex]}
                                         </Chip>
-                                        <MathJax
+                                        <MathJax dynamic
                                           className="pointer-events-none select-none text-sm lg:text-base flex-1"
                                         >
                                           {option}
@@ -777,7 +777,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                                 <h5 className="text-base lg:text-lg font-semibold text-blue-600 mb-4">Explanation</h5>
                                 <Card className="bg-green-50 border-l-4 border-l-green-500">
                                   <CardBody className="py-3 lg:py-4">
-                                    <MathJax
+                                    <MathJax dynamic
                                       inline
                                       className="text-sm lg:text-base leading-relaxed whitespace-pre-line"
                                     >
@@ -1142,7 +1142,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                       title={
                         <div>
                           <span className="font-bold text-sm lg:text-base">Q:{i + 1}) </span>
-                          <MathJax inline className="text-sm lg:text-base">
+                          <MathJax dynamic inline className="text-sm lg:text-base">
                             {ele.question}
                           </MathJax>
                         </div>
@@ -1168,7 +1168,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                                 <Chip size="sm" variant="flat">
                                   {alphabets[optionIndex]}
                                 </Chip>
-                                <MathJax inline className="text-sm lg:text-base">
+                                <MathJax dynamic inline className="text-sm lg:text-base">
                                   {option}
                                 </MathJax>
                               </div>
@@ -1206,7 +1206,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                         <Divider />
                         <div>
                           <p className="text-gray-600 mb-2 text-sm lg:text-base">Explanation:</p>
-                          <MathJax className="whitespace-pre-line !text-sm lg:text-base" inline>
+                          <MathJax dynamic className="whitespace-pre-line !text-sm lg:text-base" inline>
                             {ele.explain || "Not available"}
                           </MathJax>
                         </div>
@@ -1230,7 +1230,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                               title={
                                 <div>
                                   <span className="font-bold text-sm lg:text-base">Q:{i + 1}) </span>
-                                  <MathJax inline className="text-sm lg:text-base">
+                                  <MathJax dynamic inline className="text-sm lg:text-base">
                                     {ele.question}
                                   </MathJax>
                                 </div>
@@ -1242,7 +1242,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                                 <CardBody className="space-y-3 lg:space-y-4">
                                   <div>
                                     <span className="font-bold text-sm lg:text-base">Q:{i + 1}) </span>
-                                    <MathJax inline className="text-sm lg:text-base">
+                                    <MathJax dynamic inline className="text-sm lg:text-base">
                                       {ele.question}
                                     </MathJax>
                                   </div>
@@ -1263,7 +1263,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                                           <Chip size="sm" variant="flat">
                                             {alphabets[optionIndex]}
                                           </Chip>
-                                          <MathJax inline className="text-sm lg:text-base">
+                                          <MathJax dynamic inline className="text-sm lg:text-base">
                                             {option}
                                           </MathJax>
                                         </div>
@@ -1274,7 +1274,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                                     <div>
                                       {correctMcq.includes(ele._id) && (
                                         <Chip color="success" size="sm">
-                                           Attempt right
+                                          Attempt right
                                         </Chip>
                                       )}
                                       {wrongMcq.includes(ele._id) && (
@@ -1299,7 +1299,7 @@ const Mcqs = ({ subject, chapter, isSeries, mcqData }) => {
                                   <Divider />
                                   <div>
                                     <p className="text-gray-600 mb-2 text-sm lg:text-base"> Explanation:</p>
-                                    <MathJax className="whitespace-pre-line !text-sm lg:text-base" inline>
+                                    <MathJax dynamic className="whitespace-pre-line !text-sm lg:text-base" inline>
                                       {ele.explain || "Not available"}
                                     </MathJax>
                                   </div>

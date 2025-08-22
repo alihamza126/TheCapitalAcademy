@@ -20,6 +20,7 @@ export const metadata = {
 };
 
 
+
 const page = async ({ searchParams }) => {
     let data = [];
     const {
